@@ -1,4 +1,5 @@
 // @ts-nocheck
+import * as __fd_glob_11 from "../markdown/content/typography.mdx?collection=docs"
 import * as __fd_glob_10 from "../markdown/content/troubleshooting.mdx?collection=docs"
 import * as __fd_glob_9 from "../markdown/content/theming.mdx?collection=docs"
 import * as __fd_glob_8 from "../markdown/content/installation.mdx?collection=docs"
@@ -18,4 +19,4 @@ const create = server<typeof Config, import("fumadocs-mdx/runtime/types").Intern
   }
 }>({"doc":{"passthroughs":["extractedReferences"]}});
 
-export const docs = await create.docs("docs", "markdown/content", {}, {"api-reference.mdx": __fd_glob_0, "changelog.mdx": __fd_glob_1, "choosing-the-right-curves.mdx": __fd_glob_2, "components.mdx": __fd_glob_3, "configuration.mdx": __fd_glob_4, "contributing.mdx": __fd_glob_5, "deployment.mdx": __fd_glob_6, "getting-started.mdx": __fd_glob_7, "installation.mdx": __fd_glob_8, "theming.mdx": __fd_glob_9, "troubleshooting.mdx": __fd_glob_10, });
+export const docs = await create.docs("docs", "markdown/content", {}, {"api-reference.mdx": __fd_glob_0, "changelog.mdx": __fd_glob_1, "choosing-the-right-curves.mdx": __fd_glob_2, "components.mdx": __fd_glob_3, "configuration.mdx": __fd_glob_4, "contributing.mdx": __fd_glob_5, "deployment.mdx": __fd_glob_6, "getting-started.mdx": __fd_glob_7, "installation.mdx": __fd_glob_8, "theming.mdx": __fd_glob_9, "troubleshooting.mdx": __fd_glob_10, "typography.mdx": __fd_glob_11, });

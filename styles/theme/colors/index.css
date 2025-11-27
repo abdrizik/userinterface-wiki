@@ -1,0 +1,7 @@
+@import url(./gray/light.css);
+@import url(./gray/dark.css);
+
+:root {
+  --accent: oklch(0.6567 0.1871 237.18);
+  --color-link: var(--accent);
+}

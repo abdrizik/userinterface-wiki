@@ -5,6 +5,7 @@ const config = {
   compress: true,
   typedRoutes: true,
   reactCompiler: true,
+  reactStrictMode: true,
   devIndicators: {
     position: "bottom-right",
   },

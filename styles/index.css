@@ -1,7 +1,4 @@
-@import url(./theme/reset.css);
-@import url(./theme/typography.css);
-@import url(./theme/colors/light.css);
-@import url(./theme/colors/dark.css);
+@import url(./theme/index.css);
 
 :root {
   --radius-min: 2px;
