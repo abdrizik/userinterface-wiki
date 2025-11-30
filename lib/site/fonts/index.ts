@@ -1,12 +1,12 @@
 import { Inter, JetBrains_Mono } from "next/font/google";
 
 const inter = Inter({
-  variable: "--font-display",
+  variable: "--font-family-display",
   subsets: ["latin"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-monospace",
+  variable: "--font-family-monospace",
   subsets: ["latin"],
 });
 

@@ -1,12 +1,6 @@
 @import url(./theme/index.css);
 
 :root {
-  --radius-min: 2px;
-  --radius-tiny: 4px;
-  --radius-small: 6px;
-  --radius-medium: 8px;
-  --radius-large: 12px;
-  --radius-full: 128px;
   --background-primary: var(--gray-1);
   --background-secondary: var(--gray-2);
   --interactive-primary: var(--gray-3);
@@ -17,15 +11,13 @@
   --border-tertiary: var(--gray-8);
   --solid-primary: var(--gray-9);
   --solid-secondary: var(--gray-10);
-  --foreground-secondary: var(--gray-11);
+
   --foreground-primary: var(--gray-12);
+  --foreground-secondary: var(--gray-11);
+  --foreground-tertiary: var(--gray-10);
+
   --accent: oklch(0.7665 0.22 146.55);
   --color-link: var(--accent);
-  --font-weight-light: 300;
-  --font-weight-normal: 450;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
   --prose-block-spacing: 16px;
   --prose-block-spacing-large: 22px;
   --prose-block-spacing-small: 6px;
@@ -49,9 +41,22 @@
   --prose-max-width: 640px;
 }
 
-html,
+html {
+  scrollbar-width: none;
+
+  ::selection {
+    color: var(--gray-1);
+    background-color: var(--gray-12);
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 body {
-  font-family: var(--font-display);
+  padding-top: 256px;
+  font-family: var(--font-family-display);
   color: var(--gray-12);
   text-wrap: pretty;
   background-color: var(--gray-1);

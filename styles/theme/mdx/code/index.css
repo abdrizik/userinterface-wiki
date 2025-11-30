@@ -21,7 +21,7 @@ pre.shiki {
 
 pre.shiki code {
   display: block;
-  font-family: var(--font-monospace);
+  font-family: var(--font-family-monospace);
   font-size: 13px;
   font-weight: 400;
   line-height: inherit;
@@ -34,7 +34,7 @@ pre.shiki[title]::before {
   padding: 8px var(--prose-block-spacing);
   margin: calc(-1 * var(--prose-block-spacing))
     calc(-1 * var(--prose-block-spacing)) var(--prose-block-spacing);
-  font-family: var(--font-monospace);
+  font-family: var(--font-family-monospace);
   font-size: 13px;
   font-weight: 500;
   color: var(--gray-11);
@@ -55,7 +55,7 @@ pre.shiki .highlighted {
 }
 
 code:not(pre.shiki code) {
-  font-family: var(--font-monospace);
+  font-family: var(--font-family-monospace);
   padding: 1px 4px;
   border-radius: 4px;
   line-height: 1.3;
@@ -68,9 +68,11 @@ code:not(pre.shiki code) {
   border: 1px solid var(--gray-6);
 }
 
-@media (prefers-color-scheme: dark) {
-  .shiki,
-  .shiki span {
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+
+  @media (prefers-color-scheme: dark) {
     color: var(--shiki-dark);
   }
 }

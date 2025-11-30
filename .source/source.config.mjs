@@ -13,9 +13,11 @@ var docs = defineDocs({
         published: z.iso.date(),
         modified: z.iso.date().optional()
       }),
+      description: z.string(),
       views: z.number().optional(),
-      authors: z.array(z.string()).optional(),
-      tags: z.array(z.string()).optional()
+      author: z.string(),
+      coauthors: z.array(z.string()).optional(),
+      tags: z.array(z.string())
     })
   },
   meta: {}

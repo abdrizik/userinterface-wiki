@@ -1,0 +1,44 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  align-self: stretch;
+}
+
+.title {
+  font-family: var(--font-family-display);
+  font-size: 24px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 150%;
+  color: var(--foreground-primary);
+  letter-spacing: var(--font-inter-letter-spacing-20px);
+}
+
+.meta {
+  display: flex;
+  flex: 1 0 0;
+  gap: 12px;
+  align-items: center;
+}
+
+.description {
+  font-family: var(--font-family-display);
+  font-size: 14px;
+  font-weight: var(--font-weight-normal);
+  line-height: 150%;
+  color: var(--foreground-tertiary);
+  letter-spacing: var(--font-inter-letter-spacing-14px);
+}
+
+.coauthors {
+  display: flex;
+
+  .stack:not(:first-of-type) {
+    margin-left: -4px;
+  }
+
+  .stack:not(:last-of-type) {
+    mask: radial-gradient(circle 10px at 22px 50%, transparent 99%, #fff 100%);
+  }
+}

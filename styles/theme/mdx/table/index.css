@@ -8,7 +8,7 @@ table {
   width: 100%;
   font-size: 15px;
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--inter-letter-spacing-14px);
+  letter-spacing: var(--font-inter-letter-spacing-14px);
   border-spacing: 0;
   border-collapse: collapse;
   scroll-margin-top: var(--prose-block-spacing);
@@ -24,7 +24,7 @@ th {
   line-height: 150%;
   color: var(--gray-12);
   text-align: left;
-  letter-spacing: var(--inter-letter-spacing-14px);
+  letter-spacing: var(--font-inter-letter-spacing-14px);
 }
 
 tbody tr {
