@@ -1,0 +1,94 @@
+.reader {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface, rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #fff;
+  cursor: pointer;
+  background: var(--color-accent, #111);
+  border: 0;
+  border-radius: 999px;
+  transition:
+    transform 200ms ease,
+    background 200ms ease;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button:not(:disabled):hover {
+    transform: scale(1.04);
+  }
+
+  .button:not(:disabled):active {
+    transform: scale(0.96);
+  }
+}
+
+.spinner {
+  font-size: 0.875rem;
+}
+
+.progress {
+  position: relative;
+  flex: 1;
+  height: 0.25rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+
+.bar {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: var(--color-accent, #111);
+  border-radius: inherit;
+  transition: width 120ms ease-out;
+}
+
+.info {
+  display: flex;
+  gap: 0.25rem;
+  align-items: baseline;
+  font-family: var(--font-mono, "Geist Mono", monospace);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.time {
+  min-width: 2.5ch;
+  text-align: right;
+}
+
+.divider {
+  opacity: 0.6;
+}
+
+.message {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .bar {
+    transition: none;
+  }
+}

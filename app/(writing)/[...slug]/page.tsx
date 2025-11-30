@@ -3,6 +3,7 @@ import { source } from "@markdown/lib/source";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import React from "react";
+import { AudioReader } from "@/components/audio-reader";
 import { Article } from "@/components/layout";
 
 export async function generateStaticParams() {
@@ -38,6 +39,7 @@ export default async function Page(props: {
     <React.Fragment>
       <Header page={page.data} />
       <Article>
+        <AudioReader slugSegments={params.slug} />
         <MDX />
       </Article>
     </React.Fragment>
