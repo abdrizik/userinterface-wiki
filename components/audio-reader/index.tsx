@@ -36,6 +36,8 @@ export const AudioReader = ({ slugSegments }: AudioReaderProps) => {
   const rafRef = useRef<number | null>(null);
   const spansRef = useRef<SpanMeta[]>([]);
   const mappingRef = useRef<number[]>([]);
+  const spanToWordIndexRef = useRef<Map<HTMLElement, number>>(new Map());
+  const interactionCleanupRef = useRef<(() => void) | null>(null);
   const activeSpanRef = useRef<HTMLElement | null>(null);
   const activeBlockRef = useRef<HTMLElement | null>(null);
   const lastWordIndexRef = useRef(-1);
@@ -53,6 +55,20 @@ export const AudioReader = ({ slugSegments }: AudioReaderProps) => {
   const [duration, setDuration] = useState(0);
 
   const prefersReducedMotion = usePrefersReducedMotion();
+
+  const startTicker = useCallback(() => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+    }
+
+    const frame = () => {
+      if (!audioRef.current) return;
+      setCurrentTime(audioRef.current.currentTime);
+      rafRef.current = requestAnimationFrame(frame);
+    };
+
+    rafRef.current = requestAnimationFrame(frame);
+  }, []);
 
   const clearActiveHighlight = useCallback(() => {
     if (activeSpanRef.current) {
@@ -130,10 +146,25 @@ export const AudioReader = ({ slugSegments }: AudioReaderProps) => {
   useEffect(() => {
     if (!timestamps.length || !spansRef.current.length) {
       mappingRef.current = [];
+      spanToWordIndexRef.current.clear();
       return;
     }
 
-    mappingRef.current = alignTimeline(timestamps, spansRef.current);
+    const mapping = alignTimeline(timestamps, spansRef.current);
+    mappingRef.current = mapping;
+
+    spanToWordIndexRef.current = new Map();
+    spansRef.current.forEach((meta) => {
+      delete meta.element.dataset.wordTimeIndex;
+    });
+
+    mapping.forEach((spanIndex, wordIndex) => {
+      if (spanIndex < 0) return;
+      const meta = spansRef.current[spanIndex];
+      if (!meta) return;
+      spanToWordIndexRef.current.set(meta.element, wordIndex);
+      meta.element.dataset.wordTimeIndex = String(wordIndex);
+    });
   }, [timestamps]);
 
   useEffect(() => {
@@ -181,6 +212,8 @@ export const AudioReader = ({ slugSegments }: AudioReaderProps) => {
     const handlePause = () => {
       setIsPlaying(false);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      lastWordIndexRef.current = -1;
+      clearActiveHighlight();
     };
     const handlePlay = () => setIsPlaying(true);
 
@@ -228,17 +261,13 @@ export const AudioReader = ({ slugSegments }: AudioReaderProps) => {
     try {
       await audioRef.current.play();
       setIsPlaying(true);
-      rafRef.current = requestAnimationFrame(function frame() {
-        if (!audioRef.current) return;
-        setCurrentTime(audioRef.current.currentTime);
-        rafRef.current = requestAnimationFrame(frame);
-      });
+      startTicker();
     } catch (error) {
       console.error("[audio-reader]", error);
       setErrorMessage("Playback failed");
       setStatus("error");
     }
-  }, [audioUrl, isPlaying]);
+  }, [audioUrl, isPlaying, startTicker]);
 
   const applyHighlight = useCallback(
     (wordIndex: number) => {
@@ -275,7 +304,7 @@ export const AudioReader = ({ slugSegments }: AudioReaderProps) => {
   );
 
   useEffect(() => {
-    if (!timestamps.length) return;
+    if (!timestamps.length || !isPlaying) return;
 
     const nextIndex = locateWordIndex(
       currentTime,
@@ -293,7 +322,78 @@ export const AudioReader = ({ slugSegments }: AudioReaderProps) => {
     }
 
     applyHighlight(nextIndex);
-  }, [applyHighlight, clearActiveHighlight, currentTime, timestamps]);
+  }, [
+    applyHighlight,
+    clearActiveHighlight,
+    currentTime,
+    isPlaying,
+    timestamps,
+  ]);
+
+  useEffect(() => {
+    if (isPlaying) return;
+    lastWordIndexRef.current = -1;
+    clearActiveHighlight();
+  }, [clearActiveHighlight, isPlaying]);
+
+  useEffect(() => {
+    interactionCleanupRef.current?.();
+
+    const audio = audioRef.current;
+    if (!audio || !timestamps.length || !spanToWordIndexRef.current.size) {
+      interactionCleanupRef.current = null;
+      return;
+    }
+
+    const seekToWord = (wordIndex: number) => {
+      const entry = timestamps[wordIndex];
+      if (!entry) return;
+      audio.currentTime = entry.start;
+      setCurrentTime(entry.start);
+      const runHighlight = () => {
+        lastWordIndexRef.current = wordIndex;
+        applyHighlight(wordIndex);
+      };
+
+      if (audio.paused) {
+        audio
+          .play()
+          .then(() => {
+            startTicker();
+            runHighlight();
+          })
+          .catch(() => {});
+        return;
+      }
+
+      runHighlight();
+    };
+
+    const cleanupFns: Array<() => void> = [];
+
+    spanToWordIndexRef.current.forEach((wordIndex, element) => {
+      const handleClick = () => {
+        seekToWord(wordIndex);
+      };
+
+      element.addEventListener("click", handleClick);
+
+      cleanupFns.push(() => {
+        element.removeEventListener("click", handleClick);
+      });
+    });
+
+    interactionCleanupRef.current = () => {
+      cleanupFns.forEach((fn) => {
+        fn();
+      });
+    };
+
+    return () => {
+      interactionCleanupRef.current?.();
+      interactionCleanupRef.current = null;
+    };
+  }, [applyHighlight, startTicker, timestamps]);
 
   if (status === "error") {
     return (

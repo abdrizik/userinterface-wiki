@@ -216,8 +216,6 @@ article {
     border: none;
   }
 
-  p::after,
-  li::after,
   blockquote::after {
     position: absolute;
     inset: -0.15rem;
@@ -238,32 +236,44 @@ article {
   [data-word-id],
   [data-word-state],
   [data-word-block-state],
-  [data-word-block-state]::after,
-  [data-word-state]::after {
-    transition: all 200ms ease-out;
+  [data-word-state]::after,
+  [data-word-block-state]::after {
+    background: transparent;
+    transition: all 0.4s ease-out;
+  }
+
+  [data-word-id] {
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, #0090ff 20%, transparent);
+    }
+  }
+
+  [data-word-state]::after,
+  [data-word-block-state]::after {
+    position: absolute;
+    inset: 0 -2px;
+    z-index: -1;
+    content: "";
+    background: transparent;
+    border-radius: 2px;
+    box-shadow: none;
   }
 
   [data-word-block-state="active"]::after {
-    position: absolute;
-    inset: 0px -4px;
-    z-index: -1;
-    content: "";
+    inset: 0 -4px;
     background: color-mix(in srgb, #0090ff 10%, transparent);
-    border-radius: 2px;
   }
 
   [data-word-state="active"]::after {
-    position: absolute;
-    inset: 0px -2px;
-    z-index: -1;
-    content: "";
     background: color-mix(in srgb, #0090ff 60%, transparent);
-    border-radius: 2px;
   }
 
-  [data-word-state="inactive"]::after {
-    background: transparent;
-    box-shadow: none;
+  [data-word-state="inactive"] {
+    &::after {
+      background: transparent;
+    }
   }
 }
 
