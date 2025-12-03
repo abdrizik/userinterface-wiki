@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+export type AgentState = "thinking" | "listening" | "talking" | null;
+
 export interface WordTimestamp {
   word: string;
   start: number;
@@ -17,6 +19,7 @@ interface AudioReaderState {
   isPlaying: boolean;
   currentTime: number;
   duration: number;
+  agentState: AgentState;
 }
 
 interface AudioReaderActions {
@@ -29,6 +32,7 @@ interface AudioReaderActions {
   setIsPlaying: (isPlaying: boolean) => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
+  setAgentState: (agentState: AgentState) => void;
   reset: () => void;
 }
 
@@ -42,6 +46,7 @@ const createInitialState = (): AudioReaderState => ({
   isPlaying: false,
   currentTime: 0,
   duration: 0,
+  agentState: null,
 });
 
 export const useAudioReaderStore = create<AudioReaderStore>((set) => ({
@@ -60,5 +65,6 @@ export const useAudioReaderStore = create<AudioReaderStore>((set) => ({
   setIsPlaying: (isPlaying) => set(() => ({ isPlaying })),
   setCurrentTime: (time) => set(() => ({ currentTime: time })),
   setDuration: (duration) => set(() => ({ duration })),
+  setAgentState: (agentState) => set(() => ({ agentState })),
   reset: () => set(() => createInitialState()),
 }));
