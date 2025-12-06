@@ -6,7 +6,8 @@ export interface SpanMeta {
   normalized: string;
 }
 
-const HIGHLIGHT_TOLERANCE = 0.05;
+const BASE_WINDOW = 0.02;
+const MAX_WINDOW = 0.12;
 
 export function collectSpans(): SpanMeta[] {
   return Array.from(
@@ -51,10 +52,26 @@ export function locateWordIndex(
   const startOf = (entry: WordTimestamp) => entry.start ?? entry.end ?? 0;
   const endOf = (entry: WordTimestamp) => entry.end ?? entry.start ?? 0;
 
-  let index = Math.max(-1, Math.min(lastIndex, timestamps.length - 1));
+  const clampedLastIndex = Math.max(
+    -1,
+    Math.min(lastIndex, timestamps.length - 1),
+  );
+
+  if (clampedLastIndex >= 0) {
+    const previous = timestamps[clampedLastIndex];
+    const window = resolveWindow(previous);
+    const prevStart = startOf(previous) - window;
+    const prevEnd = endOf(previous) + window;
+
+    if (currentTime >= prevStart && currentTime <= prevEnd) {
+      return clampedLastIndex;
+    }
+  }
+
+  let index = clampedLastIndex;
 
   if (index === -1) {
-    if (currentTime < startOf(timestamps[0]) - HIGHLIGHT_TOLERANCE) {
+    if (currentTime < startOf(timestamps[0]) - BASE_WINDOW) {
       return -1;
     }
     index = 0;
@@ -62,44 +79,40 @@ export function locateWordIndex(
 
   while (
     index + 1 < timestamps.length &&
-    currentTime >= startOf(timestamps[index + 1]) - HIGHLIGHT_TOLERANCE
+    currentTime >= startOf(timestamps[index + 1]) - BASE_WINDOW
   ) {
     index += 1;
   }
 
-  while (
-    index > 0 &&
-    currentTime < startOf(timestamps[index]) - HIGHLIGHT_TOLERANCE
-  ) {
+  while (index > 0 && currentTime < startOf(timestamps[index]) - BASE_WINDOW) {
     index -= 1;
   }
 
   const current = timestamps[index];
   const currentStart = startOf(current);
   const currentEnd = endOf(current);
-
+  const window = resolveWindow(current);
   const withinCurrent =
-    currentTime >= currentStart - HIGHLIGHT_TOLERANCE &&
-    currentTime <= currentEnd + HIGHLIGHT_TOLERANCE;
+    currentTime >= currentStart - window && currentTime <= currentEnd + window;
 
   if (withinCurrent) {
     return index;
   }
 
-  if (currentTime > currentEnd + HIGHLIGHT_TOLERANCE) {
+  if (currentTime > currentEnd + window) {
     if (index + 1 >= timestamps.length) {
       return timestamps.length - 1;
     }
 
     const nextStart = startOf(timestamps[index + 1]);
-    if (currentTime < nextStart - HIGHLIGHT_TOLERANCE) {
+    if (currentTime < nextStart - BASE_WINDOW) {
       return index;
     }
 
     return index + 1;
   }
 
-  if (currentTime < currentStart - HIGHLIGHT_TOLERANCE) {
+  if (currentTime < currentStart - window) {
     if (index === 0) {
       return -1;
     }
@@ -116,4 +129,12 @@ export function formatTime(value: number) {
     .toString()
     .padStart(2, "0");
   return `${minutes}:${seconds}`;
+}
+
+function resolveWindow(entry: WordTimestamp) {
+  const span = Math.max(
+    BASE_WINDOW,
+    Math.abs((entry.end ?? 0) - (entry.start ?? 0)),
+  );
+  return Math.min(MAX_WINDOW, span * 0.5);
 }

@@ -9,29 +9,28 @@ article {
   }
 
   [data-word-id] {
+    position: relative;
+    z-index: 0;
+    display: inline-block;
     cursor: pointer;
+    transition: color 0.16s ease-out;
 
     &::after {
       position: absolute;
       inset: 0 -2px;
       z-index: -1;
+      pointer-events: none;
       content: "";
       background: transparent;
       border-radius: 2px;
       box-shadow: none;
-      transition: all 0.2s ease-out;
+      transition:
+        all 0.2 0.16s ease-out,
+        box-shadow 0.16s ease-out;
     }
 
-    &:hover {
-      &::after {
-        position: absolute;
-        inset: 0 -2px;
-        z-index: -1;
-        content: "";
-        background: color-mix(in srgb, #0090ff 20%, transparent);
-        border-radius: 2px;
-        box-shadow: none;
-      }
+    &:hover::after {
+      background: color-mix(in srgb, #0090ff 20%, transparent);
     }
   }
 
@@ -46,13 +45,16 @@ article {
     box-shadow: none;
   }
 
-  [data-word-block-state="active"]::after {
-    inset: 0 -4px;
-    background: color-mix(in srgb, #0090ff 10%, transparent);
+  [data-word-block-state="active"] {
+    text-shadow: 0 0 8px rgba(0, 144, 255, 0.4);
   }
 
-  [data-word-state="active"]::after {
-    background: color-mix(in srgb, #0090ff 60%, transparent);
+  [data-word-block-state="active"] {
+    text-shadow: 0 0 8px rgba(0, 144, 255, 0.4);
+  }
+
+  [data-word-state="active"] {
+    text-shadow: 0 0 8px rgba(0, 144, 255);
   }
 
   [data-word-state="inactive"] {

@@ -55,7 +55,7 @@ html {
 }
 
 body {
-  padding-top: 256px;
+  padding-top: 128px;
   font-family: var(--font-family-display);
   color: var(--gray-12);
   text-wrap: pretty;
