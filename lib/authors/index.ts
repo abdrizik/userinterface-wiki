@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import type { Author } from "../types";
 import { schema } from "./schema";
 
@@ -49,11 +50,9 @@ export const authors = readdirSync(directory)
   });
 
 export function getAuthorById(id: string): Author {
-  if (!id) {
-    throw new Error(`Author id is required to fetch author data.`);
-  }
-
-  const author = authors.find((author) => author.id === id);
+  const author = new Map<string, Author>(
+    authors.map((author) => [author.id, author]),
+  ).get(id);
 
   if (!author) {
     throw new Error(`Author not found for id: ${id}`);

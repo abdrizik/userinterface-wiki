@@ -1,0 +1,33 @@
+.button {
+  display: flex;
+  grid-row: 1 / span 1;
+  grid-column: 2 / span 1;
+  gap: 4px;
+  align-items: center;
+  justify-self: stretch;
+  white-space: nowrap;
+
+  &[data-size="small"] {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    padding: 5px 6px;
+  }
+
+  &[data-variant="ghost"] {
+    position: relative;
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+    color: var(--gray-10);
+    letter-spacing: var(--inter-letter-spacing-14px);
+    border-radius: 6px;
+    transition: all 0.2s;
+
+    &:hover {
+      color: var(--gray-a12);
+      background-color: var(--gray-a3);
+    }
+  }
+}

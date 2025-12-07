@@ -15,13 +15,6 @@
   letter-spacing: var(--font-inter-letter-spacing-20px);
 }
 
-.meta {
-  display: flex;
-  flex: 1 0 0;
-  gap: 12px;
-  align-items: center;
-}
-
 .description {
   font-family: var(--font-family-display);
   font-size: 14px;
@@ -33,12 +26,46 @@
 
 .coauthors {
   display: flex;
+  align-items: center;
+  height: 18px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 
-  .stack:not(:first-of-type) {
+  .coauthor:not(:first-of-type) {
     margin-left: -4px;
   }
 
-  .stack:not(:last-of-type) {
+  .coauthor:not(:last-of-type) {
     mask: radial-gradient(circle 10px at 22px 50%, transparent 99%, #fff 100%);
+  }
+}
+
+.metadata {
+  display: inline-grid;
+  grid-template-rows: 24px 24px 24px;
+  grid-template-columns: 100px minmax(0, 1fr);
+  row-gap: 16px;
+  align-self: stretch;
+
+  .label {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    justify-content: center;
+    justify-self: stretch;
+    font-family: var(--font-family-display);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: var(--font-weight-medium);
+    color: var(--gray-8);
+    letter-spacing: -0.09px;
+  }
+
+  .content {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-self: stretch;
   }
 }

@@ -15,4 +15,4 @@ export interface Author {
   };
 }
 
-export type PageData = NonNullable<ReturnType<typeof source.getPage>>["data"];
+export type Page = NonNullable<ReturnType<typeof source.getPage>>["data"];
