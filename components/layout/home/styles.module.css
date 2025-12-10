@@ -59,3 +59,15 @@
   align-items: flex-start;
   align-self: stretch;
 }
+
+.post {
+  transition: filter 0.2s ease-in-out;
+}
+
+.posts:has(.post:hover) .post {
+  filter: opacity(0.4);
+}
+
+.posts:has(.post:hover) .post:hover {
+  filter: opacity(1);
+}

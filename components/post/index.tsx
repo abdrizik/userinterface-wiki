@@ -1,26 +1,40 @@
+import { clsx } from "clsx";
 import Link from "next/link";
 import type { Page } from "@/lib/types";
+import { getFormattedPageFromPageSource } from "@/markdown/functions/get-page";
 import { Code } from "../icons";
 import styles from "./styles.module.css";
 
-export function PageCard({ page }: { page: Page }) {
+interface PageCardProps {
+  className?: string;
+  page: Page;
+}
+
+export function PageCard({ page, className, ...props }: PageCardProps) {
+  const { title, description, author, date } =
+    getFormattedPageFromPageSource(page);
+
   return (
-    <Link href={{ pathname: page.url }} className={styles.post}>
+    <Link
+      href={{ pathname: page.url }}
+      className={clsx(styles.post, className)}
+      {...props}
+    >
       <div className={styles.details}>
         <div className={styles.preview}>
           <Code />
         </div>
         <div>
-          <h2 className={styles.title}>{page.data.title}</h2>
+          <h2 className={styles.title}>{title}</h2>
           <span className={styles.meta}>
-            <span>{page.data.author}</span>
+            <span>{author.name}</span>
             <span className={styles.separator} />
-            <span>{page.data.date.published}</span>
+            <span>{date.published}</span>
           </span>
         </div>
       </div>
       <div>
-        <p className={styles.description}>{page.data.description}</p>
+        <p className={styles.description}>{description}</p>
       </div>
     </Link>
   );

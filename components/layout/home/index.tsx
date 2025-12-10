@@ -1,7 +1,5 @@
 import { Field } from "@base-ui-components/react/field";
-import { clsx } from "clsx";
 import React from "react";
-import { Button } from "@/components/button";
 import { SearchIcon } from "@/components/icons/search";
 import { PageCard } from "@/components/post";
 
@@ -29,7 +27,9 @@ export const HomeLayout = async () => {
         </Field.Root>
         <div className={styles.posts}>
           {pages.map((page) => {
-            return <PageCard key={page.url} page={page} />;
+            return (
+              <PageCard key={page.url} page={page} className={styles.post} />
+            );
           })}
         </div>
       </div>
