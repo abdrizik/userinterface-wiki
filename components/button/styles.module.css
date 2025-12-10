@@ -21,7 +21,7 @@
     font-size: 14px;
     font-weight: var(--font-weight-medium);
     color: var(--gray-10);
-    letter-spacing: var(--inter-letter-spacing-14px);
+    letter-spacing: var(--font-inter-letter-spacing-14px);
     border-radius: 6px;
     transition: all 0.2s;
 
@@ -37,7 +37,7 @@
     font-size: 14px;
     font-weight: var(--font-weight-medium);
     color: var(--gray-10);
-    letter-spacing: var(--inter-letter-spacing-14px);
+    letter-spacing: var(--font-inter-letter-spacing-14px);
     border-radius: 6px;
     transition: all 0.2s;
 

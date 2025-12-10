@@ -3,9 +3,9 @@
 :root {
   --background-primary: var(--gray-1);
   --background-secondary: var(--gray-2);
-  --interactive-primary: var(--gray-3);
-  --interactive-secondary: var(--gray-4);
-  --interactive-tertiary: var(--gray-5);
+  --font-interactive-primary: var(--gray-3);
+  --font-interactive-secondary: var(--gray-4);
+  --font-interactive-tertiary: var(--gray-5);
   --border-primary: var(--gray-6);
   --border-secondary: var(--gray-7);
   --border-tertiary: var(--gray-8);

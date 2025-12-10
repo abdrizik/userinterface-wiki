@@ -12,13 +12,6 @@ export function getPageCoauthors(page: Page): Author[] {
   return (page.coauthors ?? []).map(getAuthorById);
 }
 
-export function getPageViews(page: Page) {
-  return new Intl.NumberFormat("en-US", {
-    notation: "standard",
-    compactDisplay: "short",
-  }).format(page.views);
-}
-
 export function getPagePublishedDate(page: Page) {
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
@@ -34,7 +27,6 @@ export function getPage(page: Page) {
     tags: page.tags ?? [],
     author: getPageAuthor(page),
     coauthors: getPageCoauthors(page),
-    views: getPageViews(page),
     published: getPagePublishedDate(page),
   };
 }

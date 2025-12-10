@@ -4,10 +4,16 @@ import { Category } from "@/components/category";
 import { CalendarIcon, ViewsIcon } from "@/components/icons";
 import { getInitials } from "@/lib";
 import type { Page } from "@/lib/types";
+import { formatViews } from "@/lib/views";
 import { getPage } from "@/markdown/functions/get-page";
 import styles from "./styles.module.css";
 
-export function Header({ page }: { page: Page }) {
+interface HeaderProps {
+  page: Page;
+  views: number;
+}
+
+export function Header({ page, views }: HeaderProps) {
   const {
     title,
     description,
@@ -15,8 +21,9 @@ export function Header({ page }: { page: Page }) {
     author: { name, avatar },
     coauthors,
     published,
-    views,
   } = getPage(page);
+
+  const formattedViews = formatViews(views);
 
   return (
     <header className={styles.header}>
@@ -49,7 +56,7 @@ export function Header({ page }: { page: Page }) {
         </Button>
         <Button size="small" variant="text">
           <ViewsIcon size={18} />
-          {views}
+          {formattedViews}
           &nbsp;views
         </Button>
         <Category.Root>

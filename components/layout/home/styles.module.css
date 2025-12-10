@@ -38,7 +38,7 @@
         font-weight: var(--font-weight-medium);
         line-height: 24px;
         color: var(--gray-10);
-        letter-spacing: var(--inter-letter-spacing-16px);
+        letter-spacing: var(--font-inter-letter-spacing-16px);
       }
     }
   }
@@ -69,7 +69,7 @@
     font-size: 16px;
     font-weight: var(--font-weight-medium);
     line-height: 24px;
-    letter-spacing: var(--inter-letter-spacing-16px);
+    letter-spacing: var(--font-inter-letter-spacing-16px);
   }
 }
 

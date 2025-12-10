@@ -5,11 +5,18 @@ import React from "react";
 import { Button } from "@/components/button";
 import { Code } from "@/components/icons";
 import { SearchIcon } from "@/components/icons/search";
+import { formatViews, getMultipleViews } from "@/lib/views";
 import { getPage } from "@/markdown/functions/get-page";
 import { source } from "@/markdown/lib/source";
 import styles from "./styles.module.css";
 
-export const HomeLayout = () => {
+export const HomeLayout = async () => {
+  const pages = source.getPages();
+
+  // Extract slugs from URLs (remove leading slash)
+  const slugs = pages.map(({ url }) => url.replace(/^\//, ""));
+  const viewsMap = await getMultipleViews(slugs);
+
   return (
     <React.Fragment>
       <div className={styles.header}>
@@ -45,8 +52,10 @@ export const HomeLayout = () => {
           </Field.Root>
         </div>
         <div className={styles.grid}>
-          {source.getPages().map(({ url, data }) => {
-            const { title, author, views, published } = getPage(data);
+          {pages.map(({ url, data }) => {
+            const { title, author, published } = getPage(data);
+            const slug = url.replace(/^\//, "");
+            const views = formatViews(viewsMap[slug] ?? 0);
 
             return (
               <Link key={url} href={{ pathname: url }} className={styles.page}>

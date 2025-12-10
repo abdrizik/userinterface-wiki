@@ -6,6 +6,8 @@ import { notFound } from "next/navigation";
 import React from "react";
 import { AudioReader } from "@/components/audio-reader";
 import { Article } from "@/components/layout";
+import { ViewTracker } from "@/components/view-tracker";
+import { getViews } from "@/lib/views";
 
 export async function generateStaticParams() {
   return source.generateParams();
@@ -35,10 +37,13 @@ export default async function Page(props: {
   if (!page) notFound();
 
   const MDX = page.data.body;
+  const slugString = params.slug.join("/");
+  const views = await getViews(slugString);
 
   return (
     <React.Fragment>
-      <Header page={page.data} />
+      <ViewTracker slug={slugString} />
+      <Header page={page.data} views={views} />
       <Article>
         <AudioReader slugSegments={params.slug} />
         <MDX />

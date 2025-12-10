@@ -53,6 +53,6 @@
   font-weight: var(--font-weight-medium, 500);
   line-height: 24px;
   color: var(--gray-10);
-  letter-spacing: var(--inter-letter-spacing-13px);
+  letter-spacing: var(--font-inter-letter-spacing-13px);
   white-space: nowrap;
 }
