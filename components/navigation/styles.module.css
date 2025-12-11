@@ -7,10 +7,27 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: var(--page-max-width);
   height: 128px;
-  padding: 0 24px;
+
+  background: linear-gradient(to bottom, var(--gray-1), transparent 75%);
+  backdrop-filter: blur(12px);
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1),
+    rgba(0, 0, 0, 0.8) 75%,
+    rgba(0, 0, 0, 0)
+  );
   transform: translateX(-50%);
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: var(--page-max-width);
+  padding: 0 24px;
+  margin: 0 auto;
 }
 
 .logo,

@@ -13,18 +13,20 @@ const LINKS = [
 export default function Navigation() {
   return (
     <NavigationMenu.Root className={styles.root}>
-      <Link href="/" className={styles.logo}>
-        ui.wiki
-      </Link>
-      <NavigationMenu.List className={styles.list}>
-        {LINKS.map((link) => (
-          <NavigationMenu.Item key={link.title}>
-            <NavigationMenu.Link className={styles.trigger} href={link.href}>
-              {link.title}
-            </NavigationMenu.Link>
-          </NavigationMenu.Item>
-        ))}
-      </NavigationMenu.List>
+      <div className={styles.container}>
+        <Link href="/" className={styles.logo}>
+          ui.wiki
+        </Link>
+        <NavigationMenu.List className={styles.list}>
+          {LINKS.map((link) => (
+            <NavigationMenu.Item key={link.title}>
+              <NavigationMenu.Link className={styles.trigger} href={link.href}>
+                {link.title}
+              </NavigationMenu.Link>
+            </NavigationMenu.Item>
+          ))}
+        </NavigationMenu.List>
+      </div>
     </NavigationMenu.Root>
   );
 }
