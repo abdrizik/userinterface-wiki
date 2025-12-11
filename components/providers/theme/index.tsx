@@ -1,5 +1,5 @@
 import { ThemeProvider } from "next-themes";
 
 export const Theme = () => {
-  return <ThemeProvider />;
+  return <ThemeProvider attribute="class" />;
 };
