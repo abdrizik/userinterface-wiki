@@ -3,7 +3,7 @@ import { PageTransition } from "@/components/page-transition";
 import { getFormattedPageFromPageSource } from "@/markdown/functions/get-page";
 import { source } from "@/markdown/lib/source";
 import styles from "./styles.module.css";
-import { type SerializedPage, TagFilter } from "./tag-filter";
+import { type SerializedPage, TagFilter } from "./tag-filter-lexical";
 
 export const HomeLayout = () => {
   const pages = source.getPages();

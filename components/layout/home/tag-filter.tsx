@@ -3,6 +3,7 @@
 import { clsx } from "clsx";
 import Link from "next/link";
 import * as React from "react";
+import { DayPicker } from "react-day-picker";
 import { Code } from "@/components/icons";
 import { SearchIcon } from "@/components/icons/search";
 import {
@@ -127,8 +128,10 @@ interface TagFilterProps {
 export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
   // Ordered segments: chips and text in the order they were entered
   const [segments, setSegments] = React.useState<Segment[]>([]);
-  // Current text the user is typing (the active input at the end)
+  // Current text the user is typing (the active input)
   const [inputValue, setInputValue] = React.useState("");
+  // Cursor position: where the input is rendered (0 = before first segment, segments.length = after last)
+  const [cursorIndex, setCursorIndex] = React.useState(0);
   const [showOptions, setShowOptions] = React.useState(false);
   const [highlightedIndex, setHighlightedIndex] = React.useState(0);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -238,7 +241,7 @@ export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
   // Get sort order (default to newest)
   const sort: SortOrder = query.sort ?? "newest";
 
-  // Add a chip from current input
+  // Add a chip at the current cursor position
   const commitChip = (
     type: FilterChip["type"],
     value: string,
@@ -250,16 +253,23 @@ export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
       value,
       negated,
     };
-    setSegments((prev) => [...prev, { kind: "chip", chip: newChip }]);
+    setSegments((prev) => [
+      ...prev.slice(0, cursorIndex),
+      { kind: "chip", chip: newChip },
+      ...prev.slice(cursorIndex),
+    ]);
+    setCursorIndex((i) => i + 1);
   };
 
-  // Commit plain text as a segment (before a chip)
+  // Commit plain text as a segment at cursor position
   const commitText = (text: string) => {
     if (text.trim()) {
       setSegments((prev) => [
-        ...prev,
+        ...prev.slice(0, cursorIndex),
         { kind: "text", text: text.trim(), id: `text-${Date.now()}` },
+        ...prev.slice(cursorIndex),
       ]);
+      setCursorIndex((i) => i + 1);
     }
   };
 
@@ -267,6 +277,7 @@ export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
   const clearAll = () => {
     setSegments([]);
     setInputValue("");
+    setCursorIndex(0);
   };
 
   // Filter and sort pages using the new parser functions
@@ -355,6 +366,23 @@ export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
       };
     }
 
+    // Date filters - show date picker
+    if (
+      checkWord.startsWith("before:") ||
+      checkWord.startsWith("after:") ||
+      checkWord.startsWith("during:")
+    ) {
+      let dateType: "before" | "after" | "during" = "during";
+      if (checkWord.startsWith("before:")) dateType = "before";
+      else if (checkWord.startsWith("after:")) dateType = "after";
+
+      return {
+        type: "date" as const,
+        dateType,
+        isNegated,
+      };
+    }
+
     // Show filter options when empty or typing a partial filter keyword
     if (
       !lastWord ||
@@ -376,30 +404,42 @@ export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
   }, [inputValue, allTags, pages]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Handle backspace when input is empty - unwrap last segment back to text
-    if (e.key === "Backspace" && inputValue === "" && segments.length > 0) {
+    // Handle backspace when input is empty - unwrap segment before cursor back to text
+    if (e.key === "Backspace" && inputValue === "" && cursorIndex > 0) {
       e.preventDefault();
-      const lastSegment = segments[segments.length - 1];
+      const segmentToRemove = segments[cursorIndex - 1];
 
       // Convert segment back to editable text
       let restoredText = "";
-      if (lastSegment.kind === "chip") {
-        const chip = lastSegment.chip;
+      if (segmentToRemove.kind === "chip") {
+        const chip = segmentToRemove.chip;
         const prefix = chip.negated ? "-" : "";
         const value = chip.value.includes(" ") ? `"${chip.value}"` : chip.value;
         restoredText = `${prefix}${chip.type}:${value}`;
       } else {
-        restoredText = lastSegment.text;
+        restoredText = segmentToRemove.text;
       }
 
-      setSegments((prev) => prev.slice(0, -1));
+      setSegments((prev) => [
+        ...prev.slice(0, cursorIndex - 1),
+        ...prev.slice(cursorIndex),
+      ]);
+      setCursorIndex((i) => i - 1);
       setInputValue(restoredText);
       return;
     }
 
     if (!showOptions || !suggestions) return;
 
-    const itemCount = suggestions.items.length;
+    // Skip arrow/tab/enter handling for date picker (it has its own navigation)
+    if (suggestions.type === "date") {
+      if (e.key === "Escape") {
+        setShowOptions(false);
+      }
+      return;
+    }
+
+    const itemCount = suggestions.items?.length ?? 0;
     if (itemCount === 0) return;
 
     switch (e.key) {
@@ -426,7 +466,7 @@ export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
             const base = words.join(" ");
             setInputValue(base ? `${base} ${option.key}` : option.key);
           }
-        } else {
+        } else if ("items" in suggestions && suggestions.items) {
           const item = suggestions.items[highlightedIndex];
           if (item) {
             // Commit as chip, clear from input
@@ -491,12 +531,83 @@ export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
 
   const hasContent = inputValue.length > 0 || segments.length > 0;
 
-  // Focus input when clicking wrapper
+  // Focus input when clicking wrapper (default to end if clicking empty space)
   const handleWrapperClick = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest(`.${styles.chip}`)) return;
     if ((e.target as HTMLElement).closest(`.${styles.textsegment}`)) return;
+    if ((e.target as HTMLElement).closest(`.${styles.cursorzone}`)) return;
+    // Clicking empty space moves cursor to end
+    setCursorIndex(segments.length);
     inputRef.current?.focus();
   };
+
+  // Click handler for cursor zones between segments
+  const handleCursorZoneClick = (index: number) => {
+    setCursorIndex(index);
+    inputRef.current?.focus();
+  };
+
+  // Build the render elements: segments interleaved with cursor zones + input at cursor position
+  const renderElements: React.ReactNode[] = [];
+
+  for (let i = 0; i <= segments.length; i++) {
+    // Add the input at the cursor position
+    if (i === cursorIndex) {
+      renderElements.push(
+        <input
+          key="input"
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onFocus={() => setShowOptions(true)}
+          onKeyDown={handleKeyDown}
+          placeholder={
+            segments.length === 0 && !inputValue ? "Search articles…" : ""
+          }
+          className={styles.input}
+        />,
+      );
+    }
+
+    // Add the segment (if there is one at this index)
+    if (i < segments.length) {
+      const segment = segments[i];
+      if (segment.kind === "chip") {
+        renderElements.push(
+          // biome-ignore lint/a11y/useKeyWithClickEvents: click to position cursor
+          // biome-ignore lint/a11y/noStaticElementInteractions: clickable for cursor positioning
+          <span
+            key={segment.chip.id}
+            className={clsx(
+              styles.chip,
+              segment.chip.negated && styles.negated,
+              i === cursorIndex - 1 && styles.chipbeforecursor,
+            )}
+            onClick={() => handleCursorZoneClick(i + 1)}
+          >
+            {segment.chip.negated && (
+              <span className={styles.chipnegated}>-</span>
+            )}
+            <span className={styles.chiptype}>{segment.chip.type}:</span>
+            <span>{segment.chip.value}</span>
+          </span>,
+        );
+      } else {
+        renderElements.push(
+          // biome-ignore lint/a11y/useKeyWithClickEvents: click to position cursor
+          // biome-ignore lint/a11y/noStaticElementInteractions: clickable for cursor positioning
+          <span
+            key={segment.id}
+            className={styles.textsegment}
+            onClick={() => handleCursorZoneClick(i + 1)}
+          >
+            {segment.text}
+          </span>,
+        );
+      }
+    }
+  }
 
   return (
     <>
@@ -506,40 +617,7 @@ export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
         <SearchIcon className={styles.icon} size={18} />
 
         <div ref={wrapperRef} className={styles.wrapper}>
-          {segments.map((segment) =>
-            segment.kind === "chip" ? (
-              <span
-                key={segment.chip.id}
-                className={clsx(
-                  styles.chip,
-                  segment.chip.negated && styles.negated,
-                )}
-              >
-                {segment.chip.negated && (
-                  <span className={styles.chipnegated}>-</span>
-                )}
-                <span className={styles.chiptype}>{segment.chip.type}:</span>
-                <span>{segment.chip.value}</span>
-              </span>
-            ) : (
-              <span key={segment.id} className={styles.textsegment}>
-                {segment.text}
-              </span>
-            ),
-          )}
-
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            onFocus={() => setShowOptions(true)}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              segments.length === 0 && !inputValue ? "Search articles…" : ""
-            }
-            className={styles.input}
-          />
+          {renderElements}
         </div>
 
         {hasContent && (
@@ -666,6 +744,35 @@ export const TagFilter = ({ pages, allTags }: TagFilterProps) => {
                   )}
                 </div>
               </>
+            )}
+
+            {suggestions.type === "date" && (
+              <div className={styles.datepicker}>
+                <DayPicker
+                  mode="single"
+                  onSelect={(date) => {
+                    if (date) {
+                      const formatted = date.toISOString().split("T")[0];
+                      // Commit any preceding text
+                      const trimmed = inputValue.trimEnd();
+                      const words = trimmed.split(" ");
+                      words.pop(); // Remove the "before:" part
+                      const precedingText = words.join(" ").trim();
+                      if (precedingText) {
+                        commitText(precedingText);
+                      }
+                      // Commit the date chip
+                      commitChip(
+                        suggestions.dateType,
+                        formatted,
+                        suggestions.isNegated,
+                      );
+                      setInputValue("");
+                      inputRef.current?.focus();
+                    }
+                  }}
+                />
+              </div>
             )}
 
             <div className={styles.popupfooter}>
