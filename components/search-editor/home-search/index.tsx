@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { SearchEditor } from "../search-editor";
-import { filterAndSortDocs, type FilterableDocument } from "../utils";
+import { type FilterableDocument, filterAndSortDocs } from "../utils";
 import styles from "./styles.module.css";
 
 // ─────────────────────────────────────────────────────────────────────────────

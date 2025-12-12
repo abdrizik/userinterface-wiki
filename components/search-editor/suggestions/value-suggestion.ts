@@ -1,6 +1,6 @@
-import Suggestion from "@tiptap/suggestion";
 import { Extension } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
+import Suggestion from "@tiptap/suggestion";
 
 import type { OperatorKey } from "../extensions/operator-token";
 
@@ -31,11 +31,17 @@ function findOperatorContext(
   // Look backwards for an operator token
   for (let i = pos - 1; i >= 0; i--) {
     const node = state.doc.nodeAt(i);
-    if (node && (node as { type?: { name?: string } }).type?.name === "operatorToken") {
+    if (
+      node &&
+      (node as { type?: { name?: string } }).type?.name === "operatorToken"
+    ) {
       return (node as { attrs?: { key?: OperatorKey } }).attrs?.key ?? null;
     }
     // If we hit a value token or significant text, stop looking
-    if (node && (node as { type?: { name?: string } }).type?.name === "valueToken") {
+    if (
+      node &&
+      (node as { type?: { name?: string } }).type?.name === "valueToken"
+    ) {
       return null;
     }
   }
@@ -69,9 +75,12 @@ export const ValueSuggestion = Extension.create<ValueSuggestionOptions>({
         items: ({ query, editor }) => {
           const state = editor.state;
           const pos = state.selection.from;
-          const operatorContext = findOperatorContext(state as unknown as {
-            doc: { nodeAt: (pos: number) => unknown };
-          }, pos);
+          const operatorContext = findOperatorContext(
+            state as unknown as {
+              doc: { nodeAt: (pos: number) => unknown };
+            },
+            pos,
+          );
 
           if (!operatorContext) return [];
 
@@ -101,9 +110,12 @@ export const ValueSuggestion = Extension.create<ValueSuggestionOptions>({
             onStart: (props) => {
               const state = props.editor.state;
               const pos = state.selection.from;
-              currentOperatorContext = findOperatorContext(state as unknown as {
-                doc: { nodeAt: (pos: number) => unknown };
-              }, pos);
+              currentOperatorContext = findOperatorContext(
+                state as unknown as {
+                  doc: { nodeAt: (pos: number) => unknown };
+                },
+                pos,
+              );
 
               onRender({
                 items: props.items as string[],
@@ -117,9 +129,12 @@ export const ValueSuggestion = Extension.create<ValueSuggestionOptions>({
             onUpdate: (props) => {
               const state = props.editor.state;
               const pos = state.selection.from;
-              currentOperatorContext = findOperatorContext(state as unknown as {
-                doc: { nodeAt: (pos: number) => unknown };
-              }, pos);
+              currentOperatorContext = findOperatorContext(
+                state as unknown as {
+                  doc: { nodeAt: (pos: number) => unknown };
+                },
+                pos,
+              );
 
               onRender({
                 items: props.items as string[],

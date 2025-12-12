@@ -10,7 +10,11 @@ declare module "@tiptap/core" {
       /**
        * Insert a value token
        */
-      insertValue: (value: string, valid?: boolean, negated?: boolean) => ReturnType;
+      insertValue: (
+        value: string,
+        valid?: boolean,
+        negated?: boolean,
+      ) => ReturnType;
     };
   }
 }
@@ -73,7 +77,7 @@ export const ValueToken = Node.create<ValueTokenOptions>({
   parseHTML() {
     return [
       {
-        tag: 'span[data-search-value]',
+        tag: "span[data-search-value]",
       },
     ];
   },

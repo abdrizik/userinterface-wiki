@@ -4,9 +4,9 @@ import {
   autoUpdate,
   flip,
   offset,
+  type Placement,
   shift,
   useFloating,
-  type Placement,
 } from "@floating-ui/react";
 import * as React from "react";
 
@@ -30,7 +30,9 @@ export interface UseSuggestionFloatingOptions {
 /**
  * Hook for creating a floating suggestion menu attached to a virtual element (caret position)
  */
-export function useSuggestionFloating(options: UseSuggestionFloatingOptions = {}) {
+export function useSuggestionFloating(
+  options: UseSuggestionFloatingOptions = {},
+) {
   const { placement = "bottom-start", offsetValue = 8 } = options;
 
   const { refs, floatingStyles } = useFloating({
@@ -43,11 +45,14 @@ export function useSuggestionFloating(options: UseSuggestionFloatingOptions = {}
     whileElementsMounted: autoUpdate,
   });
 
-  const updatePosition = React.useCallback((rect: DOMRect) => {
-    refs.setReference({
-      getBoundingClientRect: () => rect,
-    });
-  }, [refs]);
+  const updatePosition = React.useCallback(
+    (rect: DOMRect) => {
+      refs.setReference({
+        getBoundingClientRect: () => rect,
+      });
+    },
+    [refs],
+  );
 
   return {
     refs,

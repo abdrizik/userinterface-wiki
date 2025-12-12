@@ -1,6 +1,6 @@
-import Suggestion from "@tiptap/suggestion";
 import { Extension } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
+import Suggestion from "@tiptap/suggestion";
 
 import type { OperatorKey } from "../extensions/operator-token";
 
@@ -39,15 +39,13 @@ export const OperatorSuggestion = Extension.create<OperatorSuggestionOptions>({
         char: "", // Trigger on any character
         startOfLine: false,
         allowSpaces: false,
-        
+
         items: ({ query }) => {
           const q = query.toLowerCase();
           // Only show operators when typing a potential operator (no colon yet)
           if (q.includes(":")) return [];
-          
-          return operators.filter((op) =>
-            op.toLowerCase().startsWith(q),
-          );
+
+          return operators.filter((op) => op.toLowerCase().startsWith(q));
         },
 
         render: () => {
@@ -85,7 +83,7 @@ export const OperatorSuggestion = Extension.create<OperatorSuggestionOptions>({
 
         command: ({ editor, range, props }) => {
           const operatorKey = props.id as OperatorKey;
-          
+
           editor
             .chain()
             .focus()

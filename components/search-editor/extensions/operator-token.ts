@@ -60,7 +60,7 @@ export const OperatorToken = Node.create<OperatorTokenOptions>({
   parseHTML() {
     return [
       {
-        tag: 'span[data-search-operator]',
+        tag: "span[data-search-operator]",
       },
     ];
   },

@@ -1,23 +1,21 @@
 "use client";
 
-import { EditorContent, useEditor } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
+import History from "@tiptap/extension-history";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
-import History from "@tiptap/extension-history";
+import { EditorContent, useEditor } from "@tiptap/react";
 import * as React from "react";
-
-import { OperatorToken } from "./extensions";
-import { ValueToken } from "./extensions";
+import { OperatorToken, ValueToken } from "./extensions";
+import styles from "./styles.module.css";
 import {
   OperatorSuggestion,
-  ValueSuggestion,
-  useSuggestionFloating,
   type OperatorSuggestionRenderProps,
+  useSuggestionFloating,
+  ValueSuggestion,
   type ValueSuggestionRenderProps,
 } from "./suggestions";
 import { serializeQuery } from "./utils/serializer";
-import styles from "./styles.module.css";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -51,8 +49,10 @@ export function SearchEditor({
   autoFocus = false,
 }: SearchEditorProps) {
   // Suggestion state
-  const [operatorSuggestion, setOperatorSuggestion] = React.useState<OperatorSuggestionRenderProps | null>(null);
-  const [valueSuggestion, setValueSuggestion] = React.useState<ValueSuggestionRenderProps | null>(null);
+  const [operatorSuggestion, setOperatorSuggestion] =
+    React.useState<OperatorSuggestionRenderProps | null>(null);
+  const [valueSuggestion, setValueSuggestion] =
+    React.useState<ValueSuggestionRenderProps | null>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   // Floating UI for suggestions
@@ -79,7 +79,10 @@ export function SearchEditor({
   const prevValueItems = React.useRef(valueSuggestion?.items);
 
   // Reset selected index when suggestions change
-  if (prevOperatorItems.current !== operatorSuggestion?.items || prevValueItems.current !== valueSuggestion?.items) {
+  if (
+    prevOperatorItems.current !== operatorSuggestion?.items ||
+    prevValueItems.current !== valueSuggestion?.items
+  ) {
     prevOperatorItems.current = operatorSuggestion?.items;
     prevValueItems.current = valueSuggestion?.items;
     if (selectedIndex !== 0) {
@@ -174,7 +177,11 @@ export function SearchEditor({
   const hasContent = (editor?.getText().trim().length ?? 0) > 0;
 
   return (
-    <search className={className} data-search-editor="" onKeyDownCapture={handleKeyDown}>
+    <search
+      className={className}
+      data-search-editor=""
+      onKeyDownCapture={handleKeyDown}
+    >
       <EditorContent editor={editor} />
 
       {/* Operator Suggestions */}

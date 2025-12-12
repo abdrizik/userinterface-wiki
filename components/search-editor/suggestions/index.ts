@@ -1,13 +1,17 @@
-export { useSuggestionFloating, SuggestionMenu, type SuggestionMenuProps } from "./floating-menu";
-export { 
-  OperatorSuggestion, 
-  OperatorSuggestionPluginKey,
+export {
+  SuggestionMenu,
+  type SuggestionMenuProps,
+  useSuggestionFloating,
+} from "./floating-menu";
+export {
+  OperatorSuggestion,
   type OperatorSuggestionOptions,
+  OperatorSuggestionPluginKey,
   type OperatorSuggestionRenderProps,
 } from "./operator-suggestion";
-export { 
+export {
   ValueSuggestion,
-  ValueSuggestionPluginKey,
   type ValueSuggestionOptions,
+  ValueSuggestionPluginKey,
   type ValueSuggestionRenderProps,
 } from "./value-suggestion";

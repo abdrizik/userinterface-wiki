@@ -1,5 +1,5 @@
-import { parse, test, type LiqeQuery } from "liqe";
-import { normalizeQuery, extractSort, type SortOption } from "./serializer";
+import { type LiqeQuery, parse, test } from "liqe";
+import { extractSort, normalizeQuery, type SortOption } from "./serializer";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -26,13 +26,17 @@ export interface FilterResult<T> {
  * Prepare a document for liqe filtering.
  * Ensures consistent field names and formats.
  */
-function prepareDocument<T extends FilterableDocument>(doc: T): Record<string, unknown> {
+function prepareDocument<T extends FilterableDocument>(
+  doc: T,
+): Record<string, unknown> {
   const prepared: Record<string, unknown> = { ...doc };
 
   // Normalize date to ISO string for comparison
   if (doc.date) {
     prepared.date =
-      doc.date instanceof Date ? doc.date.toISOString().split("T")[0] : String(doc.date).split("T")[0];
+      doc.date instanceof Date
+        ? doc.date.toISOString().split("T")[0]
+        : String(doc.date).split("T")[0];
   }
 
   // Normalize tags to array
@@ -60,7 +64,10 @@ function prepareDocument<T extends FilterableDocument>(doc: T): Record<string, u
  * // results.items = posts with tag:react
  * // results.sort = "newest"
  */
-export function filterDocs<T extends FilterableDocument>(docs: T[], query: string): FilterResult<T> {
+export function filterDocs<T extends FilterableDocument>(
+  docs: T[],
+  query: string,
+): FilterResult<T> {
   // Extract sort before normalizing
   const sort = extractSort(query);
 
@@ -104,7 +111,10 @@ export function filterDocs<T extends FilterableDocument>(docs: T[], query: strin
 /**
  * Sort documents by the specified sort option.
  */
-export function sortDocs<T extends FilterableDocument>(docs: T[], sort: SortOption | null): T[] {
+export function sortDocs<T extends FilterableDocument>(
+  docs: T[],
+  sort: SortOption | null,
+): T[] {
   if (!sort) return docs;
 
   const sorted = [...docs];
@@ -142,7 +152,10 @@ export function sortDocs<T extends FilterableDocument>(docs: T[], sort: SortOpti
 /**
  * Filter and sort documents in one call.
  */
-export function filterAndSortDocs<T extends FilterableDocument>(docs: T[], query: string): T[] {
+export function filterAndSortDocs<T extends FilterableDocument>(
+  docs: T[],
+  query: string,
+): T[] {
   const { items, sort } = filterDocs(docs, query);
   return sortDocs(items, sort);
 }
