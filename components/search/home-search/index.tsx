@@ -7,10 +7,10 @@ import {
   $isTextNode,
 } from "lexical";
 import * as React from "react";
+import { useClickAway } from "react-use";
 
 import { SearchIcon } from "@/components/icons/search";
 
-import { $createChipNode } from "../internals/chip-node";
 import { useSearchContext } from "../internals/context";
 import type { FilterOption } from "../internals/filter-options";
 import { useSuggestions } from "../internals/use-suggestions";
@@ -19,6 +19,7 @@ import { Root } from "../primitives/root";
 import type { ChipPayload } from "../types";
 import { DatePickerSection } from "./date-picker";
 import { FilterOptionsList } from "./filter-options";
+import { useChipInsertion, useHighlightedIndex } from "./hooks";
 import { PopupFooter } from "./popup-footer";
 import { PopupHeader } from "./popup-header";
 import { SearchResultsList } from "./results-list";
@@ -43,65 +44,18 @@ export function HomeSearch({ pages, allTags }: HomeSearchProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function SearchInner({ pages, allTags }: HomeSearchProps) {
-  const { state, actions, editorRef } = useSearchContext();
-  const [highlightedIndex, setHighlightedIndex] = React.useState(0);
-  const popupRef = React.useRef<HTMLDivElement>(null);
-  const inputRef = React.useRef<HTMLDivElement>(null);
+  const { state, actions, editorRef, inputRef } = useSearchContext();
+
+  // Use extracted hooks
+  const { highlightedIndex, setHighlightedIndex } = useHighlightedIndex(
+    state.textContent,
+  );
+  const { replaceLastWordWithChip } = useChipInsertion(editorRef);
 
   const { suggestions, isNegated, checkWord } = useSuggestions(
     state.textContent,
     allTags,
     pages,
-  );
-
-  // ───────────────────────────────────────────────────────────────────────────
-  // Chip Handling
-  // ───────────────────────────────────────────────────────────────────────────
-
-  const replaceLastWordWithChip = React.useCallback(
-    (type: ChipPayload["type"], value: string, negated: boolean) => {
-      if (!editorRef.current) return;
-
-      editorRef.current.update(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) return;
-
-        const anchor = selection.anchor;
-        const anchorNode = anchor.getNode();
-
-        if ($isTextNode(anchorNode)) {
-          const text = anchorNode.getTextContent();
-          const offset = anchor.offset;
-
-          let wordStart = offset;
-          while (wordStart > 0 && text[wordStart - 1] !== " ") {
-            wordStart--;
-          }
-
-          const beforeWord = text.slice(0, wordStart);
-          const afterWord = text.slice(offset);
-
-          anchorNode.setTextContent(beforeWord);
-
-          const chipNode = $createChipNode({ type, value, negated });
-
-          if (beforeWord) {
-            anchorNode.insertAfter(chipNode);
-          } else {
-            const parent = anchorNode.getParent();
-            if (parent) {
-              anchorNode.remove();
-              parent.append(chipNode);
-            }
-          }
-
-          const afterNode = $createTextNode(afterWord || " ");
-          chipNode.insertAfter(afterNode);
-          afterNode.select(afterWord ? 0 : 1, afterWord ? 0 : 1);
-        }
-      });
-    },
-    [editorRef],
   );
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -216,6 +170,7 @@ function SearchInner({ pages, allTags }: HomeSearchProps) {
       handleSelectFilterOption,
       handleSelectSuggestion,
       actions,
+      setHighlightedIndex,
     ],
   );
 
@@ -223,30 +178,13 @@ function SearchInner({ pages, allTags }: HomeSearchProps) {
   // Effects
   // ───────────────────────────────────────────────────────────────────────────
 
-  // Click outside to close
-  React.useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(e.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(e.target as Node)
-      ) {
-        actions.setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [actions]);
-
-  // Reset highlight when text changes
-  const prevTextRef = React.useRef(state.textContent);
-  if (prevTextRef.current !== state.textContent) {
-    prevTextRef.current = state.textContent;
-    if (highlightedIndex !== 0) {
-      setHighlightedIndex(0);
+  // Click outside to close (using react-use)
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  useClickAway(containerRef, () => {
+    if (state.open) {
+      actions.setOpen(false);
     }
-  }
+  });
 
   // Open popup when there are valid suggestions and input has focus
   React.useEffect(() => {
@@ -255,7 +193,7 @@ function SearchInner({ pages, allTags }: HomeSearchProps) {
     if (isFocused && suggestions && !state.open) {
       actions.setOpen(true);
     }
-  }, [suggestions, state.open, actions]);
+  }, [suggestions, state.open, actions, inputRef]);
 
   // ───────────────────────────────────────────────────────────────────────────
   // Derived State
@@ -278,7 +216,7 @@ function SearchInner({ pages, allTags }: HomeSearchProps) {
     <React.Fragment>
       {/* biome-ignore lint/a11y/noStaticElementInteractions: editor wrapper */}
       <div
-        ref={inputRef}
+        ref={containerRef}
         className={styles.search}
         onClick={() => editorRef.current?.focus()}
         onKeyDown={handleKeyDown}
@@ -302,7 +240,7 @@ function SearchInner({ pages, allTags }: HomeSearchProps) {
         )}
 
         {state.open && suggestions && (
-          <div ref={popupRef} className={styles.popup}>
+          <div className={styles.popup}>
             <PopupHeader />
 
             {suggestions.type === "options" && (
