@@ -7,8 +7,8 @@ import { ReactLenis } from "lenis/react";
 import { cancelFrame, frame } from "motion/react";
 import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Fragment, useEffect, useRef } from "react";
 import type React from "react";
+import { useEffect, useRef } from "react";
 
 const LenisProvider = () => {
   const lenisRef = useRef<LenisRef>(null);
@@ -31,10 +31,10 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <NuqsAdapter>
       <LenisProvider />
-      <Fragment>
-        <SpeedInsights />
-        <Analytics />
-      </Fragment>
+
+      <SpeedInsights />
+      <Analytics />
+
       <ThemeProvider attribute="class" />
       {children}
     </NuqsAdapter>
