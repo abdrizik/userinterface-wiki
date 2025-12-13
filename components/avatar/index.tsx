@@ -1,6 +1,6 @@
 import { Avatar as BaseAvatar } from "@base-ui-components/react/avatar";
 import { clsx } from "clsx";
-import { getColorHash } from "@/lib/core/colors";
+import { getColorHash } from "@/lib/utils/colors";
 import styles from "./styles.module.css";
 
 interface AvatarRootProps

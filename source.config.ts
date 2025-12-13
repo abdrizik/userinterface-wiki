@@ -7,7 +7,7 @@ import { z } from "zod";
 import {
   rehypeProseTypePlugin,
   rehypeWordSpans,
-} from "@/lib/modules/content/plugins";
+} from "@/lib/features/content/plugins";
 
 export const docs = defineDocs({
   dir: "documents",

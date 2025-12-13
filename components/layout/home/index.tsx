@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { SearchIcon } from "@/components/icons";
 import { PageTransition } from "@/components/page-transition";
 import { PageCard } from "@/components/post";
-import type { FormattedPage } from "@/lib/modules/content";
+import type { FormattedPage } from "@/lib/features/content";
 import styles from "./styles.module.css";
 
 export function HomeLayout({ pages }: { pages: FormattedPage[] }) {

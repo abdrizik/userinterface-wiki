@@ -6,7 +6,7 @@ import {
 } from "fumadocs-mdx/config";
 import { z } from "zod";
 
-// lib/modules/content/plugins/rehype-prose-classes.ts
+// lib/features/content/plugins/rehype-prose-classes.ts
 import { visit } from "unist-util-visit";
 var TYPE_MAP = {
   h1: "heading",
@@ -38,20 +38,17 @@ var rehypeProseTypePlugin = () => {
   };
 };
 
-// lib/modules/content/plugins/rehype-word-spans.ts
+// lib/features/content/plugins/rehype-word-spans.ts
 import { visit as visit2 } from "unist-util-visit";
 
-// lib/core/strings/normalize.ts
+// lib/utils/strings/normalize.ts
 var NON_WORD_CHARACTERS = /[^\p{L}\p{N}''-]+/gu;
 function normalizeWord(value) {
   if (!value) return "";
   return value.normalize("NFKC").trim().toLowerCase().replace(NON_WORD_CHARACTERS, "");
 }
 
-// lib/core/strings/title-case.ts
-import title from "title";
-
-// lib/modules/content/plugins/rehype-word-spans.ts
+// lib/features/content/plugins/rehype-word-spans.ts
 var SKIP_TAGS = /* @__PURE__ */ new Set([
   "code",
   "pre",

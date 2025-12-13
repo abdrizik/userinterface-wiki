@@ -1,9 +1,8 @@
-import { formatPageData, type Page } from "@/lib/modules/content";
+import { formatPageData, type Page } from "@/lib/features/content";
 import styles from "./styles.module.css";
 
 interface HeaderProps {
   page: Page;
-  views: number;
 }
 
 export function Header({ page }: HeaderProps) {

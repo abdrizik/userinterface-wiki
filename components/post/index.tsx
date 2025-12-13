@@ -1,6 +1,6 @@
 import { clsx } from "clsx";
 import Link from "next/link";
-import type { FormattedPage } from "@/lib/modules/content";
+import type { FormattedPage } from "@/lib/features/content";
 import { Code } from "../icons";
 import styles from "./styles.module.css";
 

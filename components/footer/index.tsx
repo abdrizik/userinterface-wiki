@@ -7,7 +7,7 @@ import {
   LinkIcon,
   TwitterIcon,
 } from "@/components/icons";
-import type { Page } from "@/lib/modules/content";
+import type { Page } from "@/lib/features/content";
 import styles from "./styles.module.css";
 
 interface SectionProps {

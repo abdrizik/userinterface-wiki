@@ -1,4 +1,4 @@
-import { getAuthorById } from "@/lib/modules/authors";
+import { getAuthorById } from "@/lib/features/authors";
 import type { Author } from "@/lib/types";
 import type { FormattedPage, Page, PageData } from "./types";
 

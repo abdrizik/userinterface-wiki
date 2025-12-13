@@ -6,8 +6,7 @@ import { Header } from "@/components/header";
 import { Article } from "@/components/layout";
 import { PageTransition } from "@/components/page-transition";
 import { ViewTracker } from "@/components/view-tracker";
-import { source } from "@/lib/modules/content";
-import { getViews } from "@/lib/modules/views";
+import { source } from "@/lib/features/content";
 
 export async function generateStaticParams() {
   return source.generateParams();
@@ -38,12 +37,11 @@ export default async function Page(props: {
 
   const MDX = page.data.body;
   const slugString = params.slug.join("/");
-  const views = await getViews(slugString);
 
   return (
     <PageTransition>
       <ViewTracker slug={slugString} />
-      <Header page={page} views={views} />
+      <Header page={page} />
       <Article>
         <AudioReader slugSegments={params.slug} />
         <MDX />

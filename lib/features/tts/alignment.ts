@@ -1,4 +1,4 @@
-import { normalizeWord } from "@/lib/core/strings";
+import { normalizeWord } from "@/lib/utils/strings";
 
 export interface WordTimestamp {
   word: string;

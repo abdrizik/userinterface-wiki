@@ -18,4 +18,4 @@ export type {
   FormattedPage,
   Page,
   PageData,
-} from "@/lib/modules/content/types";
+} from "@/lib/features/content/types";

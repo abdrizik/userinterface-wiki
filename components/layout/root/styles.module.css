@@ -1,8 +1,0 @@
-.root {
-  width: 100%;
-  max-width: var(--page-max-width);
-  padding-right: var(--page-padding-right);
-  padding-left: var(--page-padding-left);
-  margin-right: auto;
-  margin-left: auto;
-}
