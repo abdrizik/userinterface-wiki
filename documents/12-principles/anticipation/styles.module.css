@@ -1,0 +1,259 @@
+.container {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 384px;
+  padding: 24px 32px;
+}
+
+.issues {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  height: 40px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.title {
+  font-size: 13px;
+  font-variation-settings: var(--font-weight-500);
+  color: var(--text-primary);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.line {
+  flex-grow: 1;
+  height: 0.5px;
+  background: var(--border-secondary);
+  -webkit-box-flex: 1;
+  white-space: nowrap;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.issue {
+  position: relative;
+  display: flex;
+  flex: initial;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+
+  > :not(:first-child) {
+    margin-left: 8px;
+  }
+
+  &::before {
+    position: absolute;
+    inset: 0px -12px;
+    content: "";
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  &:hover {
+    &::before {
+      background: var(--background-secondary);
+      opacity: 1;
+    }
+
+    .checkbox {
+      border: 1px solid var(--blue);
+    }
+  }
+
+  &[data-state="checked"] {
+    &::before {
+      background: var(--background-secondary);
+      opacity: 1;
+    }
+  }
+}
+
+.checkbox {
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 2px;
+  pointer-events: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+
+  &[data-checked] {
+    background: var(--blue);
+  }
+}
+
+.priority {
+  height: 36px;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.status {
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.id {
+  font-size: 13px;
+  font-variation-settings: var(--font-weight-450);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.title {
+  font-size: 13px;
+  font-variation-settings: var(--font-weight-500);
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.spacer {
+  display: flex;
+  flex-shrink: initial;
+  flex-basis: initial;
+  flex-direction: row;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 100px;
+  box-shadow: inset 0 0px 0px 2px var(--text-quaternary);
+  fill: var(--text-tertiary);
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.date {
+  font-size: 12px;
+  font-variation-settings: var(--font-weight-450);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.popup {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 8px;
+
+  background: var(--background-primary);
+  border-radius: 100px;
+  box-shadow:
+    0 6px 18px oklch(0 0 0 / 6%),
+    0 3px 9px oklch(0 0 0 / 6%),
+    0 0 0 1px oklch(0% 0 0 / 6%);
+  transform: translateX(-50%);
+}
+
+.bolt {
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  font-variation-settings: var(--font-weight-500);
+  fill: var(--text-tertiary);
+}
+
+.selected {
+  margin-right: 24px;
+  font-size: 13px;
+  font-variation-settings: var(--font-weight-500);
+  color: var(--text-tertiary);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.clear,
+.delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0px 12px;
+  overflow: hidden;
+  font-size: 13px;
+  font-variation-settings: var(--font-weight-600);
+  user-select: none;
+  border: none;
+  border-radius: 100px;
+  transition: all 0.15s ease;
+}
+
+.clear {
+  color: var(--text-primary);
+  background: var(--white);
+  box-shadow: 0 0px 0px 1px var(--border-primary);
+}
+
+.delete {
+  color: var(--white);
+  user-select: none;
+  background: var(--red-9);
+}
+
+.clear:active,
+.delete:active {
+  transform: scale(0.97);
+}
+
+.hold {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background-color: color-mix(in srgb, var(--black) 20%, transparent);
+  transition: all 0.4s cubic-bezier(1, -0.4, 0.35, 0.95);
+}
+
+.delete:active .hold,
+.delete[data-holding="true"] .hold {
+  width: 100%;
+  transition: all 1s linear;
+}

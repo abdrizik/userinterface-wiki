@@ -1,0 +1,77 @@
+.container {
+  --pink: oklch(0.735 0.1991 351.73);
+  position: relative;
+}
+
+.button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  overflow: visible;
+  font-size: 14px;
+  font-variation-settings: var(--font-weight-600);
+  outline: none;
+  background: var(--pink);
+  border-radius: 100px;
+  transform: translate(-50%, -50%);
+
+  &[data-state="loading"] {
+    animation: pulse 1s infinite;
+  }
+
+  .inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 16px;
+  }
+}
+
+.label {
+  font-size: 16px;
+  font-variation-settings: var(--font-weight-600);
+  color: var(--white);
+  white-space: nowrap;
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+
+  transform: rotate(360deg);
+  animation: spin 1s linear infinite;
+
+  .svg {
+    position: relative;
+    display: block;
+    animation: spin 1s ease-in-out infinite;
+  }
+}
+
+.check {
+  position: relative;
+  width: 18px;
+  height: 18px;
+
+  .svg {
+    position: absolute;
+    scale: 1.2;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

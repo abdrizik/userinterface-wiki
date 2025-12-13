@@ -20,6 +20,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta
+          name="theme-color"
+          content="#111113"
+          media="(prefers-color-scheme: dark)"
+        />
+        <meta
+          name="theme-color"
+          content="#fcfcfc"
+          media="(prefers-color-scheme: light)"
+        />
+      </head>
       <body className={clsx(fonts)}>
         <Providers>
           <Navigation />
