@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 
 import type { Metadata } from "next";
-import { fonts } from "@/lib/site/fonts";
+import { fonts } from "@/lib/config/fonts";
 
 import "@/styles/index.css";
 import { Main, Root } from "@/components/layout";

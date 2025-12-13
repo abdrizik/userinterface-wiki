@@ -1,0 +1,1 @@
+export { getColorHash } from "./hash";

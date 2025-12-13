@@ -1,5 +1,3 @@
-import type { source } from "@/markdown/lib/source";
-
 export interface Author {
   id: string;
   name: string;
@@ -15,6 +13,9 @@ export interface Author {
   };
 }
 
-export type Page = NonNullable<ReturnType<typeof source.getPage>>;
-
-export type PageData = NonNullable<ReturnType<typeof source.getPage>>["data"];
+// Re-export content types for backwards compatibility
+export type {
+  FormattedPage,
+  Page,
+  PageData,
+} from "@/lib/modules/content/types";

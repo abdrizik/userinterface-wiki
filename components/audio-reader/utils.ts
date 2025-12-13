@@ -1,4 +1,4 @@
-import { normalizeWord } from "@/lib/text/normalize-word";
+import { normalizeWord } from "@/lib/core/strings";
 import type { WordTimestamp } from "./store";
 
 export interface SpanMeta {

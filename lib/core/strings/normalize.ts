@@ -1,4 +1,4 @@
-const NON_WORD_CHARACTERS = /[^\p{L}\p{N}'’-]+/gu;
+const NON_WORD_CHARACTERS = /[^\p{L}\p{N}''-]+/gu;
 
 export function normalizeWord(value: string | null | undefined): string {
   if (!value) return "";

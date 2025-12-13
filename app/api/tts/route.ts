@@ -1,14 +1,18 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { getPlainArticleText } from "@/lib/tts/article";
-import { buildCacheKey, readFromCache, writeToCache } from "@/lib/tts/cache";
+import { getPlainArticleText } from "@/lib/modules/tts/article";
+import {
+  buildCacheKey,
+  readFromCache,
+  writeToCache,
+} from "@/lib/modules/tts/cache";
 import {
   resolveModelId,
   resolveVoiceId,
   synthesizeSpeech,
-} from "@/lib/tts/elevenlabs";
-import { ArticleNotFoundError, ResponseError } from "@/lib/tts/errors";
-import { toSlugSegments } from "@/lib/tts/slug";
+} from "@/lib/modules/tts/elevenlabs";
+import { ArticleNotFoundError, ResponseError } from "@/lib/modules/tts/errors";
+import { toSlugSegments } from "@/lib/modules/tts/slug";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

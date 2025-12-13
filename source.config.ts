@@ -4,10 +4,13 @@ import {
   frontmatterSchema,
 } from "fumadocs-mdx/config";
 import { z } from "zod";
-import { rehypeProseTypePlugin, rehypeWordSpans } from "./markdown/plugins";
+import {
+  rehypeProseTypePlugin,
+  rehypeWordSpans,
+} from "@/lib/modules/content/plugins";
 
 export const docs = defineDocs({
-  dir: "markdown/content",
+  dir: "documents",
   docs: {
     schema: frontmatterSchema.extend({
       date: z.object({

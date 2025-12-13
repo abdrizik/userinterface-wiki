@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { Author } from "../types";
+import type { Author } from "@/lib/types";
 import { schema } from "./schema";
 
 const directory = join(dirname(fileURLToPath(import.meta.url)), "data");

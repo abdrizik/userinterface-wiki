@@ -1,5 +1,5 @@
 import z from "zod";
-import type { Author } from "../types";
+import type { Author } from "@/lib/types";
 
 const slug = /^[a-z0-9-]+$/;
 

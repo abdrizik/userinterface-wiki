@@ -1,13 +1,13 @@
-import { Footer } from "@markdown/components/footer";
-import { Header } from "@markdown/components/header";
-import { source } from "@markdown/lib/source";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AudioReader } from "@/components/audio-reader";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 import { Article } from "@/components/layout";
 import { PageTransition } from "@/components/page-transition";
 import { ViewTracker } from "@/components/view-tracker";
-import { getViews } from "@/lib/views";
+import { source } from "@/lib/modules/content";
+import { getViews } from "@/lib/modules/views";
 
 export async function generateStaticParams() {
   return source.generateParams();

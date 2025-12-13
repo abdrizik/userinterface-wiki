@@ -1,6 +1,6 @@
 import type { Element, Root, Text } from "hast";
 import { visit } from "unist-util-visit";
-import { normalizeWord } from "../../lib/text/normalize-word";
+import { normalizeWord } from "@/lib/core/strings";
 
 const SKIP_TAGS = new Set([
   "code",

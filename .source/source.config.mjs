@@ -6,7 +6,7 @@ import {
 } from "fumadocs-mdx/config";
 import { z } from "zod";
 
-// markdown/plugins/rehype-prose-classes.ts
+// lib/modules/content/plugins/rehype-prose-classes.ts
 import { visit } from "unist-util-visit";
 var TYPE_MAP = {
   h1: "heading",
@@ -38,17 +38,17 @@ var rehypeProseTypePlugin = () => {
   };
 };
 
-// markdown/plugins/rehype-word-spans.ts
+// lib/modules/content/plugins/rehype-word-spans.ts
 import { visit as visit2 } from "unist-util-visit";
 
-// lib/text/normalize-word.ts
-var NON_WORD_CHARACTERS = /[^\p{L}\p{N}'’-]+/gu;
+// lib/core/strings/normalize.ts
+var NON_WORD_CHARACTERS = /[^\p{L}\p{N}''-]+/gu;
 function normalizeWord(value) {
   if (!value) return "";
   return value.normalize("NFKC").trim().toLowerCase().replace(NON_WORD_CHARACTERS, "");
 }
 
-// markdown/plugins/rehype-word-spans.ts
+// lib/modules/content/plugins/rehype-word-spans.ts
 var SKIP_TAGS = /* @__PURE__ */ new Set([
   "code",
   "pre",
@@ -97,7 +97,7 @@ function rehypeWordSpans() {
 
 // source.config.ts
 var docs = defineDocs({
-  dir: "markdown/content",
+  dir: "documents",
   docs: {
     schema: frontmatterSchema.extend({
       date: z.object({

@@ -1,4 +1,4 @@
-export const getInitials = (name: string) => {
+export function getInitials(name: string): string {
   const trimmed = name.trim();
 
   if (!trimmed) {
@@ -20,4 +20,4 @@ export const getInitials = (name: string) => {
   const last = tokens[tokens.length - 1] ?? "";
 
   return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
-};
+}
