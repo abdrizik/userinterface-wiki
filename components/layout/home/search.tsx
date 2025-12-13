@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import * as React from "react";
-import { SearchEditor } from "../../search-editor";
+import { Code } from "@/components/icons";
+import { SearchEditor } from "@/components/search-editor";
 import {
   type FilterableDocument,
   filterAndSortDocs,
@@ -67,39 +69,43 @@ export function Search({ pages, tags }: SearchProps) {
       <SearchEditor
         authors={authors}
         tags={tags}
-        onQueryChange={setQuery}
-        placeholder="Search articles…"
         className={styles.editor}
+        onQueryChange={setQuery}
+        placeholder="Search…"
       />
 
-      <div className={styles.results}>
-        {filteredPages.length === 0 ? (
-          <div className={styles.empty}>No articles found</div>
-        ) : (
-          <ul className={styles.list}>
-            {filteredPages.map((page) => (
-              <li key={page.url} className={styles.item}>
-                <a href={page.url} className={styles.link}>
-                  <span className={styles.title}>{page.title}</span>
-                  <span className={styles.description}>{page.description}</span>
+      {filteredPages.length !== 0 && (
+        <ul className={styles.list}>
+          {filteredPages.map((page) => (
+            <li key={page.url} className={styles.item}>
+              <Link href={page.url} className={styles.page}>
+                <div className={styles.details}>
+                  <Code className={styles.icon} />
                   <div className={styles.meta}>
-                    <span className={styles.author}>{page.author.name}</span>
-                    {page.tags.length > 0 && (
-                      <div className={styles.tags}>
-                        {page.tags.map((tag) => (
-                          <span key={tag} className={styles.tag}>
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <span className={styles.title}>{page.title}</span>
+                    <div className={styles.subtitle}>
+                      <span>{page.author.name}</span>
+                      <div className={styles.dot} />
+                      <span>{page.date.published}</span>
+                    </div>
                   </div>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                </div>
+                <span className={styles.description}>{page.description}</span>
+
+                {page.tags.length > 0 && (
+                  <div className={styles.tags}>
+                    {page.tags.map((tag) => (
+                      <span key={tag} className={styles.tag}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
