@@ -78,7 +78,7 @@ export function Search({ pages, tags }: SearchProps) {
         <ul className={styles.list}>
           {filteredPages.map((page) => (
             <li key={page.url} className={styles.item}>
-              <Link href={page.url} className={styles.page}>
+              <Link href={page.url as "/"} className={styles.page}>
                 <div className={styles.details}>
                   <Code className={styles.icon} />
                   <div className={styles.meta}>

@@ -45,24 +45,55 @@ function SuggestionMenu({ state, handlers }: SuggestionMenuProps) {
   const { isOpen, items, selectedIndex, activeOperator } = state;
   const [shouldRender, setShouldRender] = React.useState(false);
   const [isExiting, setIsExiting] = React.useState(false);
+  const wasOpenRef = React.useRef(false);
+
+  // Freeze content during exit animation
+  const frozenStateRef = React.useRef<{
+    items: string[];
+    selectedIndex: number;
+    activeOperator: OperatorKey | null;
+  } | null>(null);
+
+  const hasContent = isOpen && items.length > 0;
 
   React.useEffect(() => {
-    if (isOpen && items.length > 0) {
+    if (hasContent && !wasOpenRef.current) {
+      // Menu opening for the first time
       setShouldRender(true);
       setIsExiting(false);
-    } else if (shouldRender) {
+      frozenStateRef.current = null;
+      wasOpenRef.current = true;
+    }
+
+    if (hasContent && wasOpenRef.current) {
+      // Menu content changed but staying open
+      setShouldRender(true);
+      setIsExiting(false);
+      frozenStateRef.current = null;
+    }
+
+    if (!hasContent && wasOpenRef.current) {
+      // Menu closing - freeze current state
+      frozenStateRef.current = { items, selectedIndex, activeOperator };
       setIsExiting(true);
       const timer = setTimeout(() => {
         setShouldRender(false);
         setIsExiting(false);
+        frozenStateRef.current = null;
+        wasOpenRef.current = false;
       }, 150);
       return () => clearTimeout(timer);
     }
-  }, [isOpen, items.length, shouldRender]);
+  }, [hasContent, items, selectedIndex, activeOperator]);
 
   if (!shouldRender) {
     return null;
   }
+
+  // Use frozen state during exit, otherwise use live state
+  const displayItems = isExiting && frozenStateRef.current ? frozenStateRef.current.items : items;
+  const displaySelectedIndex = isExiting && frozenStateRef.current ? frozenStateRef.current.selectedIndex : selectedIndex;
+  const displayActiveOperator = isExiting && frozenStateRef.current ? frozenStateRef.current.activeOperator : activeOperator;
 
   return (
     <div
@@ -72,9 +103,9 @@ function SuggestionMenu({ state, handlers }: SuggestionMenuProps) {
     >
       <div className={styles.header}>
         <span className={styles.title}>
-          {activeOperator ? `Select ${activeOperator}` : "SEARCH FILTERS"}
+          {displayActiveOperator ? `Select ${displayActiveOperator}` : "SEARCH FILTERS"}
         </span>
-        {!activeOperator && (
+        {!displayActiveOperator && (
           <span className={styles.shortcuts}>
             <kbd>↑</kbd> <kbd>↓</kbd> to navigate · <kbd>Tab</kbd> to select ·{" "}
             <kbd>Esc</kbd> to close
@@ -83,23 +114,23 @@ function SuggestionMenu({ state, handlers }: SuggestionMenuProps) {
       </div>
 
       <div className={styles.items}>
-        {items.map((item, index) => (
+        {displayItems.map((item, index) => (
           <button
             key={item}
             type="button"
             className={styles.item}
             data-suggestion-item=""
-            data-selected={index === selectedIndex}
+            data-selected={index === displaySelectedIndex}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
-              if (activeOperator) {
+              if (displayActiveOperator) {
                 handlers.onValueSelect(item);
               } else {
                 handlers.onOperatorSelect(item as OperatorKey);
               }
             }}
           >
-            {activeOperator ? (
+            {displayActiveOperator ? (
               item
             ) : (
               <>
@@ -118,7 +149,7 @@ function SuggestionMenu({ state, handlers }: SuggestionMenuProps) {
         ))}
       </div>
 
-      {!activeOperator && (
+      {!displayActiveOperator && (
         <div className={styles.footer}>
           Use <code>-</code> to exclude: <code>-tag:draft</code> · Quotes for
           spaces: <code>author:"John Doe"</code>
