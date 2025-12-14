@@ -1,23 +1,39 @@
 .container {
   --color-foreground: var(--white-a12);
   --color-background: var(--green-9);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  font-size: 14px;
-  font-weight: var(--font-weight-semibold);
   outline: none;
   background: var(--color-background);
   border-radius: 100px;
-  will-change: all;
 }
 
-.button[data-state="loading"] {
-  animation: pulse 1s infinite;
+@keyframes pulse-opacity {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.button::before {
+  inset: -16px;
+}
+
+.button::after {
+  inset: -8px;
 }
 
 .wrapper {
@@ -33,19 +49,29 @@
 
 .label {
   display: inline-block;
-  font-size: 16px;
-  font-weight: var(--font-weight-medium);
+  font-size: 24px;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-foreground);
+  letter-spacing: var(--font-inter-letter-spacing-24px);
   white-space: nowrap;
   will-change: all;
 }
 
+.icon {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  will-change: all;
+}
+
+.check,
 .spinner {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+}
+
+.spinner {
   transform: rotate(360deg);
   animation: spin 1s linear infinite;
   will-change: all;
@@ -61,15 +87,7 @@
 
 .check {
   position: relative;
-  width: 18px;
-  height: 18px;
   color: var(--color-foreground);
-  will-change: all;
-}
-
-.check .svg {
-  position: absolute;
-  scale: 1.2;
   will-change: all;
 }
 

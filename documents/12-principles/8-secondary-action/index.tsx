@@ -33,7 +33,6 @@ export function SecondaryAction() {
       width: conditional ? "auto" : 0,
     },
     style: {
-      overflow: "hidden",
       display: "inline-flex",
       justifyContent: "flex-start",
     },
@@ -47,7 +46,7 @@ export function SecondaryAction() {
     <div className={styles.container}>
       <MotionConfig
         transition={{
-          duration: 0.2,
+          duration: 0.4,
           ease: [0.25, 1, 0.5, 1],
         }}
       >
@@ -65,31 +64,30 @@ export function SecondaryAction() {
               initial={false}
               animate={{
                 opacity: isSuccess ? 1 : 0,
-                width: isSuccess ? 26 : 0,
+                width: isSuccess ? 40 : 0,
                 scale: isSuccess ? 1 : 0,
               }}
               className={styles.icon}
             >
               <Check />
             </motion.div>
-
             <motion.div
               key="loading"
               initial={false}
               animate={{
                 opacity: isLoading ? 1 : 0,
-                width: isLoading ? 26 : 0,
+                width: isLoading ? 40 : 0,
                 scale: isLoading ? 1 : 0,
               }}
               className={styles.icon}
             >
               <Spinner />
             </motion.div>
-
-            <motion.span {...show(isLoading)}>Running&nbsp;</motion.span>
             <motion.span {...show(true)}>Back</motion.span>
+            <motion.span {...show(isLoading)}>ing</motion.span>
             <motion.span {...show(isSuccess)}>ed</motion.span>
             <motion.span {...show(true)}>&nbsp;Up</motion.span>
+            <motion.span {...show(isSuccess)}>!</motion.span>
             <motion.span {...show(isIdle)}>
               {!isSuccess && <>&nbsp;</>}
               Now
@@ -101,11 +99,13 @@ export function SecondaryAction() {
   );
 }
 
-const Check = () => (
+const Check = ({ size = 32 }) => (
   <motion.div className={styles.check}>
     <svg
       viewBox="0 0 24 24"
       fill="none"
+      width={size}
+      height={size}
       xmlns="http://www.w3.org/2000/svg"
       className={styles.svg}
     >
@@ -120,12 +120,10 @@ const Check = () => (
   </motion.div>
 );
 
-const Spinner = () => (
+const Spinner = ({ size = 32 }) => (
   <motion.div
     initial={{ rotate: 180 }}
-    animate={{
-      rotate: 0,
-    }}
+    animate={{ rotate: 0 }}
     exit={{
       position: "absolute",
       rotate: -180,
@@ -142,8 +140,8 @@ const Spinner = () => (
     className={styles.spinner}
   >
     <svg
-      width="18"
-      height="18"
+      width={size}
+      height={size}
       viewBox="0 0 18 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
