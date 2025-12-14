@@ -1,0 +1,67 @@
+"use client";
+
+import { Popover } from "@base-ui-components/react/popover";
+import chroma from "chroma-js";
+import { getNearestPantone } from "pantone-tcx";
+import { useState } from "react";
+import styles from "./styles.module.css";
+
+export function Timing() {
+  const [isSnappy, setIsSnappy] = useState(true);
+
+  const pantone = getNearestPantone(chroma.random().hex());
+
+  const hex = chroma(pantone.hex).hex().toUpperCase();
+  const hsl = chroma(pantone.hex)
+    .hsl()
+    .map((v) => v.toFixed(2))
+    .join(", ");
+  const lab = chroma(pantone.hex)
+    .lab()
+    .map((v) => v.toFixed(2))
+    .join(", ");
+
+  return (
+    <div className={styles.container}>
+      <Popover.Root>
+        <Popover.Trigger
+          className={styles.trigger}
+          style={{ "--hex": hex } as React.CSSProperties}
+        >
+          <div className={styles.swatch} />
+          <span className={styles.label}>{pantone.name}</span>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Positioner sideOffset={16} side="top">
+            <Popover.Popup
+              className={styles.popup}
+              data-animation-state={isSnappy ? "snappy" : "sluggish"}
+              style={{ "--hex": hex } as React.CSSProperties}
+            >
+              <Popover.Title className={styles.title}>
+                PANTONE® {pantone.tcx} TCX
+              </Popover.Title>
+              <hr className={styles.divider} />
+              <Popover.Description className={styles.description}>
+                <span>HEX</span>
+                <span>{hex}</span>
+                <span>HSL</span>
+                <span>{hsl}</span>
+                <span>LAB</span>
+                <span>{lab}</span>
+              </Popover.Description>
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
+
+      <button
+        onClick={() => setIsSnappy((prev) => !prev)}
+        className={styles.button}
+        type="button"
+      >
+        {isSnappy ? "Snappy (120ms)" : "Sluggish (800ms)"}
+      </button>
+    </div>
+  );
+}

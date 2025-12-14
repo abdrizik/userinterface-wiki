@@ -35,7 +35,7 @@
 .label {
   font-size: 16px;
   font-variation-settings: var(--font-weight-600);
-  color: var(--white);
+  color: var(--white-a12);
   white-space: nowrap;
 }
 

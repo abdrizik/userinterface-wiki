@@ -24,8 +24,8 @@
 
 .header-title {
   font-size: 13px;
-  font-variation-settings: var(--font-weight-500);
-  color: var(--text-primary);
+  font-variation-settings: var(--font-weight-medium);
+  color: var(--gray-12);
   text-align: left;
   white-space: nowrap;
 }
@@ -125,17 +125,17 @@
 
 .id {
   font-size: 13px;
-  font-variation-settings: var(--font-weight-450);
+  font-variation-settings: var(--font-weight-normal);
   font-variant-numeric: tabular-nums;
-  color: var(--text-tertiary);
+  color: var(--gray-10);
   text-align: left;
   white-space: nowrap;
 }
 
 .title {
   font-size: 13px;
-  font-variation-settings: var(--font-weight-500);
-  color: var(--text-primary);
+  font-variation-settings: var(--font-weight-medium);
+  color: var(--gray-12);
   text-align: left;
 }
 
@@ -156,8 +156,8 @@
   width: 18px;
   height: 18px;
   border-radius: 100px;
-  box-shadow: inset 0 0px 0px 2px var(--text-quaternary);
-  fill: var(--text-tertiary);
+  box-shadow: inset 0 0px 0px 2px var(--gray-8);
+  fill: var(--gray-10);
   @media (max-width: 640px) {
     display: none;
   }
@@ -165,8 +165,8 @@
 
 .date {
   font-size: 12px;
-  font-variation-settings: var(--font-weight-450);
-  color: var(--text-tertiary);
+  font-variation-settings: var(--font-weight-normal);
+  color: var(--gray-10);
   white-space: nowrap;
 
   @media (max-width: 640px) {
@@ -198,15 +198,15 @@
   width: 16px;
   height: 16px;
   margin-left: 6px;
-  font-variation-settings: var(--font-weight-500);
-  fill: var(--text-tertiary);
+  font-variation-settings: var(--font-weight-medium);
+  fill: var(--gray-10);
 }
 
 .selected {
   margin-right: 24px;
   font-size: 13px;
-  font-variation-settings: var(--font-weight-500);
-  color: var(--text-tertiary);
+  font-variation-settings: var(--font-weight-medium);
+  color: var(--gray-10);
   text-align: left;
   white-space: nowrap;
 }
@@ -228,13 +228,13 @@
 }
 
 .clear {
-  color: var(--text-primary);
-  background: var(--white);
+  color: var(--gray-12);
+  background: var(--white-a12);
   box-shadow: 0 0px 0px 1px var(--border-primary);
 }
 
 .delete {
-  color: var(--white);
+  color: var(--white-a12);
   user-select: none;
   background: var(--red-9);
 }

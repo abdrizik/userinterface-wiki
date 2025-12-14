@@ -18,7 +18,6 @@ export {
 // Icons (alphabetically ordered)
 /** @deprecated Use AnthropicIcon instead */
 export { AnthropicIcon, AnthropicIcon as Anthropic } from "./anthropic";
-export { AphexTwinIcon } from "./aphex-twin";
 // Deprecated aliases (for backwards compatibility)
 /** @deprecated Use ArrowUpRightIcon instead */
 export {

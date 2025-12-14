@@ -31,7 +31,7 @@
 
   font-weight: var(--font-weight-medium);
   line-height: 100%;
-  color: var(--white);
+  color: var(--white-a12);
   letter-spacing: var(--font-inter-letter-spacing-14px);
 
   .slider {

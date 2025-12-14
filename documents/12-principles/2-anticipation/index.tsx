@@ -95,7 +95,7 @@ export function Anticipation() {
             >
               <Checkbox.Root checked={isSelected} className={styles.checkbox}>
                 <Checkbox.Indicator className={styles.indicator}>
-                  <Check className={styles.check} color="var(--white)" />
+                  <Check className={styles.check} color="var(--white-a12)" />
                 </Checkbox.Indicator>
               </Checkbox.Root>
               <div className={styles.priority}>

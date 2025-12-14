@@ -55,7 +55,7 @@
   width: 256px;
   font-size: 14px;
   font-variation-settings: var(--font-weight-400);
-  color: var(--text-quaternary);
+  color: var(--gray-8);
 }
 
 .image {
@@ -63,10 +63,10 @@
   display: inline-flex;
   width: 300px;
   aspect-ratio: 16 / 9;
-  color: var(--white);
+  color: var(--white-a12);
   cursor: pointer;
   object-fit: cover;
-  background-color: var(--white);
+  background-color: var(--white-a12);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
