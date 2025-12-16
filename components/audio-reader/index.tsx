@@ -4,6 +4,7 @@ import { Button } from "@base-ui-components/react/button";
 import { Menu } from "@base-ui-components/react/menu";
 import { Slider } from "@base-ui-components/react/slider";
 import { Portal } from "@radix-ui/react-portal";
+import clsx from "clsx";
 import { AnimatePresence, motion } from "motion/react";
 import type { ComponentProps } from "react";
 import React from "react";
@@ -187,14 +188,12 @@ export const AudioReader = ({
         <AnimatePresence mode="sync">
           {!isReaderVisible && status !== "loading" && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ backdropFilter: "blur(0px) opacity(0)" }}
+              animate={{ backdropFilter: "blur(6px) opacity(1)" }}
+              exit={{ backdropFilter: "blur(0px) opacity(0)" }}
               transition={{ duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
               className={styles.background}
-            >
-              <div className={styles.blur} />
-            </motion.div>
+            />
           )}
         </AnimatePresence>
         <AnimatePresence mode="sync">
@@ -207,7 +206,7 @@ export const AudioReader = ({
               className={styles.controls}
               style={{ bottom: 48 }}
             >
-              <Controls {...controlsProps} />
+              <Controls {...controlsProps} showChapters={false} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -224,6 +223,7 @@ interface ControlsProps {
   chapters: Chapter[];
   autoScroll: boolean;
   audioUrl: string | null;
+  showChapters?: boolean;
   onToggle: () => void;
   onSeek: (value: number | number[]) => void;
   onChapterClick: (id: string) => void;
@@ -239,6 +239,7 @@ const Controls = ({
   chapters,
   autoScroll,
   audioUrl,
+  showChapters = true,
   onToggle,
   onSeek,
   onChapterClick,
@@ -260,10 +261,17 @@ const Controls = ({
       </AnimatePresence>
     </MediaPlayerButton>
 
+    {showChapters && (
+      <ChaptersMenu chapters={chapters} onChapterClick={onChapterClick} />
+    )}
+
     <Slider.Root
       value={progress}
       onValueChange={onSeek}
-      className={styles.slider}
+      className={clsx(
+        styles.slider,
+        showChapters ? styles.withChapters : undefined,
+      )}
     >
       <Time>{formatTime(currentTime)}</Time>
       <Slider.Control className={styles.control}>
@@ -275,7 +283,6 @@ const Controls = ({
       <Time>{formatTime(duration)}</Time>
     </Slider.Root>
 
-    <ChaptersMenu chapters={chapters} onChapterClick={onChapterClick} />
     <SettingsMenu
       autoScroll={autoScroll}
       canDownload={!!audioUrl}
@@ -345,7 +352,7 @@ const SettingsMenu = ({
     <Menu.Portal>
       <Menu.Positioner
         className={styles.positioner}
-        sideOffset={8}
+        sideOffset={16}
         align="end"
         side="top"
       >
