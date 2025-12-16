@@ -28,11 +28,13 @@ interface AudioReaderHookState {
   currentTime: number;
   agentState: AgentState;
   playbackRate: PlaybackRate;
+  autoScroll: boolean;
   colors: [string, string];
   setAgentState: (state: AgentState) => void;
   handleToggle: () => Promise<void> | void;
   seek: (time: number) => void;
-  cyclePlaybackRate: () => void;
+  setPlaybackRate: (rate: PlaybackRate) => void;
+  setAutoScroll: (enabled: boolean) => void;
 }
 
 interface AudioReaderOptions {
@@ -73,6 +75,7 @@ export function useAudioReader({
     duration,
     agentState,
     playbackRate,
+    autoScroll,
     setAudioData,
     setStatus,
     setError,
@@ -80,7 +83,8 @@ export function useAudioReader({
     setCurrentTime,
     setDuration,
     setAgentState,
-    cyclePlaybackRate,
+    setPlaybackRate,
+    setAutoScroll,
     reset,
   } = useAudioReaderStore(
     useShallow((state) => ({
@@ -93,6 +97,7 @@ export function useAudioReader({
       duration: state.duration,
       agentState: state.agentState,
       playbackRate: state.playbackRate,
+      autoScroll: state.autoScroll,
       setAudioData: state.setAudioData,
       setStatus: state.setStatus,
       setError: state.setError,
@@ -100,7 +105,8 @@ export function useAudioReader({
       setCurrentTime: state.setCurrentTime,
       setDuration: state.setDuration,
       setAgentState: state.setAgentState,
-      cyclePlaybackRate: state.cyclePlaybackRate,
+      setPlaybackRate: state.setPlaybackRate,
+      setAutoScroll: state.setAutoScroll,
       reset: state.reset,
     })),
   );
@@ -515,7 +521,7 @@ export function useAudioReader({
         block.dataset.wordBlockState = "active";
       }
 
-      if (isUserScrollingRef.current) return;
+      if (!autoScroll || isUserScrollingRef.current) return;
 
       const rect = meta.element.getBoundingClientRect();
       const offset = window.innerHeight * 0.2;
@@ -526,7 +532,7 @@ export function useAudioReader({
         meta.element.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     },
-    [clearActiveHighlight],
+    [autoScroll, clearActiveHighlight],
   );
 
   useEffect(() => {
@@ -574,7 +580,9 @@ export function useAudioReader({
     handleToggle,
     seek,
     playbackRate,
-    cyclePlaybackRate,
+    setPlaybackRate,
+    autoScroll,
+    setAutoScroll,
     colors,
   };
 }

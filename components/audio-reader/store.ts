@@ -24,6 +24,7 @@ interface AudioReaderState {
   duration: number;
   agentState: AgentState;
   playbackRate: PlaybackRate;
+  autoScroll: boolean;
 }
 
 interface AudioReaderActions {
@@ -39,6 +40,7 @@ interface AudioReaderActions {
   setAgentState: (agentState: AgentState) => void;
   setPlaybackRate: (rate: PlaybackRate) => void;
   cyclePlaybackRate: () => void;
+  setAutoScroll: (enabled: boolean) => void;
   reset: () => void;
 }
 
@@ -54,6 +56,7 @@ const createInitialState = (): AudioReaderState => ({
   duration: 0,
   agentState: null,
   playbackRate: 1,
+  autoScroll: true,
 });
 
 export const useAudioReaderStore = create<AudioReaderStore>((set) => ({
@@ -80,5 +83,6 @@ export const useAudioReaderStore = create<AudioReaderStore>((set) => ({
       const nextIndex = (currentIndex + 1) % PLAYBACK_RATES.length;
       return { playbackRate: PLAYBACK_RATES[nextIndex] };
     }),
+  setAutoScroll: (enabled) => set(() => ({ autoScroll: enabled })),
   reset: () => set(() => createInitialState()),
 }));

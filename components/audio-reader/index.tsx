@@ -1,17 +1,28 @@
 "use client";
 
 import { Button } from "@base-ui-components/react/button";
+import { Menu } from "@base-ui-components/react/menu";
 import { Slider } from "@base-ui-components/react/slider";
 import { Portal } from "@radix-ui/react-portal";
 import { AnimatePresence, motion } from "motion/react";
 import type { ComponentProps } from "react";
 import React from "react";
+import { FilledCheckIcon } from "@/components/icons/filled-check";
+import { GearIcon } from "@/components/icons/gear";
 import { PauseIcon } from "@/components/icons/pause";
 import { PlayIcon } from "@/components/icons/play";
+import { PlaylistIcon } from "@/components/icons/playlist";
+import { PLAYBACK_RATES, type PlaybackRate } from "./store";
 import { Orb } from "../orb";
 import styles from "./styles.module.css";
 import { useAudioReader } from "./use-audio-reader";
 import { formatTime } from "./utils";
+
+interface Chapter {
+  id: string;
+  level: number;
+  text: string;
+}
 
 interface AudioReaderProps {
   slugSegments: string[];
@@ -33,13 +44,53 @@ export const AudioReader = ({
     handleToggle,
     seek,
     playbackRate,
-    cyclePlaybackRate,
+    setPlaybackRate,
+    autoScroll,
+    setAutoScroll,
+    audioUrl,
     colors,
   } = useAudioReader({ slugSegments, title, authorName });
 
   const readerRef = React.useRef<HTMLDivElement | null>(null);
-
   const [isReaderVisible, setIsReaderVisible] = React.useState(true);
+  const [chapters, setChapters] = React.useState<Chapter[]>([]);
+
+  // Collect headings from the page
+  React.useEffect(() => {
+    const headings = document.querySelectorAll<HTMLHeadingElement>(
+      "article h1, article h2, article h3, article h4, article h5, article h6",
+    );
+
+    const collected: Chapter[] = [];
+    headings.forEach((heading) => {
+      const id = heading.id || heading.textContent?.toLowerCase().replace(/\s+/g, "-") || "";
+      if (!heading.id && id) {
+        heading.id = id;
+      }
+      collected.push({
+        id,
+        level: parseInt(heading.tagName.charAt(1), 10),
+        text: heading.textContent || "",
+      });
+    });
+
+    setChapters(collected);
+  }, []);
+
+  const scrollToChapter = React.useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+
+  const handleDownload = React.useCallback(() => {
+    if (!audioUrl) return;
+    const link = document.createElement("a");
+    link.href = audioUrl;
+    link.download = `${slugSegments.join("-")}.mp3`;
+    link.click();
+  }, [audioUrl, slugSegments]);
 
   const progress =
     duration > 0
@@ -106,10 +157,6 @@ export const AudioReader = ({
               </AnimatePresence>
             </MediaPlayerButton>
 
-            <MediaPlayerButton onClick={cyclePlaybackRate}>
-              {playbackRate}x
-            </MediaPlayerButton>
-
             <Slider.Root
               value={progress}
               onValueChange={handleSeek}
@@ -124,6 +171,91 @@ export const AudioReader = ({
               </Slider.Control>
               <Time>{formatTime(duration)}</Time>
             </Slider.Root>
+
+            {/* Chapters Menu */}
+            <Menu.Root>
+              <Menu.Trigger render={<MediaPlayerButton />}>
+                <PlaylistIcon />
+              </Menu.Trigger>
+              <Menu.Portal>
+                <Menu.Positioner className={styles.positioner} sideOffset={8}>
+                  <Menu.Popup className={styles.popup}>
+                    {chapters.length > 0 ? (
+                      chapters.map((chapter) => (
+                        <Menu.Item
+                          key={chapter.id}
+                          className={styles.item}
+                          style={{ paddingLeft: `${(chapter.level - 1) * 12 + 12}px` }}
+                          onClick={() => scrollToChapter(chapter.id)}
+                        >
+                          {chapter.text}
+                        </Menu.Item>
+                      ))
+                    ) : (
+                      <Menu.Item className={styles.item} disabled>
+                        No chapters
+                      </Menu.Item>
+                    )}
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.Root>
+
+            {/* Settings Menu */}
+            <Menu.Root>
+              <Menu.Trigger render={<MediaPlayerButton />}>
+                <GearIcon />
+              </Menu.Trigger>
+              <Menu.Portal>
+                <Menu.Positioner className={styles.positioner} sideOffset={8}>
+                  <Menu.Popup className={styles.popup}>
+                    <Menu.Group className={styles.group}>
+                      <Menu.GroupLabel className={styles.label}>
+                        Playback Speed
+                      </Menu.GroupLabel>
+                      <Menu.RadioGroup
+                        value={String(playbackRate)}
+                        onValueChange={(value) =>
+                          setPlaybackRate(Number(value) as PlaybackRate)
+                        }
+                      >
+                        {PLAYBACK_RATES.map((rate) => (
+                          <Menu.RadioItem
+                            key={rate}
+                            value={String(rate)}
+                            className={styles.item}
+                          >
+                            <Menu.RadioItemIndicator className={styles.indicator}>
+                              <FilledCheckIcon />
+                            </Menu.RadioItemIndicator>
+                            {rate}x
+                          </Menu.RadioItem>
+                        ))}
+                      </Menu.RadioGroup>
+                    </Menu.Group>
+                    <Menu.Separator className={styles.separator} />
+                    <Menu.CheckboxItem
+                      checked={autoScroll}
+                      onCheckedChange={setAutoScroll}
+                      className={styles.item}
+                    >
+                      <Menu.CheckboxItemIndicator className={styles.indicator}>
+                        <FilledCheckIcon />
+                      </Menu.CheckboxItemIndicator>
+                      Auto-scroll
+                    </Menu.CheckboxItem>
+                    <Menu.Separator className={styles.separator} />
+                    <Menu.Item
+                      className={styles.item}
+                      onClick={handleDownload}
+                      disabled={!audioUrl}
+                    >
+                      Download audio
+                    </Menu.Item>
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.Root>
           </motion.div>
         )}
       </div>
@@ -192,10 +324,6 @@ export const AudioReader = ({
                 </AnimatePresence>
               </MediaPlayerButton>
 
-              <MediaPlayerButton onClick={cyclePlaybackRate}>
-                {playbackRate}x
-              </MediaPlayerButton>
-
               <Slider.Root
                 value={progress}
                 onValueChange={handleSeek}
@@ -210,6 +338,91 @@ export const AudioReader = ({
                 </Slider.Control>
                 <Time>{formatTime(duration)}</Time>
               </Slider.Root>
+
+              {/* Chapters Menu */}
+              <Menu.Root>
+                <Menu.Trigger render={<MediaPlayerButton />}>
+                  <PlaylistIcon />
+                </Menu.Trigger>
+                <Menu.Portal>
+                  <Menu.Positioner className={styles.positioner} sideOffset={8}>
+                    <Menu.Popup className={styles.popup}>
+                      {chapters.length > 0 ? (
+                        chapters.map((chapter) => (
+                          <Menu.Item
+                            key={chapter.id}
+                            className={styles.item}
+                            style={{ paddingLeft: `${(chapter.level - 1) * 12 + 12}px` }}
+                            onClick={() => scrollToChapter(chapter.id)}
+                          >
+                            {chapter.text}
+                          </Menu.Item>
+                        ))
+                      ) : (
+                        <Menu.Item className={styles.item} disabled>
+                          No chapters
+                        </Menu.Item>
+                      )}
+                    </Menu.Popup>
+                  </Menu.Positioner>
+                </Menu.Portal>
+              </Menu.Root>
+
+              {/* Settings Menu */}
+              <Menu.Root>
+                <Menu.Trigger render={<MediaPlayerButton />}>
+                  <GearIcon />
+                </Menu.Trigger>
+                <Menu.Portal>
+                  <Menu.Positioner className={styles.positioner} sideOffset={8}>
+                    <Menu.Popup className={styles.popup}>
+                      <Menu.Group className={styles.group}>
+                        <Menu.GroupLabel className={styles.label}>
+                          Playback Speed
+                        </Menu.GroupLabel>
+                        <Menu.RadioGroup
+                          value={String(playbackRate)}
+                          onValueChange={(value) =>
+                            setPlaybackRate(Number(value) as PlaybackRate)
+                          }
+                        >
+                          {PLAYBACK_RATES.map((rate) => (
+                            <Menu.RadioItem
+                              key={rate}
+                              value={String(rate)}
+                              className={styles.item}
+                            >
+                              <Menu.RadioItemIndicator className={styles.indicator}>
+                                <FilledCheckIcon />
+                              </Menu.RadioItemIndicator>
+                              {rate}x
+                            </Menu.RadioItem>
+                          ))}
+                        </Menu.RadioGroup>
+                      </Menu.Group>
+                      <Menu.Separator className={styles.separator} />
+                      <Menu.CheckboxItem
+                        checked={autoScroll}
+                        onCheckedChange={setAutoScroll}
+                        className={styles.item}
+                      >
+                        <Menu.CheckboxItemIndicator className={styles.indicator}>
+                          <FilledCheckIcon />
+                        </Menu.CheckboxItemIndicator>
+                        Auto-scroll
+                      </Menu.CheckboxItem>
+                      <Menu.Separator className={styles.separator} />
+                      <Menu.Item
+                        className={styles.item}
+                        onClick={handleDownload}
+                        disabled={!audioUrl}
+                      >
+                        Download audio
+                      </Menu.Item>
+                    </Menu.Popup>
+                  </Menu.Positioner>
+                </Menu.Portal>
+              </Menu.Root>
             </motion.div>
           )}
         </AnimatePresence>
