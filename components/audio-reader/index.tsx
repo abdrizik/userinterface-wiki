@@ -7,12 +7,13 @@ import { Portal } from "@radix-ui/react-portal";
 import { AnimatePresence, motion } from "motion/react";
 import type { ComponentProps } from "react";
 import React from "react";
-import { FilledCheckIcon } from "@/components/icons/filled-check";
-import { GearIcon } from "@/components/icons/gear";
-import { PauseIcon } from "@/components/icons/pause";
-import { PlayIcon } from "@/components/icons/play";
-import { PlaylistIcon } from "@/components/icons/playlist";
-import { PLAYBACK_RATES, type PlaybackRate } from "./store";
+import {
+  CheckIcon,
+  GearIcon,
+  PauseIcon,
+  PlayIcon,
+  PlaylistIcon,
+} from "@/components/icons";
 import { Orb } from "../orb";
 import styles from "./styles.module.css";
 import { useAudioReader } from "./use-audio-reader";
@@ -22,6 +23,7 @@ interface Chapter {
   id: string;
   level: number;
   text: string;
+  number: string;
 }
 
 interface AudioReaderProps {
@@ -29,6 +31,13 @@ interface AudioReaderProps {
   title: string;
   authorName: string;
 }
+
+const ICON_TRANSITION = {
+  initial: { opacity: 0, scale: 0.8 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.8 },
+  transition: { duration: 0.18 },
+};
 
 export const AudioReader = ({
   slugSegments,
@@ -43,8 +52,6 @@ export const AudioReader = ({
     agentState,
     handleToggle,
     seek,
-    playbackRate,
-    setPlaybackRate,
     autoScroll,
     setAutoScroll,
     audioUrl,
@@ -55,22 +62,49 @@ export const AudioReader = ({
   const [isReaderVisible, setIsReaderVisible] = React.useState(true);
   const [chapters, setChapters] = React.useState<Chapter[]>([]);
 
-  // Collect headings from the page
   React.useEffect(() => {
     const headings = document.querySelectorAll<HTMLHeadingElement>(
       "article h1, article h2, article h3, article h4, article h5, article h6",
     );
 
+    if (headings.length === 0) {
+      setChapters([]);
+      return;
+    }
+
+    const levels = Array.from(headings).map((h) =>
+      parseInt(h.tagName.charAt(1), 10),
+    );
+    const minLevel = Math.min(...levels);
+
     const collected: Chapter[] = [];
+    const counters = [0, 0, 0, 0, 0, 0];
+
     headings.forEach((heading) => {
-      const id = heading.id || heading.textContent?.toLowerCase().replace(/\s+/g, "-") || "";
-      if (!heading.id && id) {
-        heading.id = id;
+      const id =
+        heading.id ||
+        heading.textContent?.toLowerCase().replace(/\s+/g, "-") ||
+        "";
+      if (!heading.id && id) heading.id = id;
+
+      const level = parseInt(heading.tagName.charAt(1), 10);
+      const levelIndex = level - minLevel;
+
+      counters[levelIndex]++;
+      for (let i = levelIndex + 1; i < counters.length; i++) {
+        counters[i] = 0;
       }
+
+      const number = counters
+        .slice(0, levelIndex + 1)
+        .filter((n) => n > 0)
+        .join(".");
+
       collected.push({
         id,
-        level: parseInt(heading.tagName.charAt(1), 10),
+        level,
         text: heading.textContent || "",
+        number,
       });
     });
 
@@ -78,10 +112,9 @@ export const AudioReader = ({
   }, []);
 
   const scrollToChapter = React.useCallback((id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   const handleDownload = React.useCallback(() => {
@@ -101,18 +134,10 @@ export const AudioReader = ({
     (value: number | number[]) => {
       const percent = Array.isArray(value) ? value[0] : value;
       if (percent === undefined || duration <= 0) return;
-      const time = (percent / 100) * duration;
-      seek(time);
+      seek((percent / 100) * duration);
     },
     [duration, seek],
   );
-
-  const IconSwitchTransition = {
-    initial: { opacity: 0, scale: 0.8 },
-    animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.8 },
-    transition: { duration: 0.18 },
-  };
 
   React.useEffect(() => {
     const target = readerRef.current;
@@ -120,17 +145,27 @@ export const AudioReader = ({
 
     const observer = new IntersectionObserver(
       ([entry]) => setIsReaderVisible(entry?.isIntersecting ?? false),
-      {
-        threshold: 0.4,
-      },
+      { threshold: 0.4 },
     );
 
     observer.observe(target);
-
-    return () => {
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, []);
+
+  const controlsProps = {
+    isPlaying,
+    currentTime,
+    duration,
+    progress,
+    chapters,
+    autoScroll,
+    audioUrl,
+    onToggle: handleToggle,
+    onSeek: handleSeek,
+    onChapterClick: scrollToChapter,
+    onAutoScrollChange: setAutoScroll,
+    onDownload: handleDownload,
+  };
 
   return (
     <React.Fragment>
@@ -143,119 +178,7 @@ export const AudioReader = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, ease: [0.19, 1, 0.22, 1] }}
           >
-            <MediaPlayerButton onClick={handleToggle}>
-              <AnimatePresence mode="wait">
-                {isPlaying ? (
-                  <motion.div {...IconSwitchTransition} key="pause">
-                    <PauseIcon />
-                  </motion.div>
-                ) : (
-                  <motion.div {...IconSwitchTransition} key="play">
-                    <PlayIcon />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </MediaPlayerButton>
-
-            <Slider.Root
-              value={progress}
-              onValueChange={handleSeek}
-              className={styles.slider}
-            >
-              <Time>{formatTime(currentTime)}</Time>
-              <Slider.Control className={styles.control}>
-                <Slider.Track className={styles.track}>
-                  <Slider.Indicator className={styles.indicator} />
-                  <Slider.Thumb className={styles.thumb} />
-                </Slider.Track>
-              </Slider.Control>
-              <Time>{formatTime(duration)}</Time>
-            </Slider.Root>
-
-            {/* Chapters Menu */}
-            <Menu.Root>
-              <Menu.Trigger render={<MediaPlayerButton />}>
-                <PlaylistIcon />
-              </Menu.Trigger>
-              <Menu.Portal>
-                <Menu.Positioner className={styles.positioner} sideOffset={8}>
-                  <Menu.Popup className={styles.popup}>
-                    {chapters.length > 0 ? (
-                      chapters.map((chapter) => (
-                        <Menu.Item
-                          key={chapter.id}
-                          className={styles.item}
-                          style={{ paddingLeft: `${(chapter.level - 1) * 12 + 12}px` }}
-                          onClick={() => scrollToChapter(chapter.id)}
-                        >
-                          {chapter.text}
-                        </Menu.Item>
-                      ))
-                    ) : (
-                      <Menu.Item className={styles.item} disabled>
-                        No chapters
-                      </Menu.Item>
-                    )}
-                  </Menu.Popup>
-                </Menu.Positioner>
-              </Menu.Portal>
-            </Menu.Root>
-
-            {/* Settings Menu */}
-            <Menu.Root>
-              <Menu.Trigger render={<MediaPlayerButton />}>
-                <GearIcon />
-              </Menu.Trigger>
-              <Menu.Portal>
-                <Menu.Positioner className={styles.positioner} sideOffset={8}>
-                  <Menu.Popup className={styles.popup}>
-                    <Menu.Group className={styles.group}>
-                      <Menu.GroupLabel className={styles.label}>
-                        Playback Speed
-                      </Menu.GroupLabel>
-                      <Menu.RadioGroup
-                        value={String(playbackRate)}
-                        onValueChange={(value) =>
-                          setPlaybackRate(Number(value) as PlaybackRate)
-                        }
-                      >
-                        {PLAYBACK_RATES.map((rate) => (
-                          <Menu.RadioItem
-                            key={rate}
-                            value={String(rate)}
-                            className={styles.item}
-                          >
-                            <Menu.RadioItemIndicator className={styles.indicator}>
-                              <FilledCheckIcon />
-                            </Menu.RadioItemIndicator>
-                            {rate}x
-                          </Menu.RadioItem>
-                        ))}
-                      </Menu.RadioGroup>
-                    </Menu.Group>
-                    <Menu.Separator className={styles.separator} />
-                    <Menu.CheckboxItem
-                      checked={autoScroll}
-                      onCheckedChange={setAutoScroll}
-                      className={styles.item}
-                    >
-                      <Menu.CheckboxItemIndicator className={styles.indicator}>
-                        <FilledCheckIcon />
-                      </Menu.CheckboxItemIndicator>
-                      Auto-scroll
-                    </Menu.CheckboxItem>
-                    <Menu.Separator className={styles.separator} />
-                    <Menu.Item
-                      className={styles.item}
-                      onClick={handleDownload}
-                      disabled={!audioUrl}
-                    >
-                      Download audio
-                    </Menu.Item>
-                  </Menu.Popup>
-                </Menu.Positioner>
-              </Menu.Portal>
-            </Menu.Root>
+            <Controls {...controlsProps} />
           </motion.div>
         )}
       </div>
@@ -264,19 +187,10 @@ export const AudioReader = ({
         <AnimatePresence mode="sync">
           {!isReaderVisible && status !== "loading" && (
             <motion.div
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
-              exit={{
-                opacity: 0,
-              }}
-              transition={{
-                duration: 0.4,
-                ease: [0.19, 1, 0.22, 1],
-              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
               className={styles.background}
             >
               <div className={styles.blur} />
@@ -286,143 +200,14 @@ export const AudioReader = ({
         <AnimatePresence mode="sync">
           {!isReaderVisible && status !== "loading" && (
             <motion.div
-              initial={{
-                opacity: 0,
-                scale: 0.95,
-                filter: "blur(2px)",
-              }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                filter: "blur(0px)",
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.95,
-                filter: "blur(2px)",
-              }}
-              transition={{
-                duration: 0.4,
-                ease: [0.25, 0.1, 0.25, 1],
-              }}
+              initial={{ opacity: 0, scale: 0.95, filter: "blur(2px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 0.95, filter: "blur(2px)" }}
+              transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
               className={styles.controls}
-              style={{
-                bottom: 48,
-              }}
+              style={{ bottom: 48 }}
             >
-              <MediaPlayerButton onClick={handleToggle}>
-                <AnimatePresence mode="wait">
-                  {isPlaying ? (
-                    <motion.div {...IconSwitchTransition} key="pause">
-                      <PauseIcon />
-                    </motion.div>
-                  ) : (
-                    <motion.div {...IconSwitchTransition} key="play">
-                      <PlayIcon />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </MediaPlayerButton>
-
-              <Slider.Root
-                value={progress}
-                onValueChange={handleSeek}
-                className={styles.slider}
-              >
-                <Time>{formatTime(currentTime)}</Time>
-                <Slider.Control className={styles.control}>
-                  <Slider.Track className={styles.track}>
-                    <Slider.Indicator className={styles.indicator} />
-                    <Slider.Thumb className={styles.thumb} />
-                  </Slider.Track>
-                </Slider.Control>
-                <Time>{formatTime(duration)}</Time>
-              </Slider.Root>
-
-              {/* Chapters Menu */}
-              <Menu.Root>
-                <Menu.Trigger render={<MediaPlayerButton />}>
-                  <PlaylistIcon />
-                </Menu.Trigger>
-                <Menu.Portal>
-                  <Menu.Positioner className={styles.positioner} sideOffset={8}>
-                    <Menu.Popup className={styles.popup}>
-                      {chapters.length > 0 ? (
-                        chapters.map((chapter) => (
-                          <Menu.Item
-                            key={chapter.id}
-                            className={styles.item}
-                            style={{ paddingLeft: `${(chapter.level - 1) * 12 + 12}px` }}
-                            onClick={() => scrollToChapter(chapter.id)}
-                          >
-                            {chapter.text}
-                          </Menu.Item>
-                        ))
-                      ) : (
-                        <Menu.Item className={styles.item} disabled>
-                          No chapters
-                        </Menu.Item>
-                      )}
-                    </Menu.Popup>
-                  </Menu.Positioner>
-                </Menu.Portal>
-              </Menu.Root>
-
-              {/* Settings Menu */}
-              <Menu.Root>
-                <Menu.Trigger render={<MediaPlayerButton />}>
-                  <GearIcon />
-                </Menu.Trigger>
-                <Menu.Portal>
-                  <Menu.Positioner className={styles.positioner} sideOffset={8}>
-                    <Menu.Popup className={styles.popup}>
-                      <Menu.Group className={styles.group}>
-                        <Menu.GroupLabel className={styles.label}>
-                          Playback Speed
-                        </Menu.GroupLabel>
-                        <Menu.RadioGroup
-                          value={String(playbackRate)}
-                          onValueChange={(value) =>
-                            setPlaybackRate(Number(value) as PlaybackRate)
-                          }
-                        >
-                          {PLAYBACK_RATES.map((rate) => (
-                            <Menu.RadioItem
-                              key={rate}
-                              value={String(rate)}
-                              className={styles.item}
-                            >
-                              <Menu.RadioItemIndicator className={styles.indicator}>
-                                <FilledCheckIcon />
-                              </Menu.RadioItemIndicator>
-                              {rate}x
-                            </Menu.RadioItem>
-                          ))}
-                        </Menu.RadioGroup>
-                      </Menu.Group>
-                      <Menu.Separator className={styles.separator} />
-                      <Menu.CheckboxItem
-                        checked={autoScroll}
-                        onCheckedChange={setAutoScroll}
-                        className={styles.item}
-                      >
-                        <Menu.CheckboxItemIndicator className={styles.indicator}>
-                          <FilledCheckIcon />
-                        </Menu.CheckboxItemIndicator>
-                        Auto-scroll
-                      </Menu.CheckboxItem>
-                      <Menu.Separator className={styles.separator} />
-                      <Menu.Item
-                        className={styles.item}
-                        onClick={handleDownload}
-                        disabled={!audioUrl}
-                      >
-                        Download audio
-                      </Menu.Item>
-                    </Menu.Popup>
-                  </Menu.Positioner>
-                </Menu.Portal>
-              </Menu.Root>
+              <Controls {...controlsProps} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -431,10 +216,168 @@ export const AudioReader = ({
   );
 };
 
-const MediaPlayerButton = (props: ComponentProps<typeof Button>) => {
-  return <Button className={styles.button} {...props} />;
-};
+interface ControlsProps {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  progress: number;
+  chapters: Chapter[];
+  autoScroll: boolean;
+  audioUrl: string | null;
+  onToggle: () => void;
+  onSeek: (value: number | number[]) => void;
+  onChapterClick: (id: string) => void;
+  onAutoScrollChange: (value: boolean) => void;
+  onDownload: () => void;
+}
 
-const Time = (props: ComponentProps<"span">) => {
-  return <span className={styles.time} {...props} />;
-};
+const Controls = ({
+  isPlaying,
+  currentTime,
+  duration,
+  progress,
+  chapters,
+  autoScroll,
+  audioUrl,
+  onToggle,
+  onSeek,
+  onChapterClick,
+  onAutoScrollChange,
+  onDownload,
+}: ControlsProps) => (
+  <React.Fragment>
+    <MediaPlayerButton onClick={onToggle}>
+      <AnimatePresence mode="wait">
+        {isPlaying ? (
+          <motion.div {...ICON_TRANSITION} key="pause">
+            <PauseIcon />
+          </motion.div>
+        ) : (
+          <motion.div {...ICON_TRANSITION} key="play">
+            <PlayIcon />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </MediaPlayerButton>
+
+    <Slider.Root
+      value={progress}
+      onValueChange={onSeek}
+      className={styles.slider}
+    >
+      <Time>{formatTime(currentTime)}</Time>
+      <Slider.Control className={styles.control}>
+        <Slider.Track className={styles.track}>
+          <Slider.Indicator className={styles.indicator} />
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Track>
+      </Slider.Control>
+      <Time>{formatTime(duration)}</Time>
+    </Slider.Root>
+
+    <ChaptersMenu chapters={chapters} onChapterClick={onChapterClick} />
+    <SettingsMenu
+      autoScroll={autoScroll}
+      canDownload={!!audioUrl}
+      onAutoScrollChange={onAutoScrollChange}
+      onDownload={onDownload}
+    />
+  </React.Fragment>
+);
+
+interface ChaptersMenuProps {
+  chapters: Chapter[];
+  onChapterClick: (id: string) => void;
+}
+
+const ChaptersMenu = ({ chapters, onChapterClick }: ChaptersMenuProps) => (
+  <Menu.Root>
+    <Menu.Trigger render={<MediaPlayerButton />}>
+      <PlaylistIcon />
+    </Menu.Trigger>
+    <Menu.Portal>
+      <Menu.Positioner
+        className={styles.positioner}
+        sideOffset={8}
+        align="end"
+        side="top"
+      >
+        <Menu.Popup className={styles.popup}>
+          {chapters.length > 0 ? (
+            chapters.map((chapter) => (
+              <Menu.Item
+                key={chapter.id}
+                className={styles.item}
+                style={{ paddingLeft: `${(chapter.level - 1) * 12}px` }}
+                onClick={() => onChapterClick(chapter.id)}
+              >
+                {chapter.number}. {chapter.text}
+              </Menu.Item>
+            ))
+          ) : (
+            <Menu.Item className={styles.item} disabled>
+              No chapters
+            </Menu.Item>
+          )}
+        </Menu.Popup>
+      </Menu.Positioner>
+    </Menu.Portal>
+  </Menu.Root>
+);
+
+interface SettingsMenuProps {
+  autoScroll: boolean;
+  canDownload: boolean;
+  onAutoScrollChange: (value: boolean) => void;
+  onDownload: () => void;
+}
+
+const SettingsMenu = ({
+  autoScroll,
+  canDownload,
+  onAutoScrollChange,
+  onDownload,
+}: SettingsMenuProps) => (
+  <Menu.Root>
+    <Menu.Trigger render={<MediaPlayerButton />}>
+      <GearIcon />
+    </Menu.Trigger>
+    <Menu.Portal>
+      <Menu.Positioner
+        className={styles.positioner}
+        sideOffset={8}
+        align="end"
+        side="top"
+      >
+        <Menu.Popup className={styles.popup}>
+          <Menu.CheckboxItem
+            checked={autoScroll}
+            onCheckedChange={onAutoScrollChange}
+            className={styles.item}
+          >
+            Automatic Scrolling
+            <Menu.CheckboxItemIndicator
+              className={styles.indicator}
+              render={<CheckIcon size={16} />}
+            />
+          </Menu.CheckboxItem>
+          <Menu.Item
+            className={styles.item}
+            onClick={onDownload}
+            disabled={!canDownload}
+          >
+            Download Audio
+          </Menu.Item>
+        </Menu.Popup>
+      </Menu.Positioner>
+    </Menu.Portal>
+  </Menu.Root>
+);
+
+const MediaPlayerButton = (props: ComponentProps<typeof Button>) => (
+  <Button className={styles.button} {...props} />
+);
+
+const Time = (props: ComponentProps<"span">) => (
+  <span className={styles.time} {...props} />
+);

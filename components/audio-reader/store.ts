@@ -11,9 +11,6 @@ export interface WordTimestamp {
 
 export type ReaderStatus = "loading" | "ready" | "error";
 
-export const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
-export type PlaybackRate = (typeof PLAYBACK_RATES)[number];
-
 interface AudioReaderState {
   audioUrl: string | null;
   timestamps: WordTimestamp[];
@@ -23,7 +20,6 @@ interface AudioReaderState {
   currentTime: number;
   duration: number;
   agentState: AgentState;
-  playbackRate: PlaybackRate;
   autoScroll: boolean;
 }
 
@@ -38,8 +34,6 @@ interface AudioReaderActions {
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   setAgentState: (agentState: AgentState) => void;
-  setPlaybackRate: (rate: PlaybackRate) => void;
-  cyclePlaybackRate: () => void;
   setAutoScroll: (enabled: boolean) => void;
   reset: () => void;
 }
@@ -55,7 +49,6 @@ const createInitialState = (): AudioReaderState => ({
   currentTime: 0,
   duration: 0,
   agentState: null,
-  playbackRate: 1,
   autoScroll: true,
 });
 
@@ -76,13 +69,6 @@ export const useAudioReaderStore = create<AudioReaderStore>((set) => ({
   setCurrentTime: (time) => set(() => ({ currentTime: time })),
   setDuration: (duration) => set(() => ({ duration })),
   setAgentState: (agentState) => set(() => ({ agentState })),
-  setPlaybackRate: (rate) => set(() => ({ playbackRate: rate })),
-  cyclePlaybackRate: () =>
-    set((state) => {
-      const currentIndex = PLAYBACK_RATES.indexOf(state.playbackRate);
-      const nextIndex = (currentIndex + 1) % PLAYBACK_RATES.length;
-      return { playbackRate: PLAYBACK_RATES[nextIndex] };
-    }),
   setAutoScroll: (enabled) => set(() => ({ autoScroll: enabled })),
   reset: () => set(() => createInitialState()),
 }));

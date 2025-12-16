@@ -7,6 +7,7 @@ export interface SpanMeta {
 }
 
 const BASE_WINDOW = 0.02;
+
 const MAX_WINDOW = 0.12;
 
 export function collectSpans(): SpanMeta[] {

@@ -3,7 +3,6 @@ import { useShallow } from "zustand/react/shallow";
 import { getGradientColors } from "@/lib/utils/colors";
 import {
   type AgentState,
-  type PlaybackRate,
   useAudioReaderStore,
   type WordTimestamp,
 } from "./store";
@@ -27,13 +26,11 @@ interface AudioReaderHookState {
   duration: number;
   currentTime: number;
   agentState: AgentState;
-  playbackRate: PlaybackRate;
   autoScroll: boolean;
   colors: [string, string];
   setAgentState: (state: AgentState) => void;
   handleToggle: () => Promise<void> | void;
   seek: (time: number) => void;
-  setPlaybackRate: (rate: PlaybackRate) => void;
   setAutoScroll: (enabled: boolean) => void;
 }
 
@@ -74,7 +71,6 @@ export function useAudioReader({
     currentTime,
     duration,
     agentState,
-    playbackRate,
     autoScroll,
     setAudioData,
     setStatus,
@@ -83,7 +79,6 @@ export function useAudioReader({
     setCurrentTime,
     setDuration,
     setAgentState,
-    setPlaybackRate,
     setAutoScroll,
     reset,
   } = useAudioReaderStore(
@@ -96,7 +91,6 @@ export function useAudioReader({
       currentTime: state.currentTime,
       duration: state.duration,
       agentState: state.agentState,
-      playbackRate: state.playbackRate,
       autoScroll: state.autoScroll,
       setAudioData: state.setAudioData,
       setStatus: state.setStatus,
@@ -105,7 +99,6 @@ export function useAudioReader({
       setCurrentTime: state.setCurrentTime,
       setDuration: state.setDuration,
       setAgentState: state.setAgentState,
-      setPlaybackRate: state.setPlaybackRate,
       setAutoScroll: state.setAutoScroll,
       reset: state.reset,
     })),
@@ -323,12 +316,6 @@ export function useAudioReader({
     audio.load();
   }, [audioUrl]);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.playbackRate = playbackRate;
-  }, [playbackRate]);
-
   const handleToggle = useCallback(async () => {
     if (!audioRef.current || !audioUrl) return;
 
@@ -496,10 +483,10 @@ export function useAudioReader({
     if (!("mediaSession" in navigator) || duration === 0) return;
     navigator.mediaSession.setPositionState({
       duration,
-      playbackRate,
+      playbackRate: 1,
       position: currentTime,
     });
-  }, [currentTime, duration, playbackRate]);
+  }, [currentTime, duration]);
 
   const applyHighlight = useCallback(
     (wordIndex: number) => {
@@ -579,8 +566,6 @@ export function useAudioReader({
     setAgentState,
     handleToggle,
     seek,
-    playbackRate,
-    setPlaybackRate,
     autoScroll,
     setAutoScroll,
     colors,
