@@ -10,7 +10,7 @@ export const MotionPreviewIcon = ({ size = 40, ...props }: IconProps) => {
       {...props}
     >
       <title>Motion Preview</title>
-      <g clip-path="url(#a)">
+      <g clipPath="url(#a)">
         <rect width="38" height="48" x="1" y="1" fill="var(--gray-2)" rx="2" />
         <path fill="var(--gray-4)" d="M1 1h38v8H1z" />
         <rect width="4" height="4" x="3" y="3" fill="var(--gray-2)" rx="2" />
