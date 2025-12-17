@@ -248,6 +248,28 @@ export function useAudioReader({
   }, []);
 
   useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible") return;
+
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      const actualTime = audio.currentTime;
+      setCurrentTime(actualTime);
+      lastWordIndexRef.current = -1;
+
+      if (!audio.paused && isPlaying) {
+        startTicker();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [isPlaying, setCurrentTime, startTicker]);
+
+  useEffect(() => {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
