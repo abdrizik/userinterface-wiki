@@ -1,4 +1,3 @@
-import { Analytics } from "@vercel/analytics/next";
 import { clsx } from "clsx";
 import type { Metadata, Viewport } from "next";
 import { fonts } from "@/lib/config/fonts";

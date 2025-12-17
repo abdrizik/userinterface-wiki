@@ -1,6 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
-
-export const dynamic = "force-dynamic";
 
 export const size = {
   width: 180,
@@ -9,9 +9,9 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function AppleIcon() {
-  const inter = await fetch(
-    new URL("../public/fonts/inter/bold.ttf", import.meta.url),
-  ).then((res) => res.arrayBuffer());
+  const inter = readFileSync(
+    join(process.cwd(), "public/fonts/inter/bold.ttf"),
+  );
 
   return new ImageResponse(
     <div

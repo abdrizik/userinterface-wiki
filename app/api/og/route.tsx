@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
@@ -16,9 +18,9 @@ export async function GET(request: NextRequest) {
 
   if (!page) notFound();
 
-  const interSemiBold = await fetch(
-    new URL("../../../public/fonts/inter/semi-bold.ttf", import.meta.url),
-  ).then((res) => res.arrayBuffer());
+  const inter = readFileSync(
+    join(process.cwd(), "public/fonts/inter/semi-bold.ttf"),
+  );
 
   return new ImageResponse(
     <div
@@ -78,7 +80,7 @@ export async function GET(request: NextRequest) {
       fonts: [
         {
           name: "Inter",
-          data: interSemiBold,
+          data: inter,
           style: "normal",
           weight: 600,
         },

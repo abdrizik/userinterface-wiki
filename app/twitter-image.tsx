@@ -1,6 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
-
-export const dynamic = "force-dynamic";
 
 export const alt = "ui.wiki - A Living Manual for Better Interfaces.";
 export const size = {
@@ -10,9 +10,9 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-  const interSemiBold = await fetch(
-    new URL("../public/fonts/inter/semi-bold.ttf", import.meta.url),
-  ).then((res) => res.arrayBuffer());
+  const inter = readFileSync(
+    join(process.cwd(), "public/fonts/inter/semi-bold.ttf"),
+  );
 
   return new ImageResponse(
     <div
@@ -71,7 +71,7 @@ export default async function Image() {
       fonts: [
         {
           name: "Inter",
-          data: interSemiBold,
+          data: inter,
           style: "normal",
           weight: 600,
         },
