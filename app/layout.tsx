@@ -93,7 +93,6 @@ export default function RootLayout({
             <Root id="main-content">{children}</Root>
           </Main>
         </Providers>
-        <Analytics />
       </body>
     </html>
   );

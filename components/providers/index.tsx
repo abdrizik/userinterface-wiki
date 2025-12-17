@@ -30,11 +30,8 @@ const _LenisProvider = () => {
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <NuqsAdapter>
-      {/* <LenisProvider /> */}
-
       <SpeedInsights />
       <Analytics />
-
       <ThemeProvider attribute="class" />
       {children}
     </NuqsAdapter>
