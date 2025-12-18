@@ -3,6 +3,7 @@
 import { Button } from "@base-ui-components/react/button";
 import { Menu } from "@base-ui-components/react/menu";
 import { Slider } from "@base-ui-components/react/slider";
+import { Tooltip } from "@base-ui-components/react/tooltip";
 import { Portal } from "@radix-ui/react-portal";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "motion/react";
@@ -10,11 +11,19 @@ import type { ComponentProps } from "react";
 import React from "react";
 import {
   CheckIcon,
+  FastForward15sIcon,
   GearIcon,
   PauseIcon,
   PlayIcon,
   PlaylistIcon,
+  RepeatIcon,
+  Rewind15sIcon,
+  ShareIcon,
+  VolumeHighIcon,
+  VolumeLowIcon,
+  VolumeMuteIcon,
 } from "@/components/icons";
+import type { PlaybackRate } from "./store";
 import { Orb } from "../orb";
 import styles from "./styles.module.css";
 import { useAudioReader } from "./use-audio-reader";
@@ -53,8 +62,19 @@ export const AudioReader = ({
     agentState,
     handleToggle,
     seek,
+    skipForward,
+    skipBackward,
     autoScroll,
     setAutoScroll,
+    playbackRate,
+    setPlaybackRate,
+    volume,
+    setVolume,
+    isMuted,
+    toggleMute,
+    isLooping,
+    setIsLooping,
+    copyTimestampUrl,
     audioUrl,
     colors,
   } = useAudioReader({ slugSegments, title, authorName });
@@ -161,11 +181,22 @@ export const AudioReader = ({
     chapters,
     autoScroll,
     audioUrl,
+    playbackRate,
+    volume,
+    isMuted,
+    isLooping,
     onToggle: handleToggle,
     onSeek: handleSeek,
+    onSkipForward: skipForward,
+    onSkipBackward: skipBackward,
     onChapterClick: scrollToChapter,
     onAutoScrollChange: setAutoScroll,
     onDownload: handleDownload,
+    onPlaybackRateChange: setPlaybackRate,
+    onVolumeChange: setVolume,
+    onMuteToggle: toggleMute,
+    onLoopChange: setIsLooping,
+    onCopyTimestamp: copyTimestampUrl,
   };
 
   return (
@@ -223,13 +254,26 @@ interface ControlsProps {
   chapters: Chapter[];
   autoScroll: boolean;
   audioUrl: string | null;
+  playbackRate: PlaybackRate;
+  volume: number;
+  isMuted: boolean;
+  isLooping: boolean;
   showChapters?: boolean;
   onToggle: () => void;
   onSeek: (value: number | number[]) => void;
+  onSkipForward: () => void;
+  onSkipBackward: () => void;
   onChapterClick: (id: string) => void;
   onAutoScrollChange: (value: boolean) => void;
   onDownload: () => void;
+  onPlaybackRateChange: (rate: PlaybackRate) => void;
+  onVolumeChange: (volume: number) => void;
+  onMuteToggle: () => void;
+  onLoopChange: (looping: boolean) => void;
+  onCopyTimestamp: () => void;
 }
+
+const PLAYBACK_RATES: PlaybackRate[] = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
 const Controls = ({
   isPlaying,
@@ -239,17 +283,39 @@ const Controls = ({
   chapters,
   autoScroll,
   audioUrl,
+  playbackRate,
+  volume,
+  isMuted,
+  isLooping,
   showChapters = true,
   onToggle,
   onSeek,
+  onSkipForward,
+  onSkipBackward,
   onChapterClick,
   onAutoScrollChange,
   onDownload,
+  onPlaybackRateChange,
+  onVolumeChange,
+  onMuteToggle,
+  onLoopChange,
+  onCopyTimestamp,
 }: ControlsProps) => (
   <React.Fragment>
-    <MediaPlayerButton
+    <TooltipButton
+      onClick={onSkipBackward}
+      aria-label="Rewind 15 seconds"
+      label="Rewind"
+      shortcut="J"
+    >
+      <Rewind15sIcon />
+    </TooltipButton>
+
+    <TooltipButton
       onClick={onToggle}
       aria-label={isPlaying ? "Pause" : "Play"}
+      label={isPlaying ? "Pause" : "Play"}
+      shortcut="Space"
     >
       <AnimatePresence mode="wait">
         {isPlaying ? (
@@ -262,11 +328,27 @@ const Controls = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </MediaPlayerButton>
+    </TooltipButton>
+
+    <TooltipButton
+      onClick={onSkipForward}
+      aria-label="Forward 15 seconds"
+      label="Forward"
+      shortcut="L"
+    >
+      <FastForward15sIcon />
+    </TooltipButton>
 
     {showChapters && (
       <ChaptersMenu chapters={chapters} onChapterClick={onChapterClick} />
     )}
+
+    <VolumeControl
+      volume={volume}
+      isMuted={isMuted}
+      onVolumeChange={onVolumeChange}
+      onMuteToggle={onMuteToggle}
+    />
 
     <Slider.Root
       value={progress}
@@ -287,11 +369,19 @@ const Controls = ({
       <Time>{formatTime(duration)}</Time>
     </Slider.Root>
 
+    <PlaybackRateMenu
+      playbackRate={playbackRate}
+      onPlaybackRateChange={onPlaybackRateChange}
+    />
+
     <SettingsMenu
       autoScroll={autoScroll}
       canDownload={!!audioUrl}
+      isLooping={isLooping}
       onAutoScrollChange={onAutoScrollChange}
       onDownload={onDownload}
+      onLoopChange={onLoopChange}
+      onCopyTimestamp={onCopyTimestamp}
     />
   </React.Fragment>
 );
@@ -336,72 +426,308 @@ const ChaptersMenu = ({ chapters, onChapterClick }: ChaptersMenuProps) => (
   </Menu.Root>
 );
 
-interface SettingsMenuProps {
-  autoScroll: boolean;
-  canDownload: boolean;
-  onAutoScrollChange: (value: boolean) => void;
-  onDownload: () => void;
+interface VolumeControlProps {
+  volume: number;
+  isMuted: boolean;
+  onVolumeChange: (volume: number) => void;
+  onMuteToggle: () => void;
 }
 
-const SettingsMenu = ({
-  autoScroll,
-  canDownload,
-  onAutoScrollChange,
-  onDownload,
-}: SettingsMenuProps) => (
+const VolumeControl = ({
+  volume,
+  isMuted,
+  onVolumeChange,
+  onMuteToggle,
+}: VolumeControlProps) => {
+  const VolumeIcon = isMuted
+    ? VolumeMuteIcon
+    : volume > 0.5
+      ? VolumeHighIcon
+      : VolumeLowIcon;
+
+  return (
+    <Menu.Root>
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          render={
+            <Menu.Trigger
+              render={<MediaPlayerButton aria-label="Volume" />}
+            >
+              <VolumeIcon />
+            </Menu.Trigger>
+          }
+        />
+        <Tooltip.Portal>
+          <Tooltip.Positioner sideOffset={8} side="top">
+            <Tooltip.Popup className={styles.tooltip}>
+              <span>Mute</span>
+              <Kbd>M</Kbd>
+            </Tooltip.Popup>
+          </Tooltip.Positioner>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+      <Menu.Portal>
+        <Menu.Positioner
+          className={styles.positioner}
+          sideOffset={8}
+          align="center"
+          side="top"
+        >
+          <Menu.Popup className={styles.volumePopup}>
+            <Slider.Root
+              value={isMuted ? 0 : volume * 100}
+              onValueChange={(value) => {
+                const v = Array.isArray(value) ? value[0] : value;
+                if (v !== undefined) onVolumeChange(v / 100);
+              }}
+              orientation="vertical"
+              aria-label="Volume"
+              className={styles.volumeSlider}
+            >
+              <Slider.Control className={styles.volumeControl}>
+                <Slider.Track className={styles.volumeTrack}>
+                  <Slider.Indicator className={styles.volumeIndicator} />
+                  <Slider.Thumb className={styles.volumeThumb} />
+                </Slider.Track>
+              </Slider.Control>
+            </Slider.Root>
+            <MediaPlayerButton
+              onClick={onMuteToggle}
+              aria-label={isMuted ? "Unmute" : "Mute"}
+              style={{ marginTop: 4 }}
+            >
+              <VolumeIcon />
+            </MediaPlayerButton>
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
+  );
+};
+
+interface PlaybackRateMenuProps {
+  playbackRate: PlaybackRate;
+  onPlaybackRateChange: (rate: PlaybackRate) => void;
+}
+
+const PlaybackRateMenu = ({
+  playbackRate,
+  onPlaybackRateChange,
+}: PlaybackRateMenuProps) => (
   <Menu.Root>
-    <Menu.Trigger render={<MediaPlayerButton aria-label="Settings" />}>
-      <GearIcon />
+    <Menu.Trigger
+      render={
+        <MediaPlayerButton
+          aria-label="Playback speed"
+          className={styles.speedButton}
+        />
+      }
+    >
+      <span className={styles.speedLabel}>{playbackRate}×</span>
     </Menu.Trigger>
     <Menu.Portal>
       <Menu.Positioner
         className={styles.positioner}
-        sideOffset={16}
-        align="end"
+        sideOffset={8}
+        align="center"
         side="top"
       >
         <Menu.Popup className={styles.popup}>
-          <Menu.CheckboxItem
-            checked={autoScroll}
-            onCheckedChange={onAutoScrollChange}
-            className={styles.item}
-          >
-            Automatic Scrolling
-            <Menu.CheckboxItemIndicator
-              className={styles.check}
-              keepMounted
-              render={
-                <AnimatePresence initial={false}>
-                  {autoScroll && (
-                    <motion.div
-                      key="check"
-                      initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
-                      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
-                      transition={{ duration: 0.18 }}
-                    >
-                      <CheckIcon size={16} />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              }
-            />
-          </Menu.CheckboxItem>
-          <Menu.Item
-            className={styles.item}
-            onClick={onDownload}
-            disabled={!canDownload}
-          >
-            Download Audio
-          </Menu.Item>
+          <Menu.Group className={styles.group}>
+            <Menu.GroupLabel className={styles.label}>Speed</Menu.GroupLabel>
+            <Menu.RadioGroup value={playbackRate.toString()}>
+              {PLAYBACK_RATES.map((rate) => (
+                <Menu.RadioItem
+                  key={rate}
+                  value={rate.toString()}
+                  closeOnClick={false}
+                  onClick={() => onPlaybackRateChange(rate)}
+                  className={styles.item}
+                >
+                  {rate}×
+                  <Menu.RadioItemIndicator
+                    className={styles.check}
+                    keepMounted
+                    render={
+                      <AnimatePresence initial={false}>
+                        {playbackRate === rate && (
+                          <motion.div
+                            key="check"
+                            initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                            exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                            transition={{ duration: 0.18 }}
+                          >
+                            <CheckIcon size={16} />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    }
+                  />
+                </Menu.RadioItem>
+              ))}
+            </Menu.RadioGroup>
+          </Menu.Group>
         </Menu.Popup>
       </Menu.Positioner>
     </Menu.Portal>
   </Menu.Root>
 );
 
+interface SettingsMenuProps {
+  autoScroll: boolean;
+  canDownload: boolean;
+  isLooping: boolean;
+  onAutoScrollChange: (value: boolean) => void;
+  onDownload: () => void;
+  onLoopChange: (looping: boolean) => void;
+  onCopyTimestamp: () => void;
+}
+
+const SettingsMenu = ({
+  autoScroll,
+  canDownload,
+  isLooping,
+  onAutoScrollChange,
+  onDownload,
+  onLoopChange,
+  onCopyTimestamp,
+}: SettingsMenuProps) => {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopyTimestamp = React.useCallback(() => {
+    onCopyTimestamp();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [onCopyTimestamp]);
+
+  return (
+    <Menu.Root>
+      <Menu.Trigger render={<MediaPlayerButton aria-label="Settings" />}>
+        <GearIcon />
+      </Menu.Trigger>
+      <Menu.Portal>
+        <Menu.Positioner
+          className={styles.positioner}
+          sideOffset={16}
+          align="end"
+          side="top"
+        >
+          <Menu.Popup className={styles.popup}>
+            <Menu.CheckboxItem
+              checked={autoScroll}
+              onCheckedChange={onAutoScrollChange}
+              className={styles.item}
+            >
+              Auto-scroll
+              <Menu.CheckboxItemIndicator
+                className={styles.check}
+                keepMounted
+                render={
+                  <AnimatePresence initial={false}>
+                    {autoScroll && (
+                      <motion.div
+                        key="check"
+                        initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                        exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                        transition={{ duration: 0.18 }}
+                      >
+                        <CheckIcon size={16} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                }
+              />
+            </Menu.CheckboxItem>
+
+            <Menu.CheckboxItem
+              checked={isLooping}
+              onCheckedChange={onLoopChange}
+              className={styles.item}
+            >
+              <RepeatIcon size={16} />
+              Loop
+              <Menu.CheckboxItemIndicator
+                className={styles.check}
+                keepMounted
+                render={
+                  <AnimatePresence initial={false}>
+                    {isLooping && (
+                      <motion.div
+                        key="check"
+                        initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                        exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                        transition={{ duration: 0.18 }}
+                      >
+                        <CheckIcon size={16} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                }
+              />
+            </Menu.CheckboxItem>
+
+
+
+            <Menu.Separator className={styles.separator} />
+
+            <Menu.Item
+              className={styles.item}
+              onClick={handleCopyTimestamp}
+            >
+              <ShareIcon size={16} />
+              {copied ? "Copied!" : "Share at Timestamp"}
+            </Menu.Item>
+
+            <Menu.Item
+              className={styles.item}
+              onClick={onDownload}
+              disabled={!canDownload}
+            >
+              Download Audio
+            </Menu.Item>
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
+  );
+};
+
 const MediaPlayerButton = (props: ComponentProps<typeof Button>) => (
   <Button className={styles.button} {...props} />
+);
+
+interface TooltipButtonProps extends ComponentProps<"button"> {
+  label: string;
+  shortcut?: string;
+  children?: React.ReactNode;
+}
+
+const TooltipButton = ({
+  label,
+  shortcut,
+  children,
+  ...props
+}: TooltipButtonProps) => (
+  <Tooltip.Root>
+    <Tooltip.Trigger render={<MediaPlayerButton {...props} />}>
+      {children}
+    </Tooltip.Trigger>
+    <Tooltip.Portal>
+      <Tooltip.Positioner sideOffset={8} side="top">
+        <Tooltip.Popup className={styles.tooltip}>
+          <span>{label}</span>
+          {shortcut && <Kbd>{shortcut}</Kbd>}
+        </Tooltip.Popup>
+      </Tooltip.Positioner>
+    </Tooltip.Portal>
+  </Tooltip.Root>
+);
+
+const Kbd = (props: ComponentProps<"kbd">) => (
+  <kbd className={styles.kbd} {...props} />
 );
 
 const Time = (props: ComponentProps<"span">) => (

@@ -3,6 +3,7 @@ import { useShallow } from "zustand/react/shallow";
 import { getGradientColors } from "@/lib/utils/colors";
 import {
   type AgentState,
+  type PlaybackRate,
   useAudioReaderStore,
   type WordTimestamp,
 } from "./store";
@@ -28,10 +29,21 @@ interface AudioReaderHookState {
   agentState: AgentState;
   autoScroll: boolean;
   colors: [string, string];
+  playbackRate: PlaybackRate;
+  volume: number;
+  isMuted: boolean;
+  isLooping: boolean;
   setAgentState: (state: AgentState) => void;
   handleToggle: () => Promise<void> | void;
   seek: (time: number) => void;
+  skipForward: () => void;
+  skipBackward: () => void;
   setAutoScroll: (enabled: boolean) => void;
+  setPlaybackRate: (rate: PlaybackRate) => void;
+  setVolume: (volume: number) => void;
+  toggleMute: () => void;
+  setIsLooping: (looping: boolean) => void;
+  copyTimestampUrl: () => void;
 }
 
 interface AudioReaderOptions {
@@ -72,6 +84,10 @@ export function useAudioReader({
     duration,
     agentState,
     autoScroll,
+    playbackRate,
+    volume,
+    isMuted,
+    isLooping,
     setAudioData,
     setStatus,
     setError,
@@ -80,6 +96,10 @@ export function useAudioReader({
     setDuration,
     setAgentState,
     setAutoScroll,
+    setPlaybackRate,
+    setVolume,
+    toggleMute,
+    setIsLooping,
     reset,
   } = useAudioReaderStore(
     useShallow((state) => ({
@@ -92,6 +112,10 @@ export function useAudioReader({
       duration: state.duration,
       agentState: state.agentState,
       autoScroll: state.autoScroll,
+      playbackRate: state.playbackRate,
+      volume: state.volume,
+      isMuted: state.isMuted,
+      isLooping: state.isLooping,
       setAudioData: state.setAudioData,
       setStatus: state.setStatus,
       setError: state.setError,
@@ -100,6 +124,10 @@ export function useAudioReader({
       setDuration: state.setDuration,
       setAgentState: state.setAgentState,
       setAutoScroll: state.setAutoScroll,
+      setPlaybackRate: state.setPlaybackRate,
+      setVolume: state.setVolume,
+      toggleMute: state.toggleMute,
+      setIsLooping: state.setIsLooping,
       reset: state.reset,
     })),
   );
@@ -407,18 +435,22 @@ export function useAudioReader({
           break;
         case "KeyJ":
           e.preventDefault();
-          seek(audio.currentTime - 10);
+          seek(audio.currentTime - 15);
           break;
         case "KeyL":
           e.preventDefault();
-          seek(audio.currentTime + 10);
+          seek(audio.currentTime + 15);
+          break;
+        case "KeyM":
+          e.preventDefault();
+          toggleMute();
           break;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleToggle, seek]);
+  }, [handleToggle, seek, toggleMute]);
 
   const artworkUrl = useMemo(() => {
     if (typeof document === "undefined") return null;
@@ -577,6 +609,46 @@ export function useAudioReader({
     clearActiveHighlight();
   }, [clearActiveHighlight, isPlaying]);
 
+  // Sync playback rate with audio element
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.playbackRate = playbackRate;
+    }
+  }, [playbackRate]);
+
+  // Sync volume and mute with audio element
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted]);
+
+  // Sync looping with audio element
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.loop = isLooping;
+    }
+  }, [isLooping]);
+
+  const skipForward = useCallback(() => {
+    const audio = audioRef.current;
+    if (audio) seek(audio.currentTime + 15);
+  }, [seek]);
+
+  const skipBackward = useCallback(() => {
+    const audio = audioRef.current;
+    if (audio) seek(audio.currentTime - 15);
+  }, [seek]);
+
+  const copyTimestampUrl = useCallback(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("t", Math.floor(currentTime).toString());
+    navigator.clipboard.writeText(url.toString());
+  }, [currentTime]);
+
   return {
     status,
     errorMessage,
@@ -588,8 +660,19 @@ export function useAudioReader({
     setAgentState,
     handleToggle,
     seek,
+    skipForward,
+    skipBackward,
     autoScroll,
     setAutoScroll,
+    playbackRate,
+    setPlaybackRate,
+    volume,
+    setVolume,
+    isMuted,
+    toggleMute,
+    isLooping,
+    setIsLooping,
+    copyTimestampUrl,
     colors,
   };
 }

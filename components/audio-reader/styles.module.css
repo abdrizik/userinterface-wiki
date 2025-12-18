@@ -214,6 +214,9 @@
 
 .label {
   position: relative;
+  display: flex;
+  gap: 6px;
+  align-items: center;
   height: 30px;
   padding-block: 8px;
   padding-inline: 12px;
@@ -267,8 +270,151 @@
   cursor: not-allowed;
 }
 
+.check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  color: var(--gray-11);
+}
+
 .separator {
   height: 1px;
   margin: 4px 0;
   background: var(--gray-a4);
+}
+
+.tooltip {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 10px;
+  font-family: var(--font-family-display);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-12);
+  background: var(--gray-1);
+  border: 1px solid var(--gray-a4);
+  border-radius: 6px;
+  box-shadow:
+    lch(0 0 0 / 0.02) 0px 6px 18px,
+    lch(0 0 0 / 0.04) 0px 3px 9px,
+    lch(0 0 0 / 0.04) 0px 1px 1px;
+  transform-origin: var(--transform-origin);
+  transition:
+    transform 150ms,
+    opacity 150ms;
+}
+
+.tooltip[data-starting-style],
+.tooltip[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-family: var(--font-family-display);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-11);
+  background: var(--gray-3);
+  border: 1px solid var(--gray-a4);
+  border-radius: 4px;
+}
+
+.volumePopup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  background: var(--gray-1);
+  border: 1px solid var(--gray-a4);
+  border-radius: 8px;
+  box-shadow:
+    lch(0 0 0 / 0.02) 0px 6px 18px,
+    lch(0 0 0 / 0.04) 0px 3px 9px,
+    lch(0 0 0 / 0.04) 0px 1px 1px;
+  transform-origin: var(--transform-origin);
+  transition:
+    transform 150ms,
+    opacity 150ms;
+}
+
+.volumePopup[data-starting-style],
+.volumePopup[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.volumePopup .button {
+  color: var(--gray-11);
+}
+
+.volumePopup .button:hover::before,
+.volumePopup .button[data-popup-open]::before,
+.volumePopup .button[data-pressed]::before {
+  background: var(--gray-a4);
+}
+
+.volumeSlider {
+  display: flex;
+  width: 32px;
+  height: 100px;
+}
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+}
+
+.volumeTrack {
+  position: relative;
+  width: 4px;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+  background: var(--gray-a4);
+  border-radius: 0.25rem;
+}
+
+.volumeIndicator {
+  user-select: none;
+  background: var(--gray-9);
+}
+
+.volumeThumb {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--gray-12);
+  border-radius: 50%;
+  transform: translateX(-4px);
+}
+
+.volumeThumb:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--gray-a6);
+}
+
+.speedButton {
+  min-width: 40px;
+  padding: 0 8px;
+}
+
+.speedLabel {
+  font-family: var(--font-family-display);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
 }
