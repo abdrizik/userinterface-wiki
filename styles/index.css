@@ -1,6 +1,7 @@
 @import url(./theme/index.css);
 
 :root {
+  --header-height: 256px;
   --prose-block-spacing-small: 8px;
   --prose-block-spacing: 16px;
   --prose-block-spacing-large: 24px;
@@ -25,20 +26,14 @@
 }
 
 html {
-  scrollbar-width: none;
-
   ::selection {
     color: var(--gray-1);
     background-color: var(--gray-12);
   }
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 body {
-  padding-top: 256px;
+  padding-top: var(--header-height);
   font-family: var(--font-family-display);
   color: var(--gray-12);
   text-wrap: pretty;
