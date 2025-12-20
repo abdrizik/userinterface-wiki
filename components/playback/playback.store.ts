@@ -13,7 +13,7 @@ export type ReaderStatus = "loading" | "ready" | "error";
 
 export type PlaybackRate = 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2;
 
-interface AudioReaderState {
+interface PlaybackState {
   audioUrl: string | null;
   timestamps: WordTimestamp[];
   status: ReaderStatus;
@@ -29,7 +29,7 @@ interface AudioReaderState {
   isLooping: boolean;
 }
 
-interface AudioReaderActions {
+interface PlaybackActions {
   setAudioData: (payload: {
     audioUrl: string | null;
     timestamps: WordTimestamp[];
@@ -49,9 +49,9 @@ interface AudioReaderActions {
   reset: () => void;
 }
 
-type AudioReaderStore = AudioReaderState & AudioReaderActions;
+type PlaybackStore = PlaybackState & PlaybackActions;
 
-const createInitialState = (): AudioReaderState => ({
+const createInitialState = (): PlaybackState => ({
   audioUrl: null,
   timestamps: [],
   status: "loading",
@@ -67,7 +67,7 @@ const createInitialState = (): AudioReaderState => ({
   isLooping: false,
 });
 
-export const useAudioReaderStore = create<AudioReaderStore>((set) => ({
+export const usePlaybackStore = create<PlaybackStore>((set) => ({
   ...createInitialState(),
   setAudioData: ({ audioUrl, timestamps }) =>
     set(() => ({ audioUrl, timestamps })),

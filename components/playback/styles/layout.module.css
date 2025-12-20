@@ -1,0 +1,81 @@
+.reader {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  align-self: stretch;
+  justify-content: flex-end;
+  aspect-ratio: 5 / 3;
+  padding: 16px;
+  margin-top: var(--prose-block-spacing-large);
+  margin-bottom: calc(var(--prose-block-spacing-large) * 2);
+  overflow: hidden;
+  background: var(--gray-2, #222);
+  border-radius: 12px;
+}
+
+.orb {
+  position: absolute;
+  inset: 0;
+}
+
+.controls {
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  align-self: stretch;
+  justify-content: center;
+  font-family: var(--font-family-display);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  line-height: 100%;
+  color: var(--white-a12);
+  letter-spacing: var(--font-inter-letter-spacing-14px);
+}
+
+.floating {
+  position: fixed;
+  bottom: 0px;
+  left: 50%;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  max-width: 640px;
+  height: 256px;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.floating .controls {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-shrink: 0;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 48px;
+  padding: 8px;
+  pointer-events: auto;
+  background: var(--gray-a6);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px 0px rgba(0, 0, 0, 0.1);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(24px);
+}
+
+.background {
+  position: fixed;
+  bottom: 0;
+  z-index: -1;
+  width: 100%;
+  height: 256px;
+  pointer-events: none;
+  background: var(--gray-a1);
+  mask-image: linear-gradient(to top, black 0%, transparent 100%);
+}

@@ -1,5 +1,5 @@
 import { normalizeWord } from "@/lib/utils/strings";
-import type { WordTimestamp } from "./store";
+import type { WordTimestamp } from "./playback.store";
 
 export interface SpanMeta {
   element: HTMLElement;

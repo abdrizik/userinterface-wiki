@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { AudioReader } from "@/components/audio-reader";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { Article } from "@/components/layout";
 import { PageTransition } from "@/components/page-transition";
+import { Playback } from "@/components/playback";
 import { formatPageData, source } from "@/lib/features/content";
 import { getMDXComponents } from "@/mdx-components";
 
@@ -63,7 +63,7 @@ export default async function Page(props: {
     <PageTransition>
       <Header page={page} />
       <Article>
-        <AudioReader
+        <Playback
           slugSegments={params.slug}
           title={page.data.title}
           authorName={author.name}

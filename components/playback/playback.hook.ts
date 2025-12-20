@@ -4,22 +4,22 @@ import { getGradientColors } from "@/lib/utils/colors";
 import {
   type AgentState,
   type PlaybackRate,
-  useAudioReaderStore,
+  usePlaybackStore,
   type WordTimestamp,
-} from "./store";
+} from "./playback.store";
 import {
   alignTimeline,
   collectSpans,
   locateWordIndex,
   type SpanMeta,
-} from "./utils";
+} from "./playback.utils";
 
 interface ReaderResponse {
   audioUrl: string;
   timestamps: WordTimestamp[];
 }
 
-interface AudioReaderHookState {
+interface PlaybackHookState {
   status: string;
   errorMessage: string | null;
   isPlaying: boolean;
@@ -46,17 +46,17 @@ interface AudioReaderHookState {
   copyTimestampUrl: () => void;
 }
 
-interface AudioReaderOptions {
+interface PlaybackOptions {
   slugSegments: string[];
   title: string;
   authorName: string;
 }
 
-export function useAudioReader({
+export function usePlayback({
   slugSegments,
   title,
   authorName,
-}: AudioReaderOptions): AudioReaderHookState {
+}: PlaybackOptions): PlaybackHookState {
   const slugKey = useMemo(() => slugSegments.join("/"), [slugSegments]);
 
   const colors = useMemo(
@@ -101,7 +101,7 @@ export function useAudioReader({
     toggleMute,
     setIsLooping,
     reset,
-  } = useAudioReaderStore(
+  } = usePlaybackStore(
     useShallow((state) => ({
       audioUrl: state.audioUrl,
       timestamps: state.timestamps,
@@ -200,7 +200,7 @@ export function useAudioReader({
         setStatus("ready");
       } catch (error) {
         if (controller.signal.aborted) return;
-        console.error("[audio-reader]", error);
+        console.error("[playback]", error);
         setAudioData({ audioUrl: null, timestamps: [] });
         setIsPlaying(false);
         setError("Audio unavailable right now");
@@ -383,7 +383,7 @@ export function useAudioReader({
       setAgentState("talking");
       startTicker();
     } catch (error) {
-      console.error("[audio-reader]", error);
+      console.error("[playback]", error);
       setError("Playback failed");
       setStatus("error");
     }
