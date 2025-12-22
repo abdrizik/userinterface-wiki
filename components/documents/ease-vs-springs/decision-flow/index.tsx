@@ -62,7 +62,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M234.75 381.75v-17.5"
@@ -89,7 +89,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M460 448.25v17.5"
@@ -116,7 +116,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M355 448.25v17.5"
@@ -135,7 +135,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M234.75 324.25v17.5M235.25 280.25v17.5M355 341.75V335c0-13.255-10.745-24-24-24h-52"
@@ -154,7 +154,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M460 425.75V419c0-13.255-10.745-24-24-24h-47.75M355 381.75v-17.5M355 408.25v17.5"
@@ -174,7 +174,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M108 280.25v17.5"
@@ -201,7 +201,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M246.25 143h52"
@@ -220,7 +220,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M235 257.75V251c0-13.255-10.745-24-24-24h-49.75M108 240.25v17.5M108 196.25v17.5"
@@ -239,7 +239,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M223.75 143h-55M108 129.75v-17.5M108 156.25v17.5"
@@ -266,7 +266,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M304.25 59h-58"
@@ -286,7 +286,7 @@ export function DecisionFlow() {
       />
       <path
         stroke="var(--gray-a4)"
-        stroke-linecap="round"
+        strokeLinecap="round"
         stroke-linejoin="bevel"
         stroke-width="1.5"
         d="M223.75 59h-58.5M108 72.25v17.5"
