@@ -1,8 +1,8 @@
 "use client";
 
 import { Select } from "@base-ui/react/select";
+import { Checkmark1Icon, ChevronDownSmallIcon } from "@/icons";
 import styles from "./styles.module.css";
-import { Checkmark1Icon,   ChevronDownSmallIcon } from "@/icons";
 
 const items = [
   { label: "Apple", value: "apple" },

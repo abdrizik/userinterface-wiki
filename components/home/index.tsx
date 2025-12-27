@@ -2,10 +2,10 @@
 
 import { Field } from "@base-ui/react/field";
 import Fuse from "fuse.js";
-import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageTransition } from "@/components/page-transition";
 import { PageCard } from "@/components/post";
+import { MagnifyingGlassIcon } from "@/icons";
 import type { FormattedPage } from "@/lib/features/content";
 import styles from "./styles.module.css";
 
@@ -37,7 +37,7 @@ export function HomeLayout({ pages }: { pages: FormattedPage[] }) {
 
       <div className={styles.container}>
         <Field.Root className={styles.search}>
-          <Search strokeWidth={2} className={styles.icon} size={18} />
+          <MagnifyingGlassIcon className={styles.icon} size={18} />
           <Field.Control
             type="search"
             className={styles.input}

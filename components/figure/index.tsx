@@ -1,11 +1,10 @@
 "use client";
 
- 
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
+import { ArrowInboxIcon, Checkmark1Icon, ClipboardIcon } from "@/icons";
 import styles from "./styles.module.css";
 import { getRenderablePngBlob } from "./utils";
-import { ArrowInboxIcon, Checkmark1Icon, ClipboardIcon } from "@/icons";
 
 type FigureProps = React.HTMLAttributes<HTMLElement> & {
   children?: React.ReactNode;

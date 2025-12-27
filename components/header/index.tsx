@@ -1,3 +1,4 @@
+import { DotGrid1X3HorizontalIcon, PlayIcon } from "@/icons";
 import { formatPageData, type Page } from "@/lib/features/content";
 import styles from "./styles.module.css";
 
@@ -16,6 +17,14 @@ export function Header({ page }: HeaderProps) {
         {date.published}&nbsp;by&nbsp;
         {author.name}
         {hasCoauthors && <span>&nbsp;and {coauthors.length} others</span>}
+      </div>
+      <div className={styles.actions}>
+        <button type="button" className={styles.action}>
+          <PlayIcon size={16} />
+        </button>
+        <button type="button" className={styles.action}>
+          <DotGrid1X3HorizontalIcon size={16} />
+        </button>
       </div>
     </div>
   );
