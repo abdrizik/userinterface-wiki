@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Audio } from "@/components/audio";
-import { Header } from "@/components/header";
+import { Document, toSerializablePageData } from "@/components/document";
 import { PageTransition } from "@/components/page-transition";
 import { formatPageData, source } from "@/lib/features/content";
 import { getMDXComponents } from "@/mdx-components";
@@ -56,17 +55,27 @@ export default async function Page(props: {
   if (!page) notFound();
 
   const MDX = page.data.body;
-  const { author } = formatPageData(page.data);
+
+  const { author, coauthors } = formatPageData(page.data);
+
+  const pageData = toSerializablePageData(page);
 
   return (
     <PageTransition>
       <div className={styles.container}>
         <div className={styles.spacer} />
-        <article className={styles.article}>
-          <Header page={page} />
-          <MDX components={getMDXComponents()} />
-        </article>
-        <Audio />
+        <Document.Root
+          data={pageData}
+          author={author}
+          coauthors={coauthors}
+          className={styles.article}
+        >
+          <Document.Header />
+          <Document.Content>
+            <MDX components={getMDXComponents()} />
+          </Document.Content>
+          <Document.MediaPlayer />
+        </Document.Root>
       </div>
     </PageTransition>
   );

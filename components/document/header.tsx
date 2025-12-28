@@ -1,40 +1,41 @@
 "use client";
 
-import { useAudioControls } from "@/components/audio";
 import { DotGrid1X3HorizontalIcon, PauseIcon, PlayIcon } from "@/icons";
+import { useDocumentContext } from "./context";
 import styles from "./styles.module.css";
 
-interface Author {
-  id: string;
-  name: string;
-}
-
 interface HeaderProps {
-  title: string;
-  author: Author;
-  coauthors?: Author[];
-  date: {
-    published: string;
-  };
+  className?: string;
 }
 
-export function Header({ title, author, coauthors, date }: HeaderProps) {
-  const { isPlaying, isVisible, status, setIsVisible } = useAudioControls();
+export function Header({ className }: HeaderProps) {
+  const { page, status, isPlaying, isPlayerVisible, togglePlayer, toggle } =
+    useDocumentContext("Header");
 
   const isReady = status === "ready";
 
   const handlePlayClick = () => {
     if (!isReady) return;
-    setIsVisible(!isVisible);
+
+    if (isPlaying) {
+      toggle();
+    } else {
+      if (!isPlayerVisible) {
+        togglePlayer();
+      }
+      toggle();
+    }
   };
 
-  const hasCoauthors = coauthors && coauthors.length > 0;
+  const coauthors = page.data.coauthors ?? [];
+  const hasCoauthors = coauthors.length > 0;
+
   return (
-    <div className={styles.header}>
-      <h1 className={styles.title}>{title}</h1>
+    <div className={className ?? styles.header}>
+      <h1 className={styles.title}>{page.data.title}</h1>
       <div className={styles.metadata}>
-        {date.published}&nbsp;by&nbsp;
-        {author.name}
+        {page.data.date.published}&nbsp;by&nbsp;
+        {page.data.author}
         {hasCoauthors && <span>&nbsp;and {coauthors.length} others</span>}
       </div>
       <div className={styles.actions}>
@@ -43,9 +44,11 @@ export function Header({ title, author, coauthors, date }: HeaderProps) {
           className={styles.action}
           onClick={handlePlayClick}
           disabled={!isReady}
-          aria-label={isPlaying && isVisible ? "Hide player" : "Show player"}
+          aria-label={
+            isPlaying && isPlayerVisible ? "Hide player" : "Show player"
+          }
         >
-          {isPlaying && isVisible ? (
+          {isPlaying && isPlayerVisible ? (
             <PauseIcon size={16} />
           ) : (
             <PlayIcon size={16} />
@@ -58,5 +61,3 @@ export function Header({ title, author, coauthors, date }: HeaderProps) {
     </div>
   );
 }
-
-export default Header;
