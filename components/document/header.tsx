@@ -3,14 +3,23 @@
 import { DotGrid1X3HorizontalIcon, PauseIcon, PlayIcon } from "@/icons";
 import { useDocumentContext } from "./context";
 import styles from "./styles.module.css";
+import { formatDate } from "./utils";
 
 interface HeaderProps {
   className?: string;
 }
 
 export function Header({ className }: HeaderProps) {
-  const { page, status, isPlaying, isPlayerVisible, togglePlayer, toggle } =
-    useDocumentContext("Header");
+  const {
+    page,
+    author,
+    coauthors,
+    status,
+    isPlaying,
+    isPlayerVisible,
+    togglePlayer,
+    toggle,
+  } = useDocumentContext("Header");
 
   const isReady = status === "ready";
 
@@ -27,15 +36,14 @@ export function Header({ className }: HeaderProps) {
     }
   };
 
-  const coauthors = page.data.coauthors ?? [];
   const hasCoauthors = coauthors.length > 0;
 
   return (
     <div className={className ?? styles.header}>
       <h1 className={styles.title}>{page.data.title}</h1>
       <div className={styles.metadata}>
-        {page.data.date.published}&nbsp;by&nbsp;
-        {page.data.author}
+        {formatDate(page.data.date.published)}&nbsp;by&nbsp;
+        {author.name}
         {hasCoauthors && <span>&nbsp;and {coauthors.length} others</span>}
       </div>
       <div className={styles.actions}>

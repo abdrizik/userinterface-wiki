@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useEventListener } from "usehooks-ts";
 import styles from "./styles.module.css";
 
 interface ReadingProgressProps {
@@ -10,20 +11,20 @@ interface ReadingProgressProps {
 export function ReadingProgress({ className }: ReadingProgressProps) {
   const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const scrolled = window.scrollY;
-      const percentage = scrollHeight > 0 ? (scrolled / scrollHeight) * 100 : 0;
-      setProgress(Math.min(100, Math.max(0, percentage)));
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
+  const handleScroll = useCallback(() => {
+    const scrollHeight =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const scrolled = window.scrollY;
+    const percentage = scrollHeight > 0 ? (scrolled / scrollHeight) * 100 : 0;
+    setProgress(Math.min(100, Math.max(0, percentage)));
   }, []);
+
+  useEventListener("scroll", handleScroll, undefined, { passive: true });
+
+  // Initial calculation on mount
+  useEffect(() => {
+    handleScroll();
+  }, [handleScroll]);
 
   return (
     <div

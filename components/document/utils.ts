@@ -2,6 +2,18 @@ import { normalizeWord } from "@/lib/utils/strings";
 import { BASE_WINDOW, MAX_WINDOW } from "./constants";
 import type { WordTimestamp } from "./types";
 
+/**
+ * Formats a date string to "Jan 23, 2026" format.
+ */
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export function formatTime(value: number): string {
   if (!Number.isFinite(value) || value <= 0) return "0:00";
   const minutes = Math.floor(value / 60);

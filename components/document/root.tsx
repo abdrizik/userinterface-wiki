@@ -1,6 +1,13 @@
 "use client";
 
+import { useMotionValueEvent, useScroll } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import {
+  useDebounceCallback,
+  useEventListener,
+  useIsClient,
+  useLocalStorage,
+} from "usehooks-ts";
 import { useShallow } from "zustand/react/shallow";
 import type { Author } from "@/lib/types";
 import { getGradientColors } from "@/lib/utils";
@@ -48,7 +55,6 @@ export function Root({
   const activeBlockRef = useRef<HTMLElement | null>(null);
   const lastWordIndexRef = useRef(-1);
   const isUserScrollingRef = useRef(false);
-  const scrollTimerRef = useRef<number | null>(null);
 
   const {
     audioUrl,
@@ -109,6 +115,59 @@ export function Root({
       reset: state.reset,
     })),
   );
+
+  // Persisted audio preferences
+  const isClient = useIsClient();
+  const [storedVolume, setStoredVolume] = useLocalStorage("audio-volume", 1);
+  const [storedMuted, setStoredMuted] = useLocalStorage("audio-muted", false);
+  const [storedAutoScroll, setStoredAutoScroll] = useLocalStorage(
+    "audio-autoscroll",
+    true,
+  );
+  const [storedPlaybackRate, setStoredPlaybackRate] = useLocalStorage<
+    typeof playbackRate
+  >("audio-playback-rate", 1);
+  const [storedLooping, setStoredLooping] = useLocalStorage(
+    "audio-looping",
+    false,
+  );
+
+  // Sync store from localStorage on mount (client-side only)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Only run once on mount to avoid infinite loops with stored values
+  useEffect(() => {
+    if (!isClient) return;
+    setVolume(storedVolume);
+    if (storedMuted) toggleMute();
+    setAutoScroll(storedAutoScroll);
+    setPlaybackRate(storedPlaybackRate);
+    setIsLooping(storedLooping);
+  }, [isClient]);
+
+  // Persist preferences to localStorage when they change
+  useEffect(() => {
+    if (!isClient) return;
+    setStoredVolume(volume);
+  }, [isClient, volume, setStoredVolume]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    setStoredMuted(isMuted);
+  }, [isClient, isMuted, setStoredMuted]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    setStoredAutoScroll(autoScroll);
+  }, [isClient, autoScroll, setStoredAutoScroll]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    setStoredPlaybackRate(playbackRate);
+  }, [isClient, playbackRate, setStoredPlaybackRate]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    setStoredLooping(isLooping);
+  }, [isClient, isLooping, setStoredLooping]);
 
   // Reset state on mount
   useEffect(() => {
@@ -238,51 +297,39 @@ export function Root({
   }, [timestamps]);
 
   // User scroll detection
-  useEffect(() => {
-    const markScrolling = () => {
-      isUserScrollingRef.current = true;
-      if (typeof scrollTimerRef.current === "number") {
-        window.clearTimeout(scrollTimerRef.current);
-      }
-      scrollTimerRef.current = window.setTimeout(() => {
-        isUserScrollingRef.current = false;
-      }, 1200);
-    };
+  const resetUserScrolling = useDebounceCallback(() => {
+    isUserScrollingRef.current = false;
+  }, 1200);
 
-    window.addEventListener("wheel", markScrolling, { passive: true });
-    window.addEventListener("touchmove", markScrolling, { passive: true });
+  const markScrolling = useCallback(() => {
+    isUserScrollingRef.current = true;
+    resetUserScrolling();
+  }, [resetUserScrolling]);
 
-    return () => {
-      window.removeEventListener("wheel", markScrolling);
-      window.removeEventListener("touchmove", markScrolling);
-      if (typeof scrollTimerRef.current === "number") {
-        window.clearTimeout(scrollTimerRef.current);
-      }
-    };
-  }, []);
+  useEventListener("wheel", markScrolling, undefined, { passive: true });
+  useEventListener("touchmove", markScrolling, undefined, { passive: true });
 
   // Visibility change sync
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState !== "visible") return;
+  const handleVisibilityChange = useCallback(() => {
+    if (document.visibilityState !== "visible") return;
 
-      const audio = audioRef.current;
-      if (!audio) return;
+    const audio = audioRef.current;
+    if (!audio) return;
 
-      const actualTime = audio.currentTime;
-      setCurrentTime(actualTime);
-      lastWordIndexRef.current = -1;
+    const actualTime = audio.currentTime;
+    setCurrentTime(actualTime);
+    lastWordIndexRef.current = -1;
 
-      if (!audio.paused && isPlaying) {
-        startTicker();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
+    if (!audio.paused && isPlaying) {
+      startTicker();
+    }
   }, [isPlaying, setCurrentTime, startTicker]);
+
+  const documentRef = useRef<Document | null>(
+    isClient ? document : null,
+  ) as React.RefObject<Document>;
+
+  useEventListener("visibilitychange", handleVisibilityChange, documentRef);
 
   // Cleanup RAF on unmount
   useEffect(() => {
@@ -435,8 +482,8 @@ export function Root({
   }, [audioUrl, page.slugs]);
 
   // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
@@ -473,15 +520,15 @@ export function Root({
           toggleMute();
           break;
       }
-    };
+    },
+    [toggle, seek, toggleMute],
+  );
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggle, seek, toggleMute]);
+  useEventListener("keydown", handleKeyDown);
 
   // Media Session API artwork
   const artworkUrl = useMemo(() => {
-    if (typeof document === "undefined") return null;
+    if (!isClient) return null;
 
     const size = 512;
     const canvas = document.createElement("canvas");
@@ -507,7 +554,7 @@ export function Root({
     ctx.fillRect(0, 0, size, size);
 
     return canvas.toDataURL("image/png");
-  }, [colors]);
+  }, [colors, isClient]);
 
   // Media Session API
   useEffect(() => {
@@ -674,6 +721,7 @@ export function Root({
   // Scroll direction detection for auto-hiding player
   const lastScrollYRef = useRef(0);
   const hasBeenShownRef = useRef(false);
+  const { scrollY } = useScroll();
 
   useEffect(() => {
     if (isPlayerVisible) {
@@ -681,30 +729,24 @@ export function Root({
     }
   }, [isPlayerVisible]);
 
-  useEffect(() => {
+  useMotionValueEvent(scrollY, "change", (current) => {
     if (!hasBeenShownRef.current) return;
 
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const delta = currentScrollY - lastScrollYRef.current;
+    const delta = current - lastScrollYRef.current;
 
-      if (Math.abs(delta) < 10) {
-        lastScrollYRef.current = currentScrollY;
-        return;
-      }
+    if (Math.abs(delta) < 10) {
+      lastScrollYRef.current = current;
+      return;
+    }
 
-      if (delta > 0 && currentScrollY > 100 && isPlayerVisible) {
-        setIsPlayerVisible(false);
-      } else if (delta < 0 && !isPlayerVisible) {
-        setIsPlayerVisible(true);
-      }
+    if (delta > 0 && current > 100 && isPlayerVisible) {
+      setIsPlayerVisible(false);
+    } else if (delta < 0 && !isPlayerVisible) {
+      setIsPlayerVisible(true);
+    }
 
-      lastScrollYRef.current = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isPlayerVisible, setIsPlayerVisible]);
+    lastScrollYRef.current = current;
+  });
 
   const contextValue: DocumentContextValue = useMemo(
     () => ({
