@@ -1,0 +1,141 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 48px 24px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--font-letter-spacing-14px);
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.button[data-variant="success"] {
+  color: var(--mint-1);
+  background: var(--mint-9);
+}
+
+.button[data-variant="error"] {
+  color: var(--red-1);
+  background: var(--red-9);
+}
+
+.button[data-variant="warning"] {
+  color: var(--amber-1);
+  background: var(--amber-9);
+}
+
+.spinner {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.feedbackarea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+}
+
+.feedback {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 12px;
+}
+
+.feedback[data-type="success"] {
+  color: var(--mint-11);
+  background: var(--mint-3);
+}
+
+.feedback[data-type="error"] {
+  color: var(--red-11);
+  background: var(--red-3);
+}
+
+.feedback[data-type="warning"] {
+  color: var(--amber-11);
+  background: var(--amber-3);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  border-radius: 50%;
+}
+
+.icon[data-type="success"] {
+  color: var(--mint-1);
+  background: var(--mint-9);
+}
+
+.icon[data-type="error"] {
+  color: var(--red-1);
+  background: var(--red-9);
+}
+
+.icon[data-type="warning"] {
+  color: var(--amber-1);
+  background: var(--amber-9);
+}
+
+.message {
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--font-letter-spacing-14px);
+}
+
+.hint {
+  max-width: 320px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gray-10);
+  text-align: center;
+}

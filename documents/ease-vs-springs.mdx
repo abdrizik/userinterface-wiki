@@ -1,5 +1,5 @@
 ---
-title: "Ease vs Springs"
+title: "Choosing Between Easing & Springs"
 description: "When to ship ease curves and when to switch to springs, with concrete numbers, heuristics, and before/after interaction sketches."
 date:
   published: "2024-06-15"
@@ -30,6 +30,11 @@ If you've ever bounced a ball, or felt a car's suspension then you've felt a spr
 ## Key Differences
 
 To keep things simple, it really boils down to this. Easing functions have a predefined start and end, whereas springs do not. One requires a time period while the other uses physics to determine their period.
+
+<Figure>
+  <EaseVsSpring />
+  <Caption>Ease curves have fixed durations, springs settle naturally</Caption>
+</Figure>
 
 # Creating Easing Functions
 
@@ -128,6 +133,11 @@ Higher mass increases inertia, requiring more force to change velocity and more 
 
 Mass does not act independently. Its effect is relative to stiffness and damping, shaping how the system responds to applied force rather than determining behavior on its own.
 
+<Figure>
+  <SpringComparison />
+  <Caption>Different spring configurations produce distinct motion characteristics</Caption>
+</Figure>
+
 # So What Do I Choose?
 
 This is the hard part, so i've tried my best to break it down into a few questions that you can ask yourself before making a choice. Rather than starting from curves or spring parameters, I find it more useful to start from the interaction itself. I've made a diagram below to help with this.
@@ -211,6 +221,11 @@ Ease-in-out tends to feel calmer and more neutral than ease-out. That neutrality
 ```css
 transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
 ```
+
+<Figure>
+  <EasingComparison />
+  <Caption>Compare how different easing curves distribute motion over time</Caption>
+</Figure>
 
 # Closing Thoughts
 

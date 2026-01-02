@@ -1,0 +1,147 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 48px 24px;
+}
+
+.triggers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.trigger {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-12);
+  letter-spacing: var(--font-letter-spacing-13px);
+  cursor: pointer;
+  background: var(--gray-3);
+  border: none;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.trigger:hover {
+  background: var(--gray-4);
+}
+
+.triggericon {
+  font-size: 14px;
+}
+
+.triggerlabel {
+  text-transform: capitalize;
+}
+
+.notificationarea {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  max-width: 340px;
+  min-height: 120px;
+}
+
+.notification {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--gray-1);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 12px var(--black-a4),
+    0 0 0 1px var(--black-a2);
+}
+
+.notificationicon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  background: var(--gray-3);
+  border-radius: 8px;
+}
+
+.notification[data-type="message"] .notificationicon {
+  background: var(--blue-3);
+}
+
+.notification[data-type="mention"] .notificationicon {
+  color: var(--purple-11);
+  background: var(--purple-3);
+}
+
+.notification[data-type="reminder"] .notificationicon {
+  background: var(--amber-3);
+}
+
+.notification[data-type="alert"] .notificationicon {
+  background: var(--red-3);
+}
+
+.notificationcontent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.notificationtitle {
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--gray-12);
+  letter-spacing: var(--font-letter-spacing-14px);
+}
+
+.notificationbody {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  color: var(--gray-11);
+  white-space: nowrap;
+}
+
+.dismiss {
+  flex-shrink: 0;
+  padding: 4px;
+  font-size: 10px;
+  color: var(--gray-9);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.dismiss:hover {
+  color: var(--gray-12);
+  background: var(--gray-4);
+}
+
+.hint {
+  max-width: 320px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gray-10);
+  text-align: center;
+}

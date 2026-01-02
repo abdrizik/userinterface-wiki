@@ -1,0 +1,92 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 48px 24px;
+}
+
+.search {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-11);
+  letter-spacing: var(--font-letter-spacing-14px);
+}
+
+.input {
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--gray-12);
+  letter-spacing: var(--font-letter-spacing-14px);
+  outline: none;
+  background: var(--gray-2);
+  border: 1px solid var(--gray-6);
+  border-radius: 10px;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  border-color: var(--mint-8);
+}
+
+.input::placeholder {
+  color: var(--gray-9);
+}
+
+.textbox {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px 24px;
+  background: var(--gray-2);
+  border-radius: 16px;
+}
+
+.warning {
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--amber-11);
+  background: var(--amber-3);
+  border-radius: 8px;
+}
+
+.text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--gray-12);
+}
+
+/*
+ * Note: ::highlight() must be injected via JS as the CSS parser
+ * doesn't recognize this newer pseudo-element syntax yet.
+ * The actual styling is applied in the component via a <style> tag.
+ */
+
+/* Code block */
+.code {
+  width: 100%;
+  max-width: 300px;
+  padding: 16px;
+  overflow-x: auto;
+  background: var(--gray-2);
+  border-radius: 12px;
+}
+
+.snippet {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--gray-11);
+  white-space: pre;
+}

@@ -1,0 +1,123 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 48px 24px;
+}
+
+.carousel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.scroller {
+  display: flex;
+  gap: 0;
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  border-radius: 16px;
+
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 200px;
+  scroll-snap-align: center;
+}
+
+.slideLabel {
+  font-size: 18px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--white-a12);
+  letter-spacing: var(--font-letter-spacing-18px);
+}
+
+.markers {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.marker {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  cursor: pointer;
+  background: var(--gray-8);
+  border: none;
+  border-radius: 50%;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.marker:hover {
+  background: var(--gray-10);
+}
+
+.marker[data-active="true"] {
+  background: var(--gray-12);
+  transform: scale(1.25);
+}
+
+.info {
+  width: 100%;
+  max-width: 400px;
+}
+
+.note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gray-11);
+  text-align: center;
+}
+
+.note code {
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--mint-11);
+  background: var(--mint-3);
+  border-radius: 4px;
+}
+
+/* Code block */
+.code {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px;
+  overflow-x: auto;
+  background: var(--gray-2);
+  border-radius: 12px;
+}
+
+.snippet {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--gray-11);
+  white-space: pre;
+}

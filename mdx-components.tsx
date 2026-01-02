@@ -5,11 +5,14 @@ import {
   Appeal,
   Arcs,
   DecisionFlow,
+  EaseVsSpring,
+  EasingComparison,
   Exaggeration,
   FollowThroughAndOverlappingAction,
   SecondaryAction,
   SlowInSlowOut,
   SolidDrawing,
+  SpringComparison,
   SquashStretch,
   Staging,
   StraightAheadActionAndPoseToPose,
@@ -34,6 +37,9 @@ const Principles: MDXComponents = {
 
 const EaseVsSpringsComponents: MDXComponents = {
   DecisionFlow,
+  EaseVsSpring,
+  EasingComparison,
+  SpringComparison,
 };
 
 const BaseComponents: MDXComponents = {

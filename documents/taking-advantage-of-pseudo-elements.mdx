@@ -1,0 +1,515 @@
+---
+title: Taking Advantage of Pseudo Elements
+description: "Modern CSS pseudo-elements go far beyond ::before and ::after. From view transitions to scroll markers, these invisible helpers unlock interactions that once required JavaScript."
+date:
+  published: "2024-06-15"
+  modified: "2024-06-15"
+tags: ["css", "pseudo-elements", "design", "motion"]
+author: "raphael-salaja"
+icon: "code"
+---
+
+import { Figure } from "@/components/figure";
+import {
+  LayersDemo,
+  BackdropDemo,
+  HighlightDemo,
+  ScrollMarkersDemo,
+  SlottedDemo,
+} from "@/components/documents";
+
+Most developers know `::before` and `::after`. They're workhorses, used for decorative elements, clearfixes, and the occasional icon. But CSS has quietly shipped a new generation of pseudo-elements that do far more than add visual flair.
+
+These newer pseudo-elements give you direct styling hooks into browser-native features. Dialogs, popovers, view transitions, scroll-driven navigation, form pickers. Things that once required JavaScript wrappers or couldn't be styled at all.
+
+This guide covers the pseudo-elements worth knowing, when to reach for them, and how they change what's possible with CSS alone.
+
+# The Classics
+
+Before diving into the new, it helps to revisit what we already have. These pseudo-elements have been around for years, but they remain foundational.
+
+## `::before` and `::after`
+
+These create anonymous inline elements as the first or last child of their parent. They require `content` to render, even if it's empty.
+
+```css
+.button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, white 0%, transparent 100%);
+  opacity: 0.1;
+  pointer-events: none;
+}
+```
+
+The common use cases are decorative layers, icons, separators, and expanding hit targets without adding DOM nodes. They keep your HTML clean while enabling visual complexity.
+
+One pattern I use constantly is layering pseudo-elements for depth. A button might have `::before` for a highlight gradient and `::after` for a shadow or border effect. This keeps the main element's background free for state changes.
+
+<Figure>
+  <LayersDemo />
+</Figure>
+
+## `::placeholder`
+
+Styles the placeholder text inside inputs and textareas. Simple, but essential for form design.
+
+```css
+input::placeholder {
+  color: var(--color-text-tertiary);
+  opacity: 1; /* Firefox fix */
+}
+```
+
+Keep placeholder styling subtle. It should recede, not compete with actual input values.
+
+## `::selection`
+
+Controls how selected text appears. Underused, but it's a small detail that reinforces brand consistency.
+
+```css
+::selection {
+  background: var(--color-accent);
+  color: var(--color-background);
+}
+```
+
+Remember that gradient text needs to unset the gradient on `::selection`, or the selection becomes invisible.
+
+# Dialogs & Popovers
+
+The `<dialog>` and `popover` APIs brought native modal and overlay behavior to HTML. With them came styling hooks that were previously impossible.
+
+## `::backdrop`
+
+When a `<dialog>` opens in modal mode or a popover activates, the browser creates a backdrop layer behind it. This pseudo-element lets you style that layer.
+
+```css
+dialog::backdrop {
+  background: oklch(0% 0 0 / 0.5);
+  backdrop-filter: blur(4px);
+}
+```
+
+The backdrop is incredibly useful for focus management. A dimmed, blurred background naturally draws attention to the modal content. Before this, we'd need a separate overlay div and manual z-index management.
+
+One thing to note: `::backdrop` doesn't inherit from the document. You need to set properties explicitly. This includes custom properties, so you may need to redefine your design tokens.
+
+```css
+dialog::backdrop {
+  --blur: 4px;
+  backdrop-filter: blur(var(--blur));
+}
+```
+
+Animation works too. Combine with `@starting-style` for entrance animations:
+
+```css
+dialog::backdrop {
+  background: oklch(0% 0 0 / 0.5);
+  transition: background 200ms ease-out, display 200ms allow-discrete;
+}
+
+@starting-style {
+  dialog::backdrop {
+    background: oklch(0% 0 0 / 0);
+  }
+}
+```
+
+<Figure>
+  <BackdropDemo />
+</Figure>
+
+# View Transitions
+
+The View Transitions API is one of the most significant additions to CSS in years. It enables smooth animated transitions between DOM states without manual keyframe management. The pseudo-elements it creates are what make this possible.
+
+## `::view-transition`
+
+The root pseudo-element that contains all view transition content. It sits in a top layer above everything else.
+
+```css
+::view-transition {
+  pointer-events: none;
+}
+```
+
+## `::view-transition-group()`
+
+Wraps each transitioning element's old and new states. This is where you control the overall animation of a specific element.
+
+```css
+::view-transition-group(header) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
+```
+
+## `::view-transition-old()` and `::view-transition-new()`
+
+These represent the captured snapshot of the old state and the live new state respectively. They're what enable crossfade effects.
+
+```css
+::view-transition-old(card) {
+  animation: fade-out 200ms ease-out;
+}
+
+::view-transition-new(card) {
+  animation: fade-in 200ms ease-out;
+}
+```
+
+The power here is granularity. You can give different elements different transition behaviors. A header might slide while cards crossfade. A sidebar might stay fixed while content morphs.
+
+```css
+.header {
+  view-transition-name: header;
+}
+
+.card {
+  view-transition-name: card;
+}
+```
+
+## `::view-transition-image-pair()`
+
+Contains both the old and new pseudo-elements. Useful when you want to style the container rather than individual states.
+
+```css
+::view-transition-image-pair(hero) {
+  isolation: isolate;
+  mix-blend-mode: normal;
+}
+```
+
+# Scroll-Driven Features
+
+CSS now has native scroll-driven animations and scroll-linked navigation. The pseudo-elements here are brand new and enable patterns that previously required significant JavaScript.
+
+## `::scroll-marker()`
+
+When you use CSS scroll snapping with `scroll-marker-group`, the browser can automatically generate navigation markers. This pseudo-element styles them.
+
+```css
+.carousel::scroll-marker-group {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.carousel > *::scroll-marker {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-text-tertiary);
+}
+
+.carousel > *::scroll-marker:target-current {
+  background: var(--color-accent);
+}
+```
+
+This is remarkable. Native carousel dots with zero JavaScript. The browser handles scroll position detection, marker generation, and click-to-scroll behavior.
+
+## `::scroll-button()`
+
+Creates scroll buttons for navigating scrollable containers. Combined with scroll snapping, this enables fully native carousels.
+
+```css
+.carousel::scroll-button(prev) {
+  content: "←";
+}
+
+.carousel::scroll-button(next) {
+  content: "→";
+}
+```
+
+These buttons automatically disable when you reach the start or end of scrollable content. They respect scroll snapping. They work with keyboard navigation. All for free.
+
+<Figure>
+  <ScrollMarkersDemo />
+</Figure>
+
+# Web Components
+
+If you work with custom elements or shadow DOM, these pseudo-elements become essential for styling encapsulated content.
+
+## `::part()`
+
+Allows styling of elements inside shadow DOM that have been explicitly exposed with the `part` attribute.
+
+```css
+custom-button::part(label) {
+  font-weight: 600;
+}
+
+custom-button::part(icon) {
+  color: var(--color-accent);
+}
+```
+
+This is the designed escape hatch for shadow DOM encapsulation. Component authors decide what's stylable by external CSS.
+
+## `::slotted()`
+
+Styles elements that have been slotted into a shadow DOM slot. Used inside the component's shadow styles.
+
+```css
+/* Inside shadow DOM */
+::slotted(p) {
+  margin-block: 0;
+}
+
+::slotted(*:first-child) {
+  margin-block-start: 0;
+}
+```
+
+The limitation is that `::slotted()` only selects direct children of the slot, not deeper descendants. Plan your component APIs accordingly.
+
+<Figure>
+  <SlottedDemo />
+</Figure>
+
+# Text & Typography
+
+## `::highlight()`
+
+Part of the CSS Custom Highlight API. Lets you style arbitrary text ranges without wrapping them in elements.
+
+```css
+::highlight(search-result) {
+  background: yellow;
+  color: black;
+}
+```
+
+The highlight ranges are defined in JavaScript:
+
+```javascript
+const range = new Range();
+range.setStart(textNode, 0);
+range.setEnd(textNode, 5);
+
+CSS.highlights.set("search-result", new Highlight(range));
+```
+
+This is incredibly useful for search highlighting, syntax highlighting, or any case where you need to mark up text without modifying the DOM structure.
+
+<Figure>
+  <HighlightDemo />
+</Figure>
+
+## `::spelling-error` and `::grammar-error`
+
+Style the browser's native spelling and grammar underlines.
+
+```css
+::spelling-error {
+  text-decoration: wavy underline red;
+}
+
+::grammar-error {
+  text-decoration: wavy underline blue;
+}
+```
+
+Browser support is still limited, but these give you control over something that was previously unstylable.
+
+## `::target-text`
+
+Styles the text fragment that was scrolled to via a URL fragment. When someone follows a link like `page.html#:~:text=specific%20phrase`, this pseudo-element styles that highlighted text.
+
+```css
+::target-text {
+  background: var(--color-highlight);
+  color: var(--color-text);
+}
+```
+
+# Form Elements
+
+Modern CSS is slowly opening up form element styling. These pseudo-elements are part of that effort.
+
+## `::details-content`
+
+Styles the content portion of a `<details>` element, separate from the summary.
+
+```css
+details::details-content {
+  padding: 16px;
+  background: var(--color-surface);
+}
+```
+
+This is useful for animating the open/close state of details elements. Previously, you couldn't target the content independently.
+
+## `::picker()`
+
+Styles the dropdown picker portion of select elements and other picker-based inputs.
+
+```css
+select::picker(select) {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+```
+
+## `::picker-icon`
+
+The dropdown arrow or picker indicator icon.
+
+```css
+select::picker-icon {
+  content: url("chevron-down.svg");
+  width: 16px;
+  height: 16px;
+}
+```
+
+## `::checkmark`
+
+Styles the checkmark inside checkbox inputs and option elements.
+
+```css
+input[type="checkbox"]::checkmark {
+  content: url("check.svg");
+  color: var(--color-accent);
+}
+```
+
+These form pseudo-elements are still emerging. Browser support varies, but they represent a significant shift toward making native form elements fully stylable.
+
+# Performance Considerations
+
+Pseudo-elements are generally lightweight. They don't add to the DOM node count that JavaScript sees. But they do participate in layout and paint.
+
+A few guidelines:
+
+Use `pointer-events: none` on decorative pseudo-elements. This prevents them from intercepting clicks and improves hit testing performance.
+
+Avoid animating pseudo-elements with properties that trigger layout. Stick to `transform` and `opacity` where possible.
+
+`::backdrop` with `backdrop-filter` is expensive. The blur effect requires compositing the entire underlying page. Use moderate blur values and consider `will-change: backdrop-filter` for frequently-opened modals.
+
+View transition pseudo-elements are temporary. They only exist during the transition. The browser handles cleanup automatically, so there's no persistent cost.
+
+# Practical Patterns
+
+## Layered Button States
+
+```css
+.button {
+  position: relative;
+  isolation: isolate;
+}
+
+.button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    oklch(100% 0 0 / 0.1),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: oklch(0% 0 0 / 0);
+  transition: background 150ms ease;
+  pointer-events: none;
+}
+
+.button:hover::after {
+  background: oklch(0% 0 0 / 0.05);
+}
+```
+
+## Native Carousel
+
+```css
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-marker-group: after;
+}
+
+.carousel > * {
+  scroll-snap-align: center;
+  flex: 0 0 100%;
+}
+
+.carousel::scroll-marker-group {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  justify-content: center;
+}
+
+.carousel > *::scroll-marker {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-text-tertiary);
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.carousel > *::scroll-marker:target-current {
+  background: var(--color-accent);
+  transform: scale(1.25);
+}
+```
+
+## View Transition Page Navigation
+
+```css
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: 200ms ease-out fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 200ms ease-out fade-in;
+}
+
+::view-transition-group(header) {
+  animation-duration: 0ms;
+}
+
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+```
+
+# Closing Thoughts
+
+Pseudo-elements are evolving from decorative tools into structural ones. The new generation lets you style browser-native features that were previously black boxes. Dialogs get backdrops. View transitions get granular animation control. Scroll containers get native markers and buttons.
+
+The pattern is clear. As HTML gains more built-in behaviors, CSS gains the pseudo-elements needed to style them. This is a good trade. Native features mean better accessibility, performance, and consistency. Pseudo-element styling means you don't sacrifice design control to get those benefits.
+
+Start with the interaction you need. If the browser offers a native solution, use it. Then reach for the corresponding pseudo-element to make it yours.
+
+[^1]: The [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) documentation on MDN covers the full API surface and browser support.
+
+[^2]: Una Kravets wrote an excellent guide on [scroll-driven animations](https://developer.chrome.com/docs/css-ui/scroll-driven-animations) that covers the newer scroll marker features.
+
+[^3]: The [Open UI](https://open-ui.org/) initiative is driving many of the form styling improvements, including the picker pseudo-elements.
