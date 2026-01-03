@@ -6,7 +6,7 @@ import {
 } from "fumadocs-mdx/config";
 import { z } from "zod";
 var docs = defineDocs({
-  dir: "documents",
+  dir: "content",
   docs: {
     schema: frontmatterSchema.extend({
       date: z.object({

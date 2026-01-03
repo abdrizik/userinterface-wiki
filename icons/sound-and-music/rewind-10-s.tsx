@@ -1,4 +1,4 @@
-import type { IconProps } from "@/types";
+import type { IconProps } from "@/icons/types";
 
 export const Rewind10SIcon = ({
   size = 24,

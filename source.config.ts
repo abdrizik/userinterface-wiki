@@ -6,7 +6,7 @@ import {
 import { z } from "zod";
 
 export const docs = defineDocs({
-  dir: "documents",
+  dir: "content",
   docs: {
     schema: frontmatterSchema.extend({
       date: z.object({

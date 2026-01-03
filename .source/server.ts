@@ -1,8 +1,8 @@
 // @ts-nocheck
-import * as __fd_glob_3 from "../documents/taking-advantage-of-pseudo-elements.mdx?collection=docs"
-import * as __fd_glob_2 from "../documents/sounds-on-the-web.mdx?collection=docs"
-import * as __fd_glob_1 from "../documents/ease-vs-springs.mdx?collection=docs"
-import * as __fd_glob_0 from "../documents/12-principles-of-animation.mdx?collection=docs"
+import * as __fd_glob_3 from "../content/taking-advantage-of-pseudo-elements/index.mdx?collection=docs"
+import * as __fd_glob_2 from "../content/sounds-on-the-web/index.mdx?collection=docs"
+import * as __fd_glob_1 from "../content/12-principles-of-animation/index.mdx?collection=docs"
+import * as __fd_glob_0 from "../content/ease-vs-springs/index.mdx?collection=docs"
 import { server } from 'fumadocs-mdx/runtime/server';
 import type * as Config from '../source.config';
 
@@ -11,4 +11,4 @@ const create = server<typeof Config, import("fumadocs-mdx/runtime/types").Intern
   }
 }>({"doc":{"passthroughs":["extractedReferences"]}});
 
-export const docs = await create.docs("docs", "documents", {}, {"12-principles-of-animation.mdx": __fd_glob_0, "ease-vs-springs.mdx": __fd_glob_1, "sounds-on-the-web.mdx": __fd_glob_2, "taking-advantage-of-pseudo-elements.mdx": __fd_glob_3, });
+export const docs = await create.docs("docs", "content", {}, {"ease-vs-springs/index.mdx": __fd_glob_0, "12-principles-of-animation/index.mdx": __fd_glob_1, "sounds-on-the-web/index.mdx": __fd_glob_2, "taking-advantage-of-pseudo-elements/index.mdx": __fd_glob_3, });

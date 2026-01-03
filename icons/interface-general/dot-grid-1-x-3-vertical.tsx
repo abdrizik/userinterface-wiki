@@ -1,4 +1,4 @@
-import type { IconProps } from "@/types";
+import type { IconProps } from "@/icons/types";
 
 export const DotGrid1X3VerticalIcon = ({
   size = 24,

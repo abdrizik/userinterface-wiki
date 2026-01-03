@@ -7,6 +7,6 @@ const create = browser<typeof Config, import("fumadocs-mdx/runtime/types").Inter
   }
 }>();
 const browserCollections = {
-  docs: create.doc("docs", {"12-principles-of-animation.mdx": () => import("../documents/12-principles-of-animation.mdx?collection=docs"), "ease-vs-springs.mdx": () => import("../documents/ease-vs-springs.mdx?collection=docs"), "sounds-on-the-web.mdx": () => import("../documents/sounds-on-the-web.mdx?collection=docs"), "taking-advantage-of-pseudo-elements.mdx": () => import("../documents/taking-advantage-of-pseudo-elements.mdx?collection=docs"), }),
+  docs: create.doc("docs", {"ease-vs-springs/index.mdx": () => import("../content/ease-vs-springs/index.mdx?collection=docs"), "12-principles-of-animation/index.mdx": () => import("../content/12-principles-of-animation/index.mdx?collection=docs"), "sounds-on-the-web/index.mdx": () => import("../content/sounds-on-the-web/index.mdx?collection=docs"), "taking-advantage-of-pseudo-elements/index.mdx": () => import("../content/taking-advantage-of-pseudo-elements/index.mdx?collection=docs"), }),
 };
 export default browserCollections;

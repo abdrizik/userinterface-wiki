@@ -133,7 +133,7 @@ const svgToTsx = (svg, componentName, title) => {
     ? `<svg ${attrs} width={size} height={size} {...props}>`
     : `<svg width={size} height={size} {...props}>`;
 
-  return `import type { IconProps } from "@/types";
+  return `import type { IconProps } from "@/icons/types";
 
 export const ${componentName} = ({
   size = 24,

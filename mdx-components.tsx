@@ -1,58 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import { Callout } from "./components/callout";
-import {
-  Anticipation,
-  Appeal,
-  Arcs,
-  DecisionFlow,
-  EaseVsSpring,
-  Exaggeration,
-  FollowThroughAndOverlappingAction,
-  ProgressBarDemo,
-  SecondaryAction,
-  SidebarDemo,
-  SlowInSlowOut,
-  SolidDrawing,
-  SquashStretch,
-  Staging,
-  StraightAheadActionAndPoseToPose,
-  SwipeToDismiss,
-  TabSwitcher,
-  Timing,
-  ToastDemo,
-} from "./components/documents";
 import { Caption, Figure } from "./components/figure";
-
-const Principles: MDXComponents = {
-  SquashStretch,
-  Anticipation,
-  Staging,
-  StraightAheadActionAndPoseToPose,
-  FollowThroughAndOverlappingAction,
-  SlowInSlowOut,
-  Arcs,
-  SecondaryAction,
-  Timing,
-  Exaggeration,
-  SolidDrawing,
-  Appeal,
-};
-
-const EaseVsSpringsComponents: MDXComponents = {
-  DecisionFlow,
-  EaseVsSpring,
-  ProgressBarDemo,
-  SidebarDemo,
-  SwipeToDismiss,
-  TabSwitcher,
-  ToastDemo,
-};
-
-const BaseComponents: MDXComponents = {
-  Figure,
-  Caption,
-  Callout,
-};
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
@@ -72,10 +20,9 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     li: (props) => <li data-prose-type="text" {...props} />,
     ul: (props) => <ul data-prose-type="list" {...props} />,
     ol: (props) => <ol data-prose-type="list" {...props} />,
-
-    ...Principles,
-    ...EaseVsSpringsComponents,
-    ...BaseComponents,
+    Figure,
+    Caption,
+    Callout,
   };
 }
 
