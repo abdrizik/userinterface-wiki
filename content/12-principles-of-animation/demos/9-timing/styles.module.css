@@ -163,3 +163,8 @@
 .button:active {
   transform: translateX(-50%) scale(0.97);
 }
+
+.controls {
+  position: absolute;
+  bottom: 0;
+}

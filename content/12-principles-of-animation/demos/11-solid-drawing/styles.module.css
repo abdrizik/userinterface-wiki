@@ -3,14 +3,20 @@
   --accent-muted: color-mix(in srgb, var(--pink-9) 20%, transparent);
   --complete: var(--sky-9);
   --surface: var(--gray-1);
-
   position: relative;
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+
+  width: 100%;
+  height: 384px;
+}
+
+.globe-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 384px;
-  background: var(--surface);
+  height: 100%;
 }
 
 .globe-scene {

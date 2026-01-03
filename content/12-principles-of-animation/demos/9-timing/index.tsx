@@ -4,6 +4,8 @@ import { Popover } from "@base-ui/react/popover";
 import chroma from "chroma-js";
 import { getNearestPantone } from "pantone-tcx";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/button";
+import { Controls } from "@/components/controls";
 import styles from "./styles.module.css";
 
 const DEFAULT_HEX = "#5A5B9F";
@@ -60,13 +62,11 @@ export function Timing() {
         </Popover.Portal>
       </Popover.Root>
 
-      <button
-        onClick={() => setIsSnappy((prev) => !prev)}
-        className={styles.button}
-        type="button"
-      >
-        {isSnappy ? "Snappy (120ms)" : "Sluggish (800ms)"}
-      </button>
+      <Controls>
+        <Button onClick={() => setIsSnappy((prev) => !prev)}>
+          {isSnappy ? "Snappy (120ms)" : "Sluggish (800ms)"}
+        </Button>
+      </Controls>
     </div>
   );
 }

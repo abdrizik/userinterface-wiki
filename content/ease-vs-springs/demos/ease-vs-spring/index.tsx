@@ -2,7 +2,8 @@
 
 import { motion, type Transition } from "motion/react";
 import { useState } from "react";
-import { Button, Controls } from "@/components/button";
+import { Button } from "@/components/button";
+import { Controls } from "@/components/controls";
 import styles from "./styles.module.css";
 
 type Animation = {
