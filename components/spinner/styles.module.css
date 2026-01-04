@@ -1,0 +1,101 @@
+.container {
+  --color-foreground: var(--white-a12);
+  --color-background: var(--sky-9);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  outline: none;
+  background: var(--color-background);
+  border-radius: 100px;
+}
+
+@keyframes pulse-opacity {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.button::before {
+  inset: -16px;
+}
+
+.button::after {
+  inset: -8px;
+}
+
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 8px 16px;
+  white-space: nowrap;
+  will-change: all;
+}
+
+.label {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+  letter-spacing: var(--font-letter-spacing-24px);
+  white-space: nowrap;
+  will-change: all;
+}
+
+.icon {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  will-change: all;
+}
+
+.check,
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  transform: rotate(360deg);
+  animation: spin 1s linear infinite;
+  will-change: all;
+}
+
+.spinner .svg {
+  position: relative;
+  display: block;
+  color: var(--color-foreground);
+  animation: spin 1s ease-in-out infinite;
+  will-change: all;
+}
+
+.check {
+  position: relative;
+  color: var(--color-foreground);
+  will-change: all;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

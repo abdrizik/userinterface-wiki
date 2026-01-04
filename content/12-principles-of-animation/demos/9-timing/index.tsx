@@ -32,35 +32,37 @@ export function Timing() {
 
   return (
     <div className={styles.container}>
-      <Popover.Root>
-        <Popover.Trigger
-          className={styles.trigger}
-          style={{ "--hex": hex } as React.CSSProperties}
-        >
-          <div className={styles.swatch} />
-          <span className={styles.label}>{pantone.name}</span>
-        </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Positioner sideOffset={16} side="top">
-            <Popover.Popup
-              className={styles.popup}
-              data-animation-state={isSnappy ? "snappy" : "sluggish"}
-              style={{ "--hex": hex } as React.CSSProperties}
-            >
-              <Popover.Title className={styles.title}>
-                PANTONE® {pantone.tcx} TCX
-              </Popover.Title>
-              <hr className={styles.divider} />
-              <Popover.Description className={styles.description}>
-                <span>HEX</span>
-                <span>{hex}</span>
-                <span>LAB</span>
-                <span>{lab}</span>
-              </Popover.Description>
-            </Popover.Popup>
-          </Popover.Positioner>
-        </Popover.Portal>
-      </Popover.Root>
+      <div className={styles.frame}>
+        <Popover.Root>
+          <Popover.Trigger
+            className={styles.trigger}
+            style={{ "--hex": hex } as React.CSSProperties}
+          >
+            <div className={styles.swatch} />
+            <span className={styles.label}>{pantone.name}</span>
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Positioner sideOffset={16} side="top">
+              <Popover.Popup
+                className={styles.popup}
+                data-animation-state={isSnappy ? "snappy" : "sluggish"}
+                style={{ "--hex": hex } as React.CSSProperties}
+              >
+                <Popover.Title className={styles.title}>
+                  PANTONE® {pantone.tcx} TCX
+                </Popover.Title>
+                <hr className={styles.divider} />
+                <Popover.Description className={styles.description}>
+                  <span>HEX</span>
+                  <span>{hex}</span>
+                  <span>LAB</span>
+                  <span>{lab}</span>
+                </Popover.Description>
+              </Popover.Popup>
+            </Popover.Positioner>
+          </Popover.Portal>
+        </Popover.Root>
+      </div>
 
       <Controls>
         <Button onClick={() => setIsSnappy((prev) => !prev)}>

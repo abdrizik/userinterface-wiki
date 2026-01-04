@@ -8,3 +8,10 @@
   background: var(--gray-2);
   border-top: 1px solid var(--gray-4);
 }
+
+.bottom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}

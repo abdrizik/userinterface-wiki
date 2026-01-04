@@ -165,6 +165,7 @@ export function Staging() {
           <AnimatePresence initial={false} mode="popLayout">
             {!isOpen && (
               <Dialog.Trigger
+                nativeButton={false}
                 style={{ cursor: "pointer" }}
                 render={
                   <motion.div
