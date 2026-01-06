@@ -65,18 +65,46 @@ function stripFrontmatter(value: string) {
 }
 
 function stripCodeSections(value: string) {
-  return value
-    .replace(/```[\s\S]*?```/g, "")
-    .replace(/~~~[\s\S]*?~~~/g, "")
-    .replace(/`[^`]*`/g, "")
-    .replace(/<pre[\s\S]*?<\/pre>/gi, "")
-    .replace(/^\[\^[^\]]+\]:.*$/gm, "")
-    .replace(/\[\^[^\]]+\]/g, "")
-    .replace(/<(Figure|Caption|Callout|Note|Warning|Tip)[\s\S]*?<\/\1>/gi, "")
-    .replace(/<[A-Z][a-zA-Z]*\s*\/>/g, "")
-    .replace(/<\/?[a-zA-Z][^>]*>/g, "")
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-    .replace(/\n{3,}/g, "\n\n");
+  return (
+    value
+      // Code blocks
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/~~~[\s\S]*?~~~/g, "")
+      .replace(/`[^`]*`/g, "")
+      .replace(/<pre[\s\S]*?<\/pre>/gi, "")
+      // Footnotes
+      .replace(/^\[\^[^\]]+\]:.*$/gm, "")
+      .replace(/\[\^[^\]]+\]/g, "")
+      // JSX components (demos, figures, callouts, etc.)
+      .replace(/<(Figure|Caption|Callout|Note|Warning|Tip)[\s\S]*?<\/\1>/gi, "")
+      .replace(/<[A-Z][a-zA-Z]*\s*\/>/g, "")
+      .replace(/<\/?[a-zA-Z][^>]*>/g, "")
+      // Markdown links - keep text, remove URL
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      // URLs (raw links in text)
+      .replace(/https?:\/\/[^\s)>\]]+/g, "")
+      // Image references
+      .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+      // Import/export statements in MDX
+      .replace(/^import\s+.*$/gm, "")
+      .replace(/^export\s+.*$/gm, "")
+      // Horizontal rules
+      .replace(/^---+$/gm, "")
+      .replace(/^\*\*\*+$/gm, "")
+      // Repeated punctuation
+      .replace(/\.{2,}/g, ".")
+      .replace(/!{2,}/g, "!")
+      .replace(/\?{2,}/g, "?")
+      // Multiple spaces
+      .replace(/[ \t]+/g, " ")
+      // Multiple newlines
+      .replace(/\n{3,}/g, "\n\n")
+      // Trim each line
+      .split("\n")
+      .map((line) => line.trim())
+      .join("\n")
+      .trim()
+  );
 }
 
 // -----------------------------------------------------------------------------
