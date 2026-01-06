@@ -13,7 +13,7 @@
  * - Single voice: no multi-voice generation
  * - Flash v2.5 model: 50% cheaper
  * - Pre-generation only: no runtime costs
- * - Aggressive text preprocessing: fewer characters
+ * - Paragraph-level caching: only regenerate changed paragraphs
  */
 
 import { readdir } from "node:fs/promises";
@@ -25,12 +25,14 @@ config({ path: ".env.local", quiet: true });
 
 import path from "node:path";
 import {
-  buildCacheKey,
+  type ParagraphInfo,
+  analyzeParagraphs,
+  buildParagraphCacheKey,
   getPlainArticleText,
   getQuotaInfo,
-  readFromCache,
+  isParagraphCached,
   synthesizeSpeech,
-  writeToCache,
+  writeParagraphToCache,
 } from "../lib/speech";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
@@ -38,19 +40,25 @@ const CONTENT_DIR = path.join(process.cwd(), "content");
 // ElevenLabs pricing (as of 2024)
 const COST_PER_1K_CHARS = 0.15; // Flash v2.5 model pricing
 
+interface ParagraphStatus extends ParagraphInfo {
+  isCached: boolean;
+}
+
 interface DocumentInfo {
   slugSegments: string[];
   slug: string;
-  characters: number;
-  isCached: boolean;
-  cacheKey: ReturnType<typeof buildCacheKey>;
-  plainText: string;
+  paragraphs: ParagraphStatus[];
+  totalCharacters: number;
+  cachedCharacters: number;
+  pendingCharacters: number;
 }
 
 interface GenerationResult {
   slug: string;
-  status: "cached" | "generated" | "skipped" | "error";
-  characters?: number;
+  status: "cached" | "generated" | "partial" | "error";
+  paragraphsGenerated: number;
+  paragraphsCached: number;
+  charactersGenerated: number;
   duration?: number;
   error?: unknown;
 }
@@ -107,91 +115,154 @@ async function getAllDocumentSlugs(): Promise<string[][]> {
 async function analyzeDocument(slugSegments: string[]): Promise<DocumentInfo> {
   const slug = slugSegments.join("/");
   const plainText = await getPlainArticleText(slugSegments);
-  const characters = plainText.length;
-  const cacheKey = buildCacheKey(slugSegments, plainText);
-  const cached = await readFromCache(cacheKey);
+  const paragraphInfos = analyzeParagraphs(plainText);
+
+  // Check cache status for each paragraph
+  const paragraphs: ParagraphStatus[] = await Promise.all(
+    paragraphInfos.map(async (p) => {
+      const cacheKey = buildParagraphCacheKey(slugSegments, p.hash);
+      const isCached = await isParagraphCached(cacheKey);
+      return { ...p, isCached };
+    }),
+  );
+
+  const totalCharacters = paragraphs.reduce((sum, p) => sum + p.characters, 0);
+  const cachedCharacters = paragraphs
+    .filter((p) => p.isCached)
+    .reduce((sum, p) => sum + p.characters, 0);
+  const pendingCharacters = totalCharacters - cachedCharacters;
 
   return {
     slugSegments,
     slug,
-    characters,
-    isCached: !!cached,
-    cacheKey,
-    plainText,
+    paragraphs,
+    totalCharacters,
+    cachedCharacters,
+    pendingCharacters,
   };
 }
 
 async function generateTTSForDocument(
   doc: DocumentInfo,
 ): Promise<GenerationResult> {
-  if (doc.isCached) {
-    return { slug: doc.slug, status: "cached", characters: doc.characters };
-  }
+  const pendingParagraphs = doc.paragraphs.filter((p) => !p.isCached);
 
-  try {
-    process.stdout.write(pc.dim(`  generating ${doc.slug}...`));
-    const startTime = performance.now();
-
-    const synthesized = await synthesizeSpeech(doc.plainText);
-    await writeToCache(doc.cacheKey, synthesized);
-
-    const duration = performance.now() - startTime;
-
-    process.stdout.write(
-      `\r  ${pc.green("✓")} ${doc.slug} ${pc.dim(`${formatChars(doc.characters)} · ${formatDuration(duration)}`)}\n`,
-    );
-
+  if (pendingParagraphs.length === 0) {
     return {
       slug: doc.slug,
-      status: "generated",
-      characters: doc.characters,
-      duration,
+      status: "cached",
+      paragraphsGenerated: 0,
+      paragraphsCached: doc.paragraphs.length,
+      charactersGenerated: 0,
     };
-  } catch (error) {
-    console.log();
-    console.log(`  ${pc.red("✗")} ${doc.slug}`);
-    console.log(
-      pc.dim(`    ${error instanceof Error ? error.message : String(error)}`),
-    );
-    return { slug: doc.slug, status: "error", error };
   }
+
+  const startTime = performance.now();
+  let charactersGenerated = 0;
+  let paragraphsGenerated = 0;
+  let hasError = false;
+
+  for (const paragraph of pendingParagraphs) {
+    try {
+      process.stdout.write(
+        pc.dim(
+          `  ${doc.slug} [${paragraph.index + 1}/${doc.paragraphs.length}]...`,
+        ),
+      );
+
+      const synthesized = await synthesizeSpeech(paragraph.text);
+      const cacheKey = buildParagraphCacheKey(doc.slugSegments, paragraph.hash);
+      await writeParagraphToCache(cacheKey, synthesized);
+
+      charactersGenerated += paragraph.characters;
+      paragraphsGenerated++;
+
+      process.stdout.write(
+        `\r  ${pc.green("✓")} ${doc.slug} [${paragraph.index + 1}/${doc.paragraphs.length}] ${pc.dim(`${formatChars(paragraph.characters)} chars`)}\n`,
+      );
+
+      // Small delay between API calls
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    } catch (error) {
+      console.log();
+      console.log(
+        `  ${pc.red("✗")} ${doc.slug} [${paragraph.index + 1}] failed`,
+      );
+      console.log(
+        pc.dim(`    ${error instanceof Error ? error.message : String(error)}`),
+      );
+      hasError = true;
+    }
+  }
+
+  const duration = performance.now() - startTime;
+
+  return {
+    slug: doc.slug,
+    status: hasError ? "error" : paragraphsGenerated > 0 ? "generated" : "cached",
+    paragraphsGenerated,
+    paragraphsCached: doc.paragraphs.length - pendingParagraphs.length,
+    charactersGenerated,
+    duration,
+  };
 }
 
 function printAnalysis(docs: DocumentInfo[], quotaRemaining: number) {
-  const cached = docs.filter((d) => d.isCached);
-  const toGenerate = docs.filter((d) => !d.isCached);
-  const totalChars = toGenerate.reduce((sum, d) => sum + d.characters, 0);
+  const totalParagraphs = docs.reduce((sum, d) => sum + d.paragraphs.length, 0);
+  const cachedParagraphs = docs.reduce(
+    (sum, d) => sum + d.paragraphs.filter((p) => p.isCached).length,
+    0,
+  );
+  const pendingParagraphs = totalParagraphs - cachedParagraphs;
+  const totalPendingChars = docs.reduce((sum, d) => sum + d.pendingCharacters, 0);
 
   console.log();
-  console.log(pc.bold("  Document Analysis"));
-  console.log(pc.dim("  ─────────────────────────────────────"));
+  console.log(pc.bold("  Document Analysis (Paragraph-level)"));
+  console.log(pc.dim("  ─────────────────────────────────────────────"));
 
-  // Show each document
+  // Show each document with paragraph breakdown
   for (const doc of docs) {
-    const status = doc.isCached ? pc.dim("cached") : pc.yellow("pending");
-    const chars = formatChars(doc.characters);
-    console.log(`  ${status} ${doc.slug} ${pc.dim(`(${chars} chars)`)}`);
+    const cached = doc.paragraphs.filter((p) => p.isCached).length;
+    const pending = doc.paragraphs.length - cached;
+    const status =
+      pending === 0
+        ? pc.dim("cached")
+        : cached > 0
+          ? pc.yellow("partial")
+          : pc.yellow("pending");
+
+    console.log(
+      `  ${status} ${doc.slug} ${pc.dim(`(${cached}/${doc.paragraphs.length} paragraphs cached)`)}`,
+    );
+
+    if (pending > 0) {
+      console.log(
+        pc.dim(`         → ${formatChars(doc.pendingCharacters)} chars to generate`),
+      );
+    }
   }
 
-  console.log(pc.dim("  ─────────────────────────────────────"));
+  console.log(pc.dim("  ─────────────────────────────────────────────"));
 
   // Summary
-  console.log(`  ${pc.dim("Cached:")} ${cached.length} documents`);
-  console.log(`  ${pc.dim("To generate:")} ${toGenerate.length} documents`);
+  console.log(
+    `  ${pc.dim("Paragraphs:")} ${cachedParagraphs}/${totalParagraphs} cached`,
+  );
+  console.log(`  ${pc.dim("To generate:")} ${pendingParagraphs} paragraphs`);
 
-  if (toGenerate.length > 0) {
+  if (pendingParagraphs > 0) {
     console.log(
-      `  ${pc.dim("Characters:")} ${formatChars(totalChars)} (${formatCost(totalChars)})`,
+      `  ${pc.dim("Characters:")} ${formatChars(totalPendingChars)} (${formatCost(totalPendingChars)})`,
     );
     console.log(
       `  ${pc.dim("Quota remaining:")} ${formatChars(quotaRemaining)}`,
     );
 
-    if (totalChars > quotaRemaining) {
+    if (totalPendingChars > quotaRemaining) {
       console.log();
       console.log(
         pc.red(
-          `  ⚠ Not enough quota! Need ${formatChars(totalChars)}, have ${formatChars(quotaRemaining)}`,
+          `  ⚠ Not enough quota! Need ${formatChars(totalPendingChars)}, have ${formatChars(quotaRemaining)}`,
         ),
       );
     }
@@ -207,18 +278,36 @@ function printSummary(
 ) {
   const cached = results.filter((r) => r.status === "cached").length;
   const generated = results.filter((r) => r.status === "generated").length;
-  const skipped = results.filter((r) => r.status === "skipped").length;
+  const partial = results.filter((r) => r.status === "partial").length;
   const errors = results.filter((r) => r.status === "error").length;
+
+  const totalParagraphsGenerated = results.reduce(
+    (sum, r) => sum + r.paragraphsGenerated,
+    0,
+  );
+  const totalParagraphsCached = results.reduce(
+    (sum, r) => sum + r.paragraphsCached,
+    0,
+  );
 
   console.log();
 
-  // Status line
+  // Document status line
   const parts: string[] = [];
-  if (cached > 0) parts.push(pc.dim(`${cached} cached`));
-  if (generated > 0) parts.push(pc.green(`${generated} generated`));
-  if (skipped > 0) parts.push(pc.yellow(`${skipped} skipped`));
-  if (errors > 0) parts.push(pc.red(`${errors} failed`));
+  if (cached > 0) parts.push(pc.dim(`${cached} docs cached`));
+  if (generated > 0) parts.push(pc.green(`${generated} docs updated`));
+  if (partial > 0) parts.push(pc.yellow(`${partial} docs partial`));
+  if (errors > 0) parts.push(pc.red(`${errors} docs failed`));
   console.log(`  ${parts.join(pc.dim(" · "))}`);
+
+  // Paragraph stats
+  if (totalParagraphsGenerated > 0 || totalParagraphsCached > 0) {
+    console.log(
+      pc.dim(
+        `  ${totalParagraphsGenerated} paragraphs generated, ${totalParagraphsCached} reused from cache`,
+      ),
+    );
+  }
 
   if (totalCharsGenerated > 0) {
     console.log(
@@ -305,8 +394,8 @@ async function main() {
   // Print analysis
   printAnalysis(docs, quotaRemaining);
 
-  const toGenerate = docs.filter((d) => !d.isCached);
-  const totalChars = toGenerate.reduce((sum, d) => sum + d.characters, 0);
+  const docsWithPending = docs.filter((d) => d.pendingCharacters > 0);
+  const totalPendingChars = docs.reduce((sum, d) => sum + d.pendingCharacters, 0);
 
   // Dry run - exit here
   if (options.dryRun) {
@@ -315,21 +404,26 @@ async function main() {
   }
 
   // Nothing to generate
-  if (toGenerate.length === 0) {
-    console.log(pc.green("  ✓ All documents already cached\n"));
+  if (docsWithPending.length === 0) {
+    console.log(pc.green("  ✓ All paragraphs already cached\n"));
     return;
   }
 
   // Check quota
-  if (totalChars > quotaRemaining) {
+  if (totalPendingChars > quotaRemaining) {
     console.log(pc.red("  Aborting: insufficient quota\n"));
     process.exit(1);
   }
 
   // Confirm generation
+  const pendingParagraphs = docs.reduce(
+    (sum, d) => sum + d.paragraphs.filter((p) => !p.isCached).length,
+    0,
+  );
+
   if (!options.force) {
     const shouldProceed = await confirm(
-      `Generate ${toGenerate.length} documents using ${formatChars(totalChars)} characters (${formatCost(totalChars)})?`,
+      `Generate ${pendingParagraphs} paragraphs using ${formatChars(totalPendingChars)} characters (${formatCost(totalPendingChars)})?`,
     );
     if (!shouldProceed) {
       console.log(pc.yellow("\n  Cancelled\n"));
@@ -347,8 +441,8 @@ async function main() {
     const result = await generateTTSForDocument(doc);
     results.push(result);
 
-    if (result.status === "generated" && result.characters) {
-      totalCharsGenerated += result.characters;
+    if (result.charactersGenerated) {
+      totalCharsGenerated += result.charactersGenerated;
     }
 
     // Small delay between API calls to be nice to the API

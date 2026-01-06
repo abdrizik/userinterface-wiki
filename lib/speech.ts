@@ -6,6 +6,7 @@
  * - mp3_22050_32: smallest file size, low bandwidth
  * - Pre-generation only: no on-demand API calls
  * - Single voice: one great voice vs many
+ * - Paragraph-level caching: only regenerate changed paragraphs
  */
 
 import { Buffer } from "node:buffer";
@@ -24,10 +25,13 @@ import type { WordTimestamp } from "./types";
 // -----------------------------------------------------------------------------
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
-const CACHE_PREFIX = "tts";
+const CACHE_PREFIX = "tts-v2"; // New prefix for paragraph-level cache
 const ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1";
 const MODEL_ID = "eleven_flash_v2_5";
 const OUTPUT_FORMAT = "mp3_22050_32";
+
+// Minimum paragraph length to avoid tiny API calls
+const MIN_PARAGRAPH_LENGTH = 50;
 
 // -----------------------------------------------------------------------------
 // Article Text Extraction
@@ -43,6 +47,36 @@ export async function getPlainArticleText(slugSegments: string[]) {
   const body = stripFrontmatter(raw);
   const spokenSource = stripCodeSections(body);
   return removeMarkdown(spokenSource, { useImgAltText: false }).trim();
+}
+
+/**
+ * Split article text into paragraphs for incremental caching
+ */
+export function splitIntoParagraphs(text: string): string[] {
+  return text
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter((p) => p.length >= MIN_PARAGRAPH_LENGTH);
+}
+
+/**
+ * Get paragraphs with their hashes for cache checking
+ */
+export interface ParagraphInfo {
+  index: number;
+  text: string;
+  hash: string;
+  characters: number;
+}
+
+export function analyzeParagraphs(text: string): ParagraphInfo[] {
+  const paragraphs = splitIntoParagraphs(text);
+  return paragraphs.map((text, index) => ({
+    index,
+    text,
+    hash: hashContent(text),
+    characters: text.length,
+  }));
 }
 
 export function resolveArticlePath(slugSegments: string[]) {
@@ -108,7 +142,7 @@ function stripCodeSections(value: string) {
 }
 
 // -----------------------------------------------------------------------------
-// Cache (Vercel Blob)
+// Cache (Vercel Blob) - Paragraph-level
 // -----------------------------------------------------------------------------
 
 export interface CacheKey {
@@ -116,12 +150,147 @@ export interface CacheKey {
   hash: string;
 }
 
+export interface ParagraphCacheKey {
+  slug: string;
+  paragraphHash: string;
+  audioPath: string;
+  jsonPath: string;
+}
+
+/**
+ * Build cache key for a single paragraph
+ */
+export function buildParagraphCacheKey(
+  slugSegments: string[],
+  paragraphHash: string,
+): ParagraphCacheKey {
+  const slug = slugSegments.join("__");
+  const base = `${CACHE_PREFIX}/${slug}/p_${paragraphHash}`;
+  return {
+    slug,
+    paragraphHash,
+    audioPath: `${base}.mp3`,
+    jsonPath: `${base}.json`,
+  };
+}
+
+/**
+ * Build manifest cache key for a document (stores paragraph order)
+ */
+export function buildManifestCacheKey(
+  slugSegments: string[],
+  paragraphHashes: string[],
+): CacheKey {
+  const slug = slugSegments.join("__");
+  const manifestHash = hashContent(paragraphHashes.join("|"));
+  return {
+    base: `${CACHE_PREFIX}/${slug}/manifest_${manifestHash}`,
+    hash: manifestHash,
+  };
+}
+
+// Legacy function for backwards compatibility
 export function buildCacheKey(slugSegments: string[], text: string): CacheKey {
   const contentHash = hashContent(text);
   const base = `${CACHE_PREFIX}/${slugSegments.join("__")}/${contentHash}`;
   return { base, hash: contentHash };
 }
 
+/**
+ * Check if a paragraph is cached
+ */
+export async function isParagraphCached(key: ParagraphCacheKey): Promise<boolean> {
+  const audioMeta = await safeHead(key.audioPath);
+  const jsonMeta = await safeHead(key.jsonPath);
+  return !!(audioMeta && jsonMeta);
+}
+
+/**
+ * Read a single paragraph from cache
+ */
+export async function readParagraphFromCache(key: ParagraphCacheKey): Promise<{
+  audioBuffer: Buffer;
+  timestamps: WordTimestamp[];
+} | null> {
+  const audioMeta = await safeHead(key.audioPath);
+  const jsonMeta = await safeHead(key.jsonPath);
+
+  if (!audioMeta || !jsonMeta) return null;
+
+  const [audioResponse, timestamps] = await Promise.all([
+    fetch(audioMeta.url),
+    fetch(jsonMeta.url).then((res) => res.json()) as Promise<WordTimestamp[]>,
+  ]);
+
+  const audioBuffer = Buffer.from(await audioResponse.arrayBuffer());
+  return { audioBuffer, timestamps };
+}
+
+/**
+ * Write a single paragraph to cache
+ */
+export async function writeParagraphToCache(
+  key: ParagraphCacheKey,
+  data: { audioBuffer: Buffer; timestamps: WordTimestamp[] },
+): Promise<void> {
+  await Promise.all([
+    uploadBinary(key.audioPath, data.audioBuffer, "audio/mpeg"),
+    uploadJson(key.jsonPath, data.timestamps),
+  ]);
+}
+
+/**
+ * Read full document from paragraph cache (combines all paragraphs)
+ */
+export async function readDocumentFromCache(
+  slugSegments: string[],
+  paragraphs: ParagraphInfo[],
+): Promise<{ audioUrl: string; timestamps: WordTimestamp[] } | null> {
+  // Check if all paragraphs are cached
+  const cacheKeys = paragraphs.map((p) =>
+    buildParagraphCacheKey(slugSegments, p.hash),
+  );
+
+  const cachedFlags = await Promise.all(cacheKeys.map(isParagraphCached));
+  if (!cachedFlags.every(Boolean)) return null;
+
+  // All cached - read and combine
+  const paragraphData = await Promise.all(
+    cacheKeys.map(readParagraphFromCache),
+  );
+
+  // Filter out any nulls (shouldn't happen since we checked, but be safe)
+  const validData = paragraphData.filter(
+    (d): d is NonNullable<typeof d> => d !== null,
+  );
+  if (validData.length !== paragraphData.length) return null;
+
+  // Combine audio buffers
+  const audioBuffers = validData.map((d) => d.audioBuffer);
+  const combinedAudio = concatenateMP3Buffers(audioBuffers);
+
+  // Combine timestamps with offset
+  const combinedTimestamps = combineTimestamps(
+    validData.map((d) => d.timestamps),
+    audioBuffers,
+  );
+
+  // Upload combined result
+  const manifestKey = buildManifestCacheKey(
+    slugSegments,
+    paragraphs.map((p) => p.hash),
+  );
+  const audioUrl = await uploadBinary(
+    `${manifestKey.base}.mp3`,
+    combinedAudio,
+    "audio/mpeg",
+  );
+  await uploadJson(`${manifestKey.base}.json`, combinedTimestamps);
+
+  return { audioUrl, timestamps: combinedTimestamps };
+}
+
+// Legacy read function
 export async function readFromCache(key: CacheKey) {
   const audioMeta = await safeHead(`${key.base}.mp3`);
   const jsonMeta = await safeHead(`${key.base}.json`);
@@ -135,6 +304,7 @@ export async function readFromCache(key: CacheKey) {
   return { audioUrl: audioMeta.url, timestamps };
 }
 
+// Legacy write function
 export async function writeToCache(
   key: CacheKey,
   synthesized: { audioBuffer: Buffer; timestamps: WordTimestamp[] },
@@ -144,6 +314,50 @@ export async function writeToCache(
     uploadJson(`${key.base}.json`, synthesized.timestamps),
   ]);
   return audioUrl;
+}
+
+/**
+ * Concatenate MP3 buffers (simple concatenation works for same-format MP3s)
+ */
+function concatenateMP3Buffers(buffers: Buffer[]): Buffer {
+  return Buffer.concat(buffers);
+}
+
+/**
+ * Combine timestamps from multiple paragraphs with time offsets
+ */
+function combineTimestamps(
+  paragraphTimestamps: WordTimestamp[][],
+  audioBuffers: Buffer[],
+): WordTimestamp[] {
+  const combined: WordTimestamp[] = [];
+  let timeOffset = 0;
+
+  for (let i = 0; i < paragraphTimestamps.length; i++) {
+    const timestamps = paragraphTimestamps[i];
+
+    // Add timestamps with offset
+    for (const ts of timestamps) {
+      combined.push({
+        ...ts,
+        start: ts.start + timeOffset,
+        end: ts.end + timeOffset,
+      });
+    }
+
+    // Estimate duration from last timestamp or audio buffer size
+    if (timestamps.length > 0) {
+      const lastTs = timestamps[timestamps.length - 1];
+      // Add small gap between paragraphs (0.3s)
+      timeOffset = lastTs.end + 0.3;
+    } else {
+      // Fallback: estimate from buffer size (rough approximation for 22kHz 32kbps)
+      const durationEstimate = (audioBuffers[i].length * 8) / 32000;
+      timeOffset += durationEstimate + 0.3;
+    }
+  }
+
+  return combined;
 }
 
 function hashContent(value: string) {
