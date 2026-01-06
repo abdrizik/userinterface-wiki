@@ -25,12 +25,12 @@ config({ path: ".env.local", quiet: true });
 
 import path from "node:path";
 import {
-  type ParagraphInfo,
   analyzeParagraphs,
   buildParagraphCacheKey,
   getPlainArticleText,
   getQuotaInfo,
   isParagraphCached,
+  type ParagraphInfo,
   synthesizeSpeech,
   writeParagraphToCache,
 } from "../lib/speech";
@@ -199,7 +199,11 @@ async function generateTTSForDocument(
 
   return {
     slug: doc.slug,
-    status: hasError ? "error" : paragraphsGenerated > 0 ? "generated" : "cached",
+    status: hasError
+      ? "error"
+      : paragraphsGenerated > 0
+        ? "generated"
+        : "cached",
     paragraphsGenerated,
     paragraphsCached: doc.paragraphs.length - pendingParagraphs.length,
     charactersGenerated,
@@ -214,7 +218,10 @@ function printAnalysis(docs: DocumentInfo[], quotaRemaining: number) {
     0,
   );
   const pendingParagraphs = totalParagraphs - cachedParagraphs;
-  const totalPendingChars = docs.reduce((sum, d) => sum + d.pendingCharacters, 0);
+  const totalPendingChars = docs.reduce(
+    (sum, d) => sum + d.pendingCharacters,
+    0,
+  );
 
   console.log();
   console.log(pc.bold("  Document Analysis (Paragraph-level)"));
@@ -237,7 +244,9 @@ function printAnalysis(docs: DocumentInfo[], quotaRemaining: number) {
 
     if (pending > 0) {
       console.log(
-        pc.dim(`         → ${formatChars(doc.pendingCharacters)} chars to generate`),
+        pc.dim(
+          `         → ${formatChars(doc.pendingCharacters)} chars to generate`,
+        ),
       );
     }
   }
@@ -395,7 +404,10 @@ async function main() {
   printAnalysis(docs, quotaRemaining);
 
   const docsWithPending = docs.filter((d) => d.pendingCharacters > 0);
-  const totalPendingChars = docs.reduce((sum, d) => sum + d.pendingCharacters, 0);
+  const totalPendingChars = docs.reduce(
+    (sum, d) => sum + d.pendingCharacters,
+    0,
+  );
 
   // Dry run - exit here
   if (options.dryRun) {

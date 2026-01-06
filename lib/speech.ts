@@ -199,7 +199,9 @@ export function buildCacheKey(slugSegments: string[], text: string): CacheKey {
 /**
  * Check if a paragraph is cached
  */
-export async function isParagraphCached(key: ParagraphCacheKey): Promise<boolean> {
+export async function isParagraphCached(
+  key: ParagraphCacheKey,
+): Promise<boolean> {
   const audioMeta = await safeHead(key.audioPath);
   const jsonMeta = await safeHead(key.jsonPath);
   return !!(audioMeta && jsonMeta);
