@@ -10,7 +10,6 @@ import {
 } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { getGradientColors } from "@/lib/colors";
-import { clearHighlight } from "./functions";
 import {
   useAudio,
   useKeyboardShortcuts,
@@ -18,7 +17,6 @@ import {
   useNarrationFetch,
   usePersistedPreferences,
   useScrollDirection,
-  useWordHighlight,
 } from "./hooks";
 import { useNarrationStore } from "./store";
 import type { NarrationContextValue } from "./types";
@@ -109,16 +107,7 @@ export function Provider({
   useNarrationFetch({ slug, preferencesLoaded });
 
   const { audioRef, play, pause, toggle, seek, skipForward, skipBackward } =
-    useAudio({
-      onEnded: () => {
-        clearHighlight();
-      },
-      onPause: () => {
-        clearHighlight();
-      },
-    });
-
-  useWordHighlight({ containerRef });
+    useAudio({});
 
   useKeyboardShortcuts({ toggle, seek, audioRef });
 

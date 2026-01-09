@@ -185,7 +185,11 @@ interface ContentProps {
 }
 
 function Content({ children, className }: ContentProps) {
-  return <article className={className}>{children}</article>;
+  return (
+    <article className={className} data-article-content>
+      {children}
+    </article>
+  );
 }
 
 export {
