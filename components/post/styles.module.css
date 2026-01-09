@@ -89,8 +89,8 @@
 .row-title {
   flex: 1;
   overflow: hidden;
-  color: var(--gray-12);
   text-overflow: ellipsis;
+  color: var(--gray-12);
   white-space: nowrap;
   transition: color 0.2s ease;
 }
