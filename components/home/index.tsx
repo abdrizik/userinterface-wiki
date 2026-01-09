@@ -1,16 +1,22 @@
 "use client";
 
 import { Field } from "@base-ui/react/field";
+import { Toggle } from "@base-ui/react/toggle";
+import { ToggleGroup } from "@base-ui/react/toggle-group";
+import { clsx } from "clsx";
 import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
 import { PageTransition } from "@/components/page-transition";
-import { PageCard } from "@/components/post";
-import { MagnifyingGlassIcon } from "@/icons";
+import { PageCard, PageRow } from "@/components/post";
+import { BarsThreeIcon, BarsTwo2Icon, MagnifyingGlassIcon } from "@/icons";
 import type { FormattedPage } from "@/lib/source";
 import styles from "./styles.module.css";
 
+type ViewMode = "card" | "row";
+
 export function HomeLayout({ pages }: { pages: FormattedPage[] }) {
   const [query, setQuery] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("card");
 
   const fuse = useMemo(
     () =>
@@ -36,21 +42,47 @@ export function HomeLayout({ pages }: { pages: FormattedPage[] }) {
       </div>
 
       <div className={styles.container}>
-        <Field.Root className={styles.search}>
-          <MagnifyingGlassIcon className={styles.icon} size={18} />
-          <Field.Control
-            type="search"
-            className={styles.input}
-            placeholder="Search…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </Field.Root>
+        <div className={styles.toolbar}>
+          <Field.Root className={styles.search}>
+            <MagnifyingGlassIcon className={styles.icon} size={18} />
+            <Field.Control
+              type="search"
+              className={styles.input}
+              placeholder="Search…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </Field.Root>
+          <ToggleGroup
+            defaultValue={[viewMode]}
+            className={styles.toggle}
+            onValueChange={(value) => {
+              if (value.length > 0) {
+                setViewMode(value[0] as ViewMode);
+              }
+            }}
+          >
+            <Toggle value="card" aria-label="Card view" className={styles.view}>
+              <BarsThreeIcon size={18} />
+            </Toggle>
+            <Toggle value="row" aria-label="Row view" className={styles.view}>
+              <BarsTwo2Icon size={18} />
+            </Toggle>
+          </ToggleGroup>
+        </div>
 
-        {filteredPages.length !== 0 && (
-          <div className={styles.list}>
+        {filteredPages.length !== 0 && viewMode === "card" && (
+          <div className={clsx(styles.list, styles.card)}>
             {filteredPages.map((page) => (
-              <PageCard key={page.url} page={page} className={styles.card} />
+              <PageCard key={page.url} page={page} className={styles.item} />
+            ))}
+          </div>
+        )}
+
+        {filteredPages.length !== 0 && viewMode === "row" && (
+          <div className={clsx(styles.list, styles.row)}>
+            {filteredPages.map((page) => (
+              <PageRow key={page.url} page={page} className={styles.item} />
             ))}
           </div>
         )}

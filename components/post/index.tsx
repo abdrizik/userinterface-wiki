@@ -8,13 +8,27 @@ import {
 import type { FormattedPage } from "@/lib/source";
 import styles from "./styles.module.css";
 
-interface PageCardProps {
-  className?: string;
-  page: FormattedPage;
+function formatRowDate(dateString: string): { year: string; dayMonth: string } {
+  const date = new Date(dateString);
+  const year = date.getFullYear().toString();
+  const dayMonth = date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+  });
+  return { year, dayMonth };
 }
 
-export function PageCard({ page, className, ...props }: PageCardProps) {
-  const { title, description, author, date, icon } = page;
+type ViewMode = "card" | "row";
+
+interface PageItemProps {
+  className?: string;
+  page: FormattedPage;
+  viewMode: ViewMode;
+}
+
+export function PageItem({ page, className, viewMode }: PageItemProps) {
+  const { title, description, author, date, icon, url } = page;
+  const { year, dayMonth } = formatRowDate(date.published);
 
   const Icon = () => {
     switch (icon) {
@@ -29,12 +43,18 @@ export function PageCard({ page, className, ...props }: PageCardProps) {
     }
   };
 
+  if (viewMode === "row") {
+    return (
+      <Link href={{ pathname: url }} className={clsx(styles.row, className)}>
+        <span className={styles["row-year"]}>{year}</span>
+        <span className={styles["row-title"]}>{title}</span>
+        <span className={styles["row-date"]}>{dayMonth}</span>
+      </Link>
+    );
+  }
+
   return (
-    <Link
-      href={{ pathname: page.url }}
-      className={clsx(styles.post, className)}
-      {...props}
-    >
+    <Link href={{ pathname: url }} className={clsx(styles.post, className)}>
       <div className={styles.details}>
         <div className={styles.preview}>
           <Icon />
@@ -53,4 +73,23 @@ export function PageCard({ page, className, ...props }: PageCardProps) {
       </div>
     </Link>
   );
+}
+
+// Legacy exports for backwards compatibility
+interface PageCardProps {
+  className?: string;
+  page: FormattedPage;
+}
+
+export function PageCard({ page, className }: PageCardProps) {
+  return <PageItem page={page} className={className} viewMode="card" />;
+}
+
+interface PageRowProps {
+  className?: string;
+  page: FormattedPage;
+}
+
+export function PageRow({ page, className }: PageRowProps) {
+  return <PageItem page={page} className={className} viewMode="row" />;
 }

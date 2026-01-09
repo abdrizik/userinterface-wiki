@@ -63,3 +63,46 @@
 .post:hover .description {
   color: var(--gray-12);
 }
+
+/* Row variant */
+.row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  font-family: var(--font-family-display);
+  font-size: 14px;
+  font-weight: var(--font-weight-normal);
+  line-height: 24px;
+  letter-spacing: var(--font-letter-spacing-14px);
+  transition: color 0.2s ease;
+}
+
+.row-year {
+  flex-shrink: 0;
+  width: 48px;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray-10);
+  transition: color 0.2s ease;
+}
+
+.row-title {
+  flex: 1;
+  overflow: hidden;
+  color: var(--gray-12);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.row-date {
+  flex-shrink: 0;
+  color: var(--gray-10);
+  transition: color 0.2s ease;
+}
+
+.row:hover .row-year,
+.row:hover .row-title,
+.row:hover .row-date {
+  color: var(--gray-12);
+}

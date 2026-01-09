@@ -24,11 +24,22 @@
   padding-bottom: 64px;
 }
 
+.toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
 .list {
   display: flex;
   flex-direction: column;
   gap: 64px;
   align-self: stretch;
+}
+
+.list.row {
+  gap: 8px;
 }
 
 .search {
@@ -39,13 +50,10 @@
   width: 100%;
   padding: 8px 12px;
   color: var(--gray-12);
-  border-bottom: 1px solid var(--gray-4);
-  transition: border-color 0.2s ease-in-out;
+
 }
 
-.search:focus-within {
-  border-bottom: 1px solid var(--gray-12);
-}
+ 
 
 .search .icon {
   width: 18px;
@@ -73,16 +81,50 @@
   outline: none;
 }
 
-.card {
+.toggle {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  color: var(--gray-8);
+  border-radius: 6px;
+  transition: color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .view:hover {
+    color: var(--gray-10);
+  }
+}
+
+.view[data-pressed] {
+  color: var(--gray-12);
+}
+
+.item {
   transition-timing-function: ease-in-out;
   transition-duration: 0.2s;
   transition-property: all;
 }
 
-.list:has(.card:hover) .card {
+.list.card:has(.item:hover) .item {
   filter: opacity(0.2);
 }
 
-.list:has(.card:hover) .card:hover {
+.list.card:has(.item:hover) .item:hover {
+  filter: opacity(1);
+}
+
+.list.row:has(.item:hover) .item {
+  filter: opacity(0.4);
+}
+
+.list.row:has(.item:hover) .item:hover {
   filter: opacity(1);
 }
