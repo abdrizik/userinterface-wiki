@@ -129,7 +129,7 @@ export function SlottedDemo() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: will fix
         dangerouslySetInnerHTML={
           isRegistered
             ? {

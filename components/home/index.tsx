@@ -84,7 +84,13 @@ export function HomeLayout({ pages }: { pages: FormattedPage[] }) {
                       <Post.Meta>
                         <Post.Author />
                         <Post.Separator />
-                        <Post.Date options={{ day: "numeric", month: "short", year: "numeric" }} />
+                        <Post.Date
+                          options={{
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          }}
+                        />
                       </Post.Meta>
                     </div>
                   </div>

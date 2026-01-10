@@ -1,8 +1,11 @@
 "use client";
 
-import { createCollection, eq } from "@tanstack/react-db";
-import { localStorageCollectionOptions } from "@tanstack/react-db";
-import { useLiveQuery } from "@tanstack/react-db";
+import {
+  createCollection,
+  eq,
+  localStorageCollectionOptions,
+  useLiveQuery,
+} from "@tanstack/react-db";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -38,7 +41,9 @@ const DEFAULT_PREFERENCES: Preferences = {
  */
 export function usePreferences() {
   const [isHydrated, setIsHydrated] = useState(false);
-  const [viewMode, setViewModeState] = useState<ViewMode>(DEFAULT_PREFERENCES.viewMode);
+  const [viewMode, setViewModeState] = useState<ViewMode>(
+    DEFAULT_PREFERENCES.viewMode,
+  );
 
   useEffect(() => {
     setIsHydrated(true);
@@ -46,7 +51,9 @@ export function usePreferences() {
 
   // Subscribe to live updates after hydration
   const { data: prefs } = useLiveQuery((q) =>
-    q.from({ pref: preferencesCollection }).where(({ pref }) => eq(pref.id, "user")),
+    q
+      .from({ pref: preferencesCollection })
+      .where(({ pref }) => eq(pref.id, "user")),
   );
 
   // Sync state with collection data after hydration

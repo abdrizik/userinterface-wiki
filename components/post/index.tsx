@@ -11,7 +11,6 @@ import {
 import type { FormattedPage } from "@/lib/source";
 import styles from "./styles.module.css";
 
- 
 const PostContext = createContext<FormattedPage | null>(null);
 
 function usePost() {
@@ -115,9 +114,9 @@ interface DateProps {
   className?: string;
 }
 
-function Date({ options, locale = "en-US", className }: DateProps) {
+function PublishedDate({ options, locale = "en-US", className }: DateProps) {
   const { date } = usePost();
-  const formatted = new globalThis.Date(date.published).toLocaleDateString(
+  const formatted = new Date(date.published).toLocaleDateString(
     locale,
     options,
   );
@@ -159,7 +158,12 @@ interface SeparatorProps {
 }
 
 function Separator({ className }: SeparatorProps) {
-  return <span data-post-separator="" className={clsx(styles.separator, className)} />;
+  return (
+    <span
+      data-post-separator=""
+      className={clsx(styles.separator, className)}
+    />
+  );
 }
 
 interface DividerProps {
@@ -170,14 +174,13 @@ function Divider({ className }: DividerProps) {
   return <hr data-post-divider="" className={className} />;
 }
 
- 
 export const Post = {
   Root,
   Link: PostLink,
   Preview,
   Title,
   Description,
-  Date,
+  Date: PublishedDate,
   Author,
   Meta,
   Separator,
