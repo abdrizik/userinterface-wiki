@@ -1,5 +1,6 @@
 "use client";
 
+import { Toast } from "@base-ui/react/toast";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "next-themes";
@@ -12,7 +13,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
       <SpeedInsights />
       <Analytics />
       <ThemeProvider attribute="class" />
-      {children}
+      <Toast.Provider>{children}</Toast.Provider>
     </NuqsAdapter>
   );
 };

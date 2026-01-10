@@ -1,7 +1,7 @@
 ---
 title: "Sound Advice"
 description: "Sound is the forgotten sense in web design. Used well, it adds feedback, personality, and presence that visuals alone cannot achieve."
-date: "2024-06-15"
+date: "2026-01-04"
 tags: ["sound", "design", "ux", "interaction"]
 author: "raphael-salaja"
 icon: "writing"
@@ -10,259 +10,97 @@ icon: "writing"
 import {
   ButtonSoundDemo,
   ActionFeedbackDemo,
-  NotificationSoundDemo,
 } from "./demos";
 
-Open any native iOS app and tap around. You'll hear subtle clicks, swooshes, and confirmations. Now open most web apps. Silence.
+We've collectively decided that the web should be mute. 
 
-We've collectively decided that the web should be mute. Somewhere along the way (I'd guess around the era of autoplay Flash ads and MySpace profiles that assaulted you with music) sound became the enemy. The reaction was reasonable. We stopped using sound entirely.
+I've never understood why. Native apps use sound constantly to confirm actions, signal errors, provide notifications and nobody thinks less of them for it. Same goes for games, or any other form of interactive media. 
 
-But in doing so, we threw out something valuable.
+Yet on the web, sound is rare, often jarring, and frequently maligned as unprofessional or intrusive.
+
+I think this is because people have probably had bad experiences with sound on the web. I've had my share of autoplaying music, loud error beeps, unnecessary clicks. These are valid complaints, but they miss the point: sound itself isn't the problem; it's how and when it's used.
 
 # Why Sound Matters
 
-Here's something I find fascinating: your ears are faster than your eyes. The auditory cortex processes sound in about 25 milliseconds, while visual processing takes nearly ten times longer.[^1] When you need immediate feedback, right now, this instant, sound gets there first.
+Your ears are faster than your eyes. The auditory cortex processes sound in about `25ms`, while visual processing takes nearly ten times longer.[^1] When you need immediate feedback sound gets there first. 
 
-This has real consequences for how interfaces feel. A button that clicks feels faster than one that doesn't, even when the visual feedback is identical. Try it yourself:
+This has real consequences for how interfaces feel. A button that clicks feels faster than one that doesn't, even when the visual feedback is identical.
 
 <Figure>
   <ButtonSoundDemo />
 </Figure>
 
-The difference is subtle but unmistakable. Sound bridges the gap between action and response in a way that visual feedback alone cannot.
+The difference is subtle but when you try it without, something feels off. 
 
-There's something else going on too. Screens are flat, two-dimensional. Sound exists in space. A notification that chimes is present in your room, not just on your display. It crosses the boundary between device and environment in a way that pixels never can.
+Sound bridges the gap between action and response in a way that visual feedback alone cannot. A notification that chimes is present in your room, not just on your display. It crosses the boundary between device and environment in a way that pixels never can.
 
 ## The Emotional Layer
 
-Here's what I mean by emotional information: a single tone can communicate success, error, tension, or playfulness in a fraction of a second. To achieve the same thing visually, you'd need elaborate choreography. Colors shifting, icons animating, text appearing.[^2]
+A single tone can communicate success, error, tension, or playfulness. To achieve the same thing visually, you'd need elaborate choreography colors shifting and much more.[^2] Researchers call this "auditory dominance in temporal processing."[^3] 
 
-Researchers call this "auditory dominance in temporal processing."[^3] In plain English: when sight and sound tell slightly different stories, we tend to believe our ears. The implications for interface design are significant.
+In plain English, it's when sight and sound tell slightly different stories, we tend to believe our ears.
 
-Think about it. A form submission with a gentle chime feels different than one met with silence. An error with a soft thunk lands differently than a red border alone. We're leaving this expressive range on the table.
+A form submission with a gentle chime feels different than one met with silence. An error with a soft thunk lands differently than a red border alone.
 
 ## What Games Get Right
 
-If you want to understand audio feedback done well, study games. They've been perfecting this for decades.
+If you want to understand audio feedback done well, study games. They've been perfecting this for decades. Stryxo's video on game sound design breaks down the principles beautifully.[^4]
 
-The coin collection sound in Mario is pure dopamine, and I mean that literally. Research shows that game reward sounds trigger dopamine release in the brain's reward pathways, reinforcing the behavior that preceded them.[^4] The low health warning in Zelda creates urgency without a single word. These sounds are doing emotional work that would be clumsy or impossible with visuals.
+<Figure>
+  <Video src="https://www.youtube.com/watch?v=89_WG5PiTpo" />
+  <Caption>Video Game Sound Design - Stryxo</Caption>
+</Figure>
 
-Game audio designers have figured out principles that web interfaces could adopt.[^5]
-
-Every action produces sound. Jumping, attacking, collecting, opening. Everything. The sound arrives with or before the visual, which means the game feels responsive even when frame rates dip. Studies confirm that audio feedback can mask visual delays of up to 100ms.[^6] That's a huge buffer.
-
-Sounds encode multiple states simultaneously. The pitch of a charging attack tells you how powerful it will be. The rhythm of footsteps tells you what surface you're on. Information density without visual clutter.
-
-Audio signposts emotion. Music shifts when danger approaches. Sound effects darken when health is low. The audio tells you how to feel about what's happening, priming your response before you consciously process the visuals.
-
-And critically: the best game sounds are designed for repetition. The Destiny reload sound. The Minecraft block placement. These are engineered for the hundredth hearing, not just the first.[^7]
-
-Web interfaces rarely need this level of sophistication. But the underlying principles (immediate, informative, emotionally appropriate, pleasant on repetition) absolutely apply.
-
-## Feedback Confirmation
-
-Some actions need more than visual confirmation. Destructive actions, especially.
-
-When you empty the trash on macOS, you hear paper crumpling. That sound does something the disappearing icon cannot: it makes the action feel visceral. Final. You know something happened because you *heard* it happen.
-
-On the web, we rely entirely on visual feedback. But here's the thing about visual feedback: it can be missed. It can happen off-screen. It can be too subtle in a busy interface. Sound cuts through all of that.
+I'm not saynig you should turn your app into a game, but games have nailed the balance of informative, emotional, and non-intrusive sound. They use sound to reward actions, signal errors, and provide context without overwhelming the player. 
 
 # When to Use Sound
 
-Not every interaction needs audio. That was the mistake the early web made: sounds everywhere, for everything, all the time. The goal isn't to add sound. It's restraint. Intentionality.
+Not every interaction needs audio. That was the mistake the early web made. The goal is to use sound where it adds value. 
 
-So where does sound actually earn its place?
-
-## Confirmations
-
-Major actions benefit from audio confirmation. Submitting a form. Processing a payment. Completing an upload. These are moments where the user has invested effort and wants assurance that it worked.
-
-The sound should match the weight of the action. A sent message might get a soft whoosh. A processed payment deserves something more substantial. Your audio vocabulary needs range.
+Some of the main examples include, confirmations for major actions like payments or uploads, errors and warnings that can't be overlooked, state changes that reinforce transitions, and notifications that interrupt without requiring visual attention. The sound should match the weight of the action and be informative rather than punishing.
 
 <Figure>
   <ActionFeedbackDemo />
 </Figure>
 
-## Errors and Warnings
-
-This is where sound provides the most value, honestly. A visual error state can be overlooked. A sound cannot.
-
-But, and this is important, the sound needs to be informative, not punishing. Early Windows error sounds were aggressive. They *blamed* the user. Modern error sounds should acknowledge the problem without adding stress. A gentle knock rather than a buzzer.
-
-## State Changes
-
-Toggling between modes, switching tabs, opening panels. These transitions can benefit from subtle audio cues that reinforce what just happened.
-
-Slack's knock sound when you switch channels is a good example. It's not announcing anything important. It's just acknowledging the transition, making the interface feel more responsive and present.
-
-## Notifications
-
-This is the most established use case. Notification sounds work because they need to interrupt without requiring visual attention. The sound *is* the point.
-
-But even here, there's room for improvement. Most web notifications use the same generic chime. What if different sounds carried semantic meaning? Different tones for different types of updates?
-
-<Figure>
-  <NotificationSoundDemo />
-</Figure>
-
-# Designing Sound
-
-Good interface sounds share characteristics. They're short, typically under 200ms for feedback. They're non-intrusive, sitting below the threshold of annoyance. And they're semantically meaningful, conveying information through their character.
-
-Let me break down what that actually means.
-
-## Frequency and Pitch
-
-Higher pitches feel lighter, more positive. Lower pitches feel heavier, more serious.[^8] This isn't arbitrary. It's rooted in how we evolved to interpret sound. Rising tones signal approach or increase; falling tones signal retreat or decrease.[^9]
-
-So a successful action might use a rising tone. An error, a descending one. A warning sits in the middle, neutral but attention-grabbing.
-
-## Texture and Timbre
-
-The character of a sound matters as much as its pitch. A pure sine wave feels clinical, almost cold. A sound with organic texture, recorded from real objects, feels warmer, more human.
-
-Many apps use sounds derived from physical interactions: clicks, taps, slides. These connect the digital action to a physical metaphor, making the interface feel more tangible. There's something satisfying about hearing a sound that could have come from the real world.
-
-## Rhythm and Timing
-
-Sounds should align with visual motion. If a panel slides open over 200ms, the sound should match that duration. If a button has a quick scale animation, the sound should be similarly snappy.
-
-Misaligned timing creates cognitive dissonance. Your eyes and ears are telling different stories, and your brain notices.
-
-## Consistency
-
-Like visual design, audio needs a system. Define a palette of sounds that share characteristics: similar frequency ranges, similar textures, similar production quality. Sounds from different sources or styles will feel jarring together.
-
-Think of it as a design system for audio. A set of tokens that work together.
-
-# Implementation
-
-The Web Audio API makes sophisticated sound possible in the browser. But for most interface sounds, you don't need its full power. Simple audio playback works fine:
-
-```typescript
-const sounds = {
-  click: new Audio('/sounds/click.mp3'),
-  success: new Audio('/sounds/success.mp3'),
-  error: new Audio('/sounds/error.mp3'),
-};
-
-function playSound(name: keyof typeof sounds) {
-  const sound = sounds[name];
-  sound.currentTime = 0;
-  sound.play().catch(() => {
-    // Autoplay prevented, fail silently
-  });
-}
-```
-
-One thing to watch: preloading. Sounds need to be ready before they're triggered, or you'll get noticeable latency. Load your sound files early, before they're needed.
-
 ## Respecting Preferences
 
-Some users don't want sound, and you should respect that:
+Some users don't want sound, and you should respect that. There's no `prefers-reduced-audio` media query yet, but `prefers-reduced-motion` works as a reasonable proxy since users who want less visual stimuli often want less audio stimuli too. 
 
-```typescript
-function playSound(name: keyof typeof sounds) {
-  // Check for reduced motion as a proxy for reduced stimuli
-  const prefersReducedMotion = window.matchMedia(
-    '(prefers-reduced-motion: reduce)'
-  ).matches;
-  
-  if (prefersReducedMotion) return;
-  
-  const sound = sounds[name];
-  sound.currentTime = 0;
-  sound.play().catch(() => {});
-}
-```
-
-There's no `prefers-reduced-audio` media query yet, which is a shame. But `prefers-reduced-motion` works as a reasonable proxy. Users who want less visual stimuli often want less audio stimuli too.
-
-You should also provide an explicit toggle in settings. Let users opt out entirely, or adjust volume independent of system volume.
-
-## Mobile Considerations
-
-Mobile browsers are stricter about audio, and for good reason. Sounds generally can't play until the user has interacted with the page. This prevents autoplay abuse.
-
-For interface sounds, this usually isn't a problem. By the time someone is clicking buttons, they've already interacted. But be aware that sounds on page load will be blocked.
-
-```typescript
-// Unlock audio context on first interaction
-document.addEventListener('click', () => {
-  const audioContext = new AudioContext();
-  audioContext.resume();
-}, { once: true });
-```
-
-
-# Learning From Others
-
-You don't need to be a sound designer to add audio to your interface. The best education comes from studying what already works.
-
-[SND](https://snd.dev/) is an excellent starting point. It's a curated library of UI sound assets designed specifically for interaction design, with multiple kits from different sound designers. Each kit has a distinct character: sine wave purity, piano warmth, industrial texture. More importantly, the sounds are categorized by function: tap, toggle, swipe, notification, celebration. This taxonomy itself is educational. It shows you the vocabulary of interface sound.
-
-But the real masters are game designers. They've spent decades refining audio feedback. Pay attention to how games handle repetition. Notice the slight variations in footstep sounds, the pitch shifts in collection chimes, the layered feedback when actions succeed or fail. Record your gameplay and listen back. The density of information encoded in game audio is remarkable.
-
-For more polished needs, commissioning a sound designer to create a small palette of branded sounds is worthwhile. A set of 5-10 sounds can cover most interface needs and brings a cohesion that stock sounds lack.
-
-## Recording Your Own
-
-Some of the best interface sounds come from recording real objects. A pen clicking. A drawer closing. Keys dropped on a table. These organic sounds have character that synthesized audio lacks.
-
-You don't need professional equipment. A phone recording, cleaned up and trimmed, can absolutely work. The authenticity often matters more than the fidelity.
+You should also provide an explicit toggle in settings, letting users opt out entirely or adjust volume independent of system volume.
 
 # The Counter-Arguments
 
-There are legitimate reasons the web went silent. Let me address them directly.
+There are legitimate reasons the web went silent, so let me address them directly.
 
-## "Users will hate it"
+## "Users will hate it." 
 
-Only if you do it poorly. Aggressive, loud, or unnecessary sounds are annoying. Subtle, appropriate, optional sounds are not. The autoplay video backlash was about intrusion, not about sound itself. Context matters.
+Only if you do it poorly. Aggressive, loud, or unnecessary sounds are annoying; subtle, appropriate, optional sounds are not. The autoplay video backlash was about intrusion, not about sound itself. Context matters.
 
-## "It's inaccessible"
+## "It's inaccessible." 
 
 Sound should complement, not replace. Every audio cue should have a visual equivalent. Users who can't hear, or choose not to, should lose nothing functional. Sound adds a layer; it's never a requirement.
 
-## "It's technically complicated"
+## "It's technically complicated." 
 
 Basic audio playback is straightforward. The Web Audio API offers more power when you need it, but simple `Audio` objects cover most cases. The implementation burden is genuinely low.
 
-## "It's not professional"
+## "It's not professional." 
 
-This is cultural inertia, nothing more. Native apps use sound constantly and nobody considers it unprofessional. The web's silence is a historical accident, not a design principle.
+This is cultural inertia. Native apps use sound constantly and nobody considers it unprofessional. The web's silence is a historical accident, not a design principle.
 
 # Starting Small
 
-You don't need to audio-design your entire application at once. Start with one moment.
+You don't need to audio-design your entire application at once. Pick a single interaction that feels flat: a button that needs emphasis, a confirmation that gets overlooked, an action that would benefit from finality. 
 
-Pick a single interaction that feels flat. A button that needs emphasis. A confirmation that gets overlooked. An action that would benefit from finality.
+Add a sound, make it subtle, make it optional, and see how it changes the feeling of that moment. If it works, add another. Build the vocabulary gradually, learning what works for your product and your users.
 
-Add a sound. Make it subtle. Make it optional. See how it changes the feeling of that moment.
+The goal isn't to fill silence. It's to use sound where it earns its place, where it adds feedback, presence, or emotional resonance that visuals alone can't achieve. The web has been mute for too long. It doesn't have to stay that way.
 
-If it works, add another. Build the vocabulary gradually, learning what works for your product and your users.
+[^1]: The auditory cortex processes sound significantly faster than visual processing. See [The cost of cortical computation](https://www.cell.com/current-biology/fulltext/S0960-9822(03)00135-0) for more on processing speeds across sensory modalities.
 
-The goal isn't to fill silence. It's to use sound where it earns its place, where it adds feedback, presence, or emotional resonance that visuals alone can't achieve.
+[^2]: Sound triggers emotional responses through multiple psychological mechanisms. [Emotional responses to music](https://www.cambridge.org/core/journals/behavioral-and-brain-sciences/article/abs/emotional-responses-to-music-the-need-to-consider-underlying-mechanisms/BBE8CFEA5D6B5E66F93E2289C0E378BA) explores this in depth.
 
-The web has been mute for too long. It doesn't have to stay that way.
+[^3]: When sight and sound conflict, we tend to trust our ears. Research on [sensory modalities](https://www.sciencedirect.com/science/article/abs/pii/S0959438801002461) shows how audio influences visual perception.
 
-[^1]: Lennie, P. (2003). The cost of cortical computation. Current Biology, 13(6), 493-497. The paper discusses processing speeds across sensory modalities.
-
-[^2]: Juslin, P. N., & Västfjäll, D. (2008). Emotional responses to music: The need to consider underlying mechanisms. Behavioral and Brain Sciences, 31(5), 559-575. This foundational paper explores how sound triggers emotional responses through multiple psychological mechanisms.
-
-[^3]: Shimojo, S., & Shams, L. (2001). Sensory modalities are not separate modalities: plasticity and interactions. Current Opinion in Neurobiology, 11(4), 505-509. Research on how audio influences visual perception.
-
-[^4]: Koepp, M. J., et al. (1998). Evidence for striatal dopamine release during a video game. Nature, 393(6682), 266-268. The landmark study demonstrating dopamine release during gameplay.
-
-[^5]: Collins, K. (2008). Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design. MIT Press. Comprehensive overview of game audio design principles.
-
-[^6]: Miller, R., & Siegert, R. (2016). The effect of auditory feedback on perceived latency in touch interfaces. Proceedings of the ACM CHI Conference. Research showing audio can mask perceived visual delays.
-
-[^7]: Grimshaw, M. (2010). Game Sound Technology and Player Interaction: Concepts and Developments. IGI Global. Explores how repetition affects sound perception in games.
-
-[^8]: Eitan, Z., & Timmers, R. (2010). Beethoven's last piano sonata and those who follow crocodiles: Cross-domain mappings of auditory pitch in a musical context. Cognition, 114(3), 405-422. Research on pitch-meaning associations.
-
-[^9]: Huron, D. (2006). Sweet Anticipation: Music and the Psychology of Expectation. MIT Press. Explores how humans interpret rising and falling tones based on evolutionary psychology.
-
-[^10]: Apple's Human Interface Guidelines on [Sound](https://developer.apple.com/design/human-interface-guidelines/playing-audio) remain an excellent reference for designing audio feedback.
-
-[^11]: The [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) documentation covers everything from basic playback to complex synthesis and spatial audio.
+[^4]: Games have been perfecting audio feedback for decades. This [video on game sound design](https://www.youtube.com/watch?v=89_WG5PiTpo) breaks down the principles beautifully.

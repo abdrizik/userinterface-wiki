@@ -310,7 +310,6 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 384px;
     overflow: hidden;
     background: var(--gray-1);
     border-radius: 8px;

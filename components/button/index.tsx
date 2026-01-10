@@ -26,6 +26,7 @@ function Button({
 }: ButtonProps) {
   return (
     <MotionBaseButton
+      data-button
       className={clsx(
         styles.button,
         styles[size],

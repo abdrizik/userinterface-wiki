@@ -104,6 +104,9 @@ importers:
       remove-markdown:
         specifier: ^0.6.2
         version: 0.6.2
+      snd-lib:
+        specifier: ^1.2.4
+        version: 1.2.4
       three:
         specifier: ^0.182.0
         version: 0.182.0
@@ -1122,6 +1125,10 @@ packages:
   estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
 
+  events@3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
+    engines: {node: '>=0.8.x'}
+
   execa@8.0.1:
     resolution: {integrity: sha512-VyhnebXciFV2DESc+p6B+y0LjSm0krU4OgJN44qFAhBY0TJ+1V61tYD2+wHusZ6F9n5K+vl8k0sTy7PEfV4qpg==}
     engines: {node: '>=16.17'}
@@ -1838,6 +1845,9 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
+
+  snd-lib@1.2.4:
+    resolution: {integrity: sha512-Q8DnFVFGGb+buivj5aE4UIyJ3BI4j0qyARwxbkWsJPCEt1jMbBDD3nCTttZl1R0HcWFh5adDR3SHy/dSciwLvw==}
 
   sorted-btree@1.8.1:
     resolution: {integrity: sha512-395+XIP+wqNn3USkFSrNz7G3Ss/MXlZEqesxvzCRFwL14h6e8LukDHdLBePn5pwbm5OQ9vGu8mDyz2lLDIqamQ==}
@@ -2915,6 +2925,8 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.8
 
+  events@3.3.0: {}
+
   execa@8.0.1:
     dependencies:
       cross-spawn: 7.0.6
@@ -3928,6 +3940,10 @@ snapshots:
       '@types/hast': 3.0.4
 
   signal-exit@4.1.0: {}
+
+  snd-lib@1.2.4:
+    dependencies:
+      events: 3.3.0
 
   sorted-btree@1.8.1: {}
 
