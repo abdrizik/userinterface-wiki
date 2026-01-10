@@ -1,10 +1,10 @@
 "use client";
 
+import { animate, motion, useMotionValue, useTransform } from "motion/react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/button";
 import { Controls } from "@/components/controls";
 import { CrossLargeIcon } from "@/icons";
-import { animate, motion, useMotionValue, useTransform } from "motion/react";
-import { useRef, useState } from "react";
 import styles from "./styles.module.css";
 
 export function LinearDemo() {
@@ -13,7 +13,11 @@ export function LinearDemo() {
   const [useLinear, setUseLinear] = useState(true);
 
   const progress = useMotionValue(0);
-  const clipPath = useTransform(progress, [0, 1], ["inset(0 100% 0 0)", "inset(0 0% 0 0)"]);
+  const clipPath = useTransform(
+    progress,
+    [0, 1],
+    ["inset(0 100% 0 0)", "inset(0 0% 0 0)"],
+  );
   const animation = useRef<ReturnType<typeof animate>>(null);
 
   const handlePointerDown = () => {
@@ -36,7 +40,10 @@ export function LinearDemo() {
   const handlePointerUp = () => {
     setIsHolding(false);
     animation.current?.stop();
-    animation.current = animate(progress, 0, { duration: 0.3, ease: "easeOut" });
+    animation.current = animate(progress, 0, {
+      duration: 0.3,
+      ease: "easeOut",
+    });
   };
 
   return (
