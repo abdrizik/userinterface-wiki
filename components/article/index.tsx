@@ -132,7 +132,7 @@ function Header({ className }: HeaderProps) {
           <Button
             {...props.button}
             onClick={handlePlayClick}
-            disabled={!isReady}
+            disabled={true}
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             <AnimatePresence mode="wait" initial={false}>

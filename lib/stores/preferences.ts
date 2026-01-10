@@ -49,7 +49,7 @@ export function usePreferences() {
     setIsHydrated(true);
   }, []);
 
-  // Subscribe to live updates after hydration
+  // Subscribe to live updates - returns empty during SSR
   const { data: prefs } = useLiveQuery((q) =>
     q
       .from({ pref: preferencesCollection })
