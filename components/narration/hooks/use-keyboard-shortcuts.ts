@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
-import { useEventListener } from "usehooks-ts";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useNarrationStore } from "../store";
 
 interface UseKeyboardShortcutsOptions {
@@ -16,48 +15,58 @@ export function useKeyboardShortcuts({
   audioRef,
 }: UseKeyboardShortcutsOptions) {
   const toggleMute = useNarrationStore((state) => state.toggleMute);
+  const isPlaying = useNarrationStore((state) => state.isPlaying);
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
-        return;
+  // Only prevent default for Space when audio is playing to avoid blocking scroll
+  useHotkeys(
+    "space",
+    (e) => {
+      if (isPlaying) {
+        e.preventDefault();
       }
-
-      const audio = audioRef.current;
-      if (!audio) return;
-
-      switch (e.code) {
-        case "Space":
-          e.preventDefault();
-          toggle();
-          break;
-        case "ArrowLeft":
-          e.preventDefault();
-          seek(audio.currentTime - 5);
-          break;
-        case "ArrowRight":
-          e.preventDefault();
-          seek(audio.currentTime + 5);
-          break;
-        case "KeyJ":
-          e.preventDefault();
-          seek(audio.currentTime - 15);
-          break;
-        case "KeyL":
-          e.preventDefault();
-          seek(audio.currentTime + 15);
-          break;
-        case "KeyM":
-          e.preventDefault();
-          toggleMute();
-          break;
-      }
+      toggle();
     },
-    [toggle, seek, toggleMute, audioRef],
+    { enableOnFormTags: false, preventDefault: false },
   );
 
-  useEventListener("keydown", handleKeyDown);
+  // Use shift+arrow keys to avoid blocking native scroll behavior
+  useHotkeys(
+    "shift+left",
+    () => {
+      const audio = audioRef.current;
+      if (audio) seek(audio.currentTime - 5);
+    },
+    { enableOnFormTags: false },
+  );
+
+  useHotkeys(
+    "shift+right",
+    () => {
+      const audio = audioRef.current;
+      if (audio) seek(audio.currentTime + 5);
+    },
+    { enableOnFormTags: false },
+  );
+
+  // j/l for seeking (common video player pattern)
+  useHotkeys(
+    "j",
+    () => {
+      const audio = audioRef.current;
+      if (audio) seek(audio.currentTime - 15);
+    },
+    { enableOnFormTags: false },
+  );
+
+  useHotkeys(
+    "l",
+    () => {
+      const audio = audioRef.current;
+      if (audio) seek(audio.currentTime + 15);
+    },
+    { enableOnFormTags: false },
+  );
+
+  // m for mute
+  useHotkeys("m", () => toggleMute(), { enableOnFormTags: false });
 }

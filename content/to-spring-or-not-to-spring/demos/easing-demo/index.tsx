@@ -46,46 +46,48 @@ export function EasingDemo() {
   }, [activeTab]);
 
   return (
-    <Tabs.Root
-      value={activeTab}
-      onValueChange={(value) => setActiveTab(value as string)}
-    >
-      <div ref={wrapperRef} className={styles.wrapper}>
-        <Tabs.List className={styles.list}>
-          {tabs.map((tab) => (
-            <Tabs.Tab
-              key={tab.id}
-              ref={(el) => {
-                if (el) tabRefs.current.set(tab.id, el as HTMLButtonElement);
-                else tabRefs.current.delete(tab.id);
-              }}
-              value={tab.id}
-              className={styles.tab}
-            >
-              {tab.label}
-            </Tabs.Tab>
-          ))}
-        </Tabs.List>
-        <div
-          ref={indicatorRef}
-          className={styles.indicator}
-          aria-hidden="true"
-        />
-        <div ref={overlayRef} className={styles.overlay} aria-hidden="true">
-          {tabs.map((tab) => (
-            <span
-              key={tab.id}
-              ref={(el) => {
-                if (el) overlayTabRefs.current.set(tab.id, el);
-                else overlayTabRefs.current.delete(tab.id);
-              }}
-              className={styles.tab}
-            >
-              {tab.label}
-            </span>
-          ))}
+    <div className={styles.root}>
+      <Tabs.Root
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as string)}
+      >
+        <div ref={wrapperRef} className={styles.wrapper}>
+          <Tabs.List className={styles.list}>
+            {tabs.map((tab) => (
+              <Tabs.Tab
+                key={tab.id}
+                ref={(el) => {
+                  if (el) tabRefs.current.set(tab.id, el as HTMLButtonElement);
+                  else tabRefs.current.delete(tab.id);
+                }}
+                value={tab.id}
+                className={styles.tab}
+              >
+                {tab.label}
+              </Tabs.Tab>
+            ))}
+          </Tabs.List>
+          <div
+            ref={indicatorRef}
+            className={styles.indicator}
+            aria-hidden="true"
+          />
+          <div ref={overlayRef} className={styles.overlay} aria-hidden="true">
+            {tabs.map((tab) => (
+              <span
+                key={tab.id}
+                ref={(el) => {
+                  if (el) overlayTabRefs.current.set(tab.id, el);
+                  else overlayTabRefs.current.delete(tab.id);
+                }}
+                className={styles.tab}
+              >
+                {tab.label}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
-    </Tabs.Root>
+      </Tabs.Root>
+    </div>
   );
 }

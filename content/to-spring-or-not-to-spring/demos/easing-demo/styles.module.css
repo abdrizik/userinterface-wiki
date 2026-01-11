@@ -1,3 +1,6 @@
+.root {
+  height: 128px;
+}
 .wrapper {
   position: relative;
   display: flex;

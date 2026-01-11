@@ -104,22 +104,6 @@
   color: var(--gray-12);
 }
 
-.list.card:has(.post:hover) .post {
-  filter: opacity(0.2);
-}
-
-.list.card:has(.post:hover) .post:hover {
-  filter: opacity(1);
-}
-
-.list.row:has(.post:hover) .post {
-  filter: opacity(0.4);
-}
-
-.list.row:has(.post:hover) .post:hover {
-  filter: opacity(1);
-}
-
 .post {
   transition-timing-function: ease-in-out;
   transition-duration: 0.2s;

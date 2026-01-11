@@ -157,9 +157,7 @@ export function Player({ className }: PlayerProps) {
         exit={{
           opacity: 0,
         }}
-        style={{
-          pointerEvents: isPlayerVisible ? "auto" : "none",
-        }}
+        inert={!isPlayerVisible ? true : undefined}
         animate={{
           filter: isPlayerVisible ? "none" : "blur(8px)",
           opacity: isPlayerVisible ? 1 : 0,

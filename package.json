@@ -46,6 +46,7 @@
     "pantone-tcx": "^2.2.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-hotkeys-hook": "^5.2.1",
     "react-use-measure": "^2.1.7",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx": "^3.1.1",

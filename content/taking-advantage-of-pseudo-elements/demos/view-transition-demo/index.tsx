@@ -76,6 +76,7 @@ export function ViewTransitionDemo() {
   return (
     <div className={styles.container}>
       <figure ref={cardRef} className={styles.card}>
+        {/* biome-ignore lint/performance/noImgElement: view transitions require native img */}
         <img src={image} alt="" />
         <button type="button" className={styles.button} onClick={open} />
       </figure>

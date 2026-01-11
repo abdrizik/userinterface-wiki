@@ -1,7 +1,7 @@
 "use client";
 
 import { animate, motion, useMotionValue, useTransform } from "motion/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/button";
 import { Controls } from "@/components/controls";
 import { CrossLargeIcon } from "@/icons";
@@ -19,6 +19,23 @@ export function LinearDemo() {
     ["inset(0 100% 0 0)", "inset(0 0% 0 0)"],
   );
   const animation = useRef<ReturnType<typeof animate>>(null);
+  const resetTimeout = useRef<NodeJS.Timeout>(null);
+
+  const reset = () => {
+    animation.current?.stop();
+    if (resetTimeout.current) {
+      clearTimeout(resetTimeout.current);
+      resetTimeout.current = null;
+    }
+    setIsHolding(false);
+    setIsDeleted(false);
+    progress.set(0);
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset on mount only
+  useEffect(() => {
+    reset();
+  }, []);
 
   const handlePointerDown = () => {
     setIsHolding(true);
@@ -29,7 +46,7 @@ export function LinearDemo() {
       onComplete: () => {
         setIsHolding(false);
         setIsDeleted(true);
-        setTimeout(() => {
+        resetTimeout.current = setTimeout(() => {
           setIsDeleted(false);
           progress.set(0);
         }, 1000);

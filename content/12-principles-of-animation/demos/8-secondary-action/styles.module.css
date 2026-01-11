@@ -1,10 +1,11 @@
 .container {
-  --color-foreground: var(--white-a12);
+  --color-foreground: var(--gray-1);
   --color-background: var(--sky-9);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 256px;
 }
 
 .button {

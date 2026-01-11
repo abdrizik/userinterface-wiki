@@ -2,7 +2,7 @@
 
 import { clsx } from "clsx";
 import { AnimatePresence, motion } from "motion/react";
-import { createContext, useContext, useMemo, useRef } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { Button } from "@/components/button";
 import { Menu } from "@/components/menu";
 import { useNarrationContext } from "@/components/narration/provider";
@@ -65,8 +65,6 @@ function Root({
   children,
   className,
 }: RootProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
   const colors = useMemo(
     () => getGradientColors(page.slugs?.join("-") ?? ""),
     [page.slugs],
@@ -84,9 +82,7 @@ function Root({
 
   return (
     <ArticleContext.Provider value={contextValue}>
-      <div ref={containerRef} className={className}>
-        {children}
-      </div>
+      <div className={className}>{children}</div>
     </ArticleContext.Provider>
   );
 }

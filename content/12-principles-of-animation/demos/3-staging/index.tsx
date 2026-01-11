@@ -159,7 +159,7 @@ export function Staging() {
   }, [isEditingName]);
 
   return (
-    <div>
+    <div className={styles.root}>
       <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.5 }}>
         <Dialog.Root open={isOpen} onOpenChange={handleDialogChange}>
           <AnimatePresence initial={false} mode="popLayout">

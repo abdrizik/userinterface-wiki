@@ -1,5 +1,3 @@
-// Sound library using Web Audio API - Tactile UI sounds
-
 let audioContext: AudioContext | null = null;
 
 function getAudioContext(): AudioContext {
@@ -13,13 +11,11 @@ function getAudioContext(): AudioContext {
 }
 
 export const sounds = {
-  // Mechanical button press
   click: () => {
     try {
       const ctx = getAudioContext();
       const t = ctx.currentTime;
 
-      // Impact transient
       const noise = ctx.createBufferSource();
       const buf = ctx.createBuffer(1, ctx.sampleRate * 0.008, ctx.sampleRate);
       const data = buf.getChannelData(0);
@@ -40,18 +36,14 @@ export const sounds = {
       filter.connect(gain);
       gain.connect(ctx.destination);
       noise.start(t);
-    } catch {
-      // Audio not supported
-    }
+    } catch {}
   },
 
-  // Bubble/dropdown appear
   pop: () => {
     try {
       const ctx = getAudioContext();
       const t = ctx.currentTime;
 
-      // Short thump
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
@@ -66,18 +58,14 @@ export const sounds = {
       gain.connect(ctx.destination);
       osc.start(t);
       osc.stop(t + 0.05);
-    } catch {
-      // Audio not supported
-    }
+    } catch {}
   },
 
-  // Switch flip
   toggle: () => {
     try {
       const ctx = getAudioContext();
       const t = ctx.currentTime;
 
-      // Click + resonance
       const noise = ctx.createBufferSource();
       const buf = ctx.createBuffer(1, ctx.sampleRate * 0.012, ctx.sampleRate);
       const data = buf.getChannelData(0);
@@ -99,7 +87,6 @@ export const sounds = {
       gain.connect(ctx.destination);
       noise.start(t);
 
-      // Add body
       const osc = ctx.createOscillator();
       const oscGain = ctx.createGain();
       osc.type = "sine";
@@ -111,12 +98,9 @@ export const sounds = {
       oscGain.connect(ctx.destination);
       osc.start(t);
       osc.stop(t + 0.04);
-    } catch {
-      // Audio not supported
-    }
+    } catch {}
   },
 
-  // Notch/detent
   tick: () => {
     try {
       const ctx = getAudioContext();
@@ -141,12 +125,9 @@ export const sounds = {
       filter.connect(gain);
       gain.connect(ctx.destination);
       noise.start(t);
-    } catch {
-      // Audio not supported
-    }
+    } catch {}
   },
 
-  // Slide/swipe
   whoosh: () => {
     try {
       const ctx = getAudioContext();
@@ -174,52 +155,68 @@ export const sounds = {
       filter.connect(gain);
       gain.connect(ctx.destination);
       noise.start(t);
-    } catch {
-      // Audio not supported
-    }
+    } catch {}
   },
 
-  // Positive feedback
   success: () => {
     try {
       const ctx = getAudioContext();
       const t = ctx.currentTime;
 
-      // Double tap
-      [0, 0.06].forEach((delay) => {
-        const noise = ctx.createBufferSource();
-        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.01, ctx.sampleRate);
-        const data = buf.getChannelData(0);
-        for (let i = 0; i < data.length; i++) {
-          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / 60);
-        }
-        noise.buffer = buf;
+      const notes = [523.25, 659.25, 783.99];
+      const spacing = 0.08;
 
-        const filter = ctx.createBiquadFilter();
-        filter.type = "bandpass";
-        filter.frequency.value = delay === 0 ? 3000 : 4500;
-        filter.Q.value = 3;
-
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
         const gain = ctx.createGain();
-        gain.gain.value = 0.35;
+        const filter = ctx.createBiquadFilter();
 
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-        noise.start(t + delay);
+        osc.type = "triangle";
+        osc.frequency.value = freq;
+        osc2.type = "sine";
+        osc2.frequency.value = freq * 2;
+
+        filter.type = "lowpass";
+        filter.frequency.value = 3000;
+
+        const start = t + i * spacing;
+        const duration = 0.15;
+
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.25, start + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+
+        osc.connect(gain);
+        osc2.connect(gain);
+        gain.connect(filter);
+        filter.connect(ctx.destination);
+
+        osc.start(start);
+        osc2.start(start);
+        osc.stop(start + duration);
+        osc2.stop(start + duration);
       });
-    } catch {
-      // Audio not supported
-    }
+
+      const shimmer = ctx.createOscillator();
+      const shimmerGain = ctx.createGain();
+      shimmer.type = "sine";
+      shimmer.frequency.value = 1046.5;
+      shimmerGain.gain.setValueAtTime(0, t + 0.24);
+      shimmerGain.gain.linearRampToValueAtTime(0.15, t + 0.26);
+      shimmerGain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+      shimmer.connect(shimmerGain);
+      shimmerGain.connect(ctx.destination);
+      shimmer.start(t + 0.24);
+      shimmer.stop(t + 0.45);
+    } catch {}
   },
 
-  // Confirm action
   confirm: () => {
     try {
       const ctx = getAudioContext();
       const t = ctx.currentTime;
 
-      // Solid click with body
       const noise = ctx.createBufferSource();
       const buf = ctx.createBuffer(1, ctx.sampleRate * 0.015, ctx.sampleRate);
       const data = buf.getChannelData(0);
@@ -241,7 +238,6 @@ export const sounds = {
       gain.connect(ctx.destination);
       noise.start(t);
 
-      // Low thump
       const osc = ctx.createOscillator();
       const oscGain = ctx.createGain();
       osc.type = "sine";
@@ -253,70 +249,88 @@ export const sounds = {
       oscGain.connect(ctx.destination);
       osc.start(t);
       osc.stop(t + 0.06);
-    } catch {
-      // Audio not supported
-    }
+    } catch {}
   },
 
-  // Error/reject
   error: () => {
     try {
       const ctx = getAudioContext();
       const t = ctx.currentTime;
 
-      // Two thuds
-      [0, 0.08].forEach((delay) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const distortion = ctx.createWaveShaper();
 
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(120, t + delay);
-        osc.frequency.exponentialRampToValueAtTime(50, t + delay + 0.06);
+      const curve = new Float32Array(256);
+      for (let i = 0; i < 256; i++) {
+        const x = i / 128 - 1;
+        curve[i] = Math.tanh(x * 2);
+      }
+      distortion.curve = curve;
 
-        gain.gain.setValueAtTime(0.4, t + delay);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.08);
+      osc1.type = "sawtooth";
+      osc1.frequency.setValueAtTime(180, t);
+      osc1.frequency.exponentialRampToValueAtTime(80, t + 0.25);
 
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(t + delay);
-        osc.stop(t + delay + 0.08);
-      });
-    } catch {
-      // Audio not supported
-    }
+      osc2.type = "square";
+      osc2.frequency.setValueAtTime(190, t);
+      osc2.frequency.exponentialRampToValueAtTime(85, t + 0.25);
+
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.3, t + 0.02);
+      gain.gain.setValueAtTime(0.3, t + 0.08);
+      gain.gain.linearRampToValueAtTime(0.25, t + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = 800;
+
+      osc1.connect(distortion);
+      osc2.connect(distortion);
+      distortion.connect(gain);
+      gain.connect(filter);
+      filter.connect(ctx.destination);
+
+      osc1.start(t);
+      osc2.start(t);
+      osc1.stop(t + 0.3);
+      osc2.stop(t + 0.3);
+    } catch {}
   },
 
-  // Alert tap
   warning: () => {
     try {
       const ctx = getAudioContext();
       const t = ctx.currentTime;
 
-      // Triple tap
-      [0, 0.07, 0.14].forEach((delay) => {
-        const noise = ctx.createBufferSource();
-        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.006, ctx.sampleRate);
-        const data = buf.getChannelData(0);
-        for (let i = 0; i < data.length; i++) {
-          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / 30);
-        }
-        noise.buffer = buf;
-
-        const filter = ctx.createBiquadFilter();
-        filter.type = "bandpass";
-        filter.frequency.value = 2500;
-        filter.Q.value = 4;
-
+      [0, 0.15].forEach((delay, i) => {
+        const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        gain.gain.value = 0.35;
+        const filter = ctx.createBiquadFilter();
 
-        noise.connect(filter);
+        osc.type = "triangle";
+
+        osc.frequency.value = i === 0 ? 880 : 698.46;
+
+        filter.type = "bandpass";
+        filter.frequency.value = 1200;
+        filter.Q.value = 1;
+
+        const start = t + delay;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.3, start + 0.01);
+        gain.gain.setValueAtTime(0.3, start + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.12);
+
+        osc.connect(filter);
         filter.connect(gain);
         gain.connect(ctx.destination);
-        noise.start(t + delay);
+
+        osc.start(start);
+        osc.stop(start + 0.12);
       });
-    } catch {
-      // Audio not supported
-    }
+    } catch {}
   },
 };
