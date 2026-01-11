@@ -1,5 +1,2 @@
-export { BackdropDemo } from "./backdrop-demo";
-export { HighlightDemo } from "./highlight-demo";
-export { LayersDemo } from "./layers-demo";
-export { ScrollMarkersDemo } from "./scroll-markers-demo";
-export { SlottedDemo } from "./slotted-demo";
+export * from "./before-and-after-demo/index";
+export * from "./view-transition-demo/index";
