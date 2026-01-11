@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import styles from "./styles.module.css";
 
 const image =
@@ -33,7 +33,7 @@ export function ViewTransitionDemo() {
     document.startViewTransition ? document.startViewTransition(run) : run();
   };
 
-  const close = () => {
+  const close = useCallback(() => {
     const card = cardRef.current;
     const dialog = dialogRef.current;
     if (!card || !dialog) return;
@@ -58,7 +58,7 @@ export function ViewTransitionDemo() {
     } else {
       run();
     }
-  };
+  }, []);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -76,10 +76,12 @@ export function ViewTransitionDemo() {
   return (
     <div className={styles.container}>
       <figure ref={cardRef} className={styles.card}>
-        <img src={image} />
+        {/* biome-ignore lint/a11y/useAltText: decorative image */}
+        <img src={image} alt="" />
         <button type="button" className={styles.button} onClick={open} />
       </figure>
 
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: dialog handles keyboard */}
       <dialog ref={dialogRef} className={styles.dialog} onClick={close} />
     </div>
   );

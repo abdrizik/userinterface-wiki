@@ -57,6 +57,7 @@
   display: none;
 }
 
+/* biome-ignore lint/correctness/noUnknownTypeSelector: view transition pseudo-element */
 ::view-transition-group(card) {
   animation-duration: 300ms;
   animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
