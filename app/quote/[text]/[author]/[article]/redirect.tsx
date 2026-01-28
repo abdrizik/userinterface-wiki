@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 interface QuoteRedirectProps {
@@ -14,11 +13,9 @@ function QuoteRedirect({
   quoteText,
   articleTitle,
 }: QuoteRedirectProps) {
-  const router = useRouter();
-
   useEffect(() => {
-    router.replace(redirectUrl);
-  }, [router, redirectUrl]);
+    window.location.replace(redirectUrl);
+  }, [redirectUrl]);
 
   return (
     <div
