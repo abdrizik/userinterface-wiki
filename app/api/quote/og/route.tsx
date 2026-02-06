@@ -1,7 +1,7 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
+
+export const runtime = "edge";
 
 const colors = {
   background: "#fcfcfc",
@@ -11,13 +11,19 @@ const colors = {
   },
 };
 
-const fontsPromise = Promise.all([
-  readFile(join(process.cwd(), "public/fonts/inter/semi-bold.ttf")),
-  readFile(join(process.cwd(), "public/fonts/georgia/georgia.ttf")),
-]);
+function decodeBase64Url(str: string): string {
+  const base64 = str.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+  return decodeURIComponent(
+    atob(padded)
+      .split("")
+      .map((c) => `%${c.charCodeAt(0).toString(16).padStart(2, "0")}`)
+      .join(""),
+  );
+}
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams, origin } = new URL(request.url);
 
   const textBase64 = searchParams.get("text");
   const author = searchParams.get("author");
@@ -27,15 +33,22 @@ export async function GET(request: NextRequest) {
     return new Response("Missing required parameters", { status: 400 });
   }
 
-  const text = Buffer.from(textBase64, "base64url").toString("utf-8");
+  const text = decodeBase64Url(textBase64);
   const authorDecoded = decodeURIComponent(author);
-  const article = Buffer.from(articleBase64, "base64url").toString("utf-8");
+  const article = decodeBase64Url(articleBase64);
+
+  const [interSemiBold, georgia] = await Promise.all([
+    fetch(`${origin}/fonts/inter/semi-bold.ttf`).then((res) =>
+      res.arrayBuffer(),
+    ),
+    fetch(`${origin}/fonts/georgia/georgia.ttf`).then((res) =>
+      res.arrayBuffer(),
+    ),
+  ]);
 
   const MAX_CHARS = 180;
   const truncatedText =
     text.length > MAX_CHARS ? `${text.slice(0, MAX_CHARS).trim()}…` : text;
-
-  const [interSemiBold, georgia] = await fontsPromise;
 
   return new ImageResponse(
     <div
