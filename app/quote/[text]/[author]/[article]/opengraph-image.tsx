@@ -67,7 +67,10 @@ export default async function Image({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: 64,
+        paddingLeft: 64,
+        paddingRight: 64,
+        paddingTop: 96,
+        paddingBottom: 96,
       }}
     >
       <div
