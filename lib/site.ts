@@ -21,7 +21,7 @@ export const SITE_MANIFEST = {
       type: "image/png",
     },
   ],
-  url: "https://userinterface.wiki",
+  url: "https://www.userinterface.wiki",
   author: {
     name: "Raphael Salaja",
     twitter: "@raphaelsalaja",

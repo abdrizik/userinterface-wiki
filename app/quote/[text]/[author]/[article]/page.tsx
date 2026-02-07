@@ -22,22 +22,12 @@ export async function generateMetadata({
   const decodedAuthor = decodeURIComponent(author);
   const decodedArticle = Buffer.from(article, "base64url").toString("utf-8");
 
-  const ogImageUrl = `${SITE_MANIFEST.url}/api/quote/og?text=${text}&author=${author}&article=${article}`;
-
   return {
     title: decodedArticle,
     description: `"${decodedText.slice(0, 100)}${decodedText.length > 100 ? "…" : ""}" — ${decodedAuthor}`,
     openGraph: {
       title: decodedArticle,
       description: `"${decodedText.slice(0, 100)}${decodedText.length > 100 ? "…" : ""}" — ${decodedAuthor}`,
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: `Quote by ${decodedAuthor}`,
-        },
-      ],
       type: "article",
       siteName: SITE_MANIFEST.name,
     },
@@ -45,7 +35,6 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: decodedArticle,
       description: `"${decodedText.slice(0, 100)}${decodedText.length > 100 ? "…" : ""}" — ${decodedAuthor}`,
-      images: [ogImageUrl],
     },
   };
 }
