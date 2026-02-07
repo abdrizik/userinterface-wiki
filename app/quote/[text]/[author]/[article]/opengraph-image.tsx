@@ -1,6 +1,7 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { SITE_MANIFEST } from "@/lib/site";
+
+export const runtime = "edge";
 
 export const alt = "Quote from userinterface.wiki";
 export const size = {
@@ -44,8 +45,12 @@ export default async function Image({
   const article = decodeBase64Url(articleBase64);
 
   const [interSemiBoldData, georgiaData] = await Promise.all([
-    readFile(join(process.cwd(), "public/fonts/inter/semi-bold.ttf")),
-    readFile(join(process.cwd(), "public/fonts/georgia/georgia.ttf")),
+    fetch(`${SITE_MANIFEST.url}/fonts/inter/semi-bold.ttf`).then((res) =>
+      res.arrayBuffer(),
+    ),
+    fetch(`${SITE_MANIFEST.url}/fonts/georgia/georgia.ttf`).then((res) =>
+      res.arrayBuffer(),
+    ),
   ]);
 
   const MAX_CHARS = 180;
