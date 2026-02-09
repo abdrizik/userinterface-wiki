@@ -117,7 +117,7 @@ export function useMediaSession({
     navigator.mediaSession.setPositionState({
       duration,
       playbackRate: 1,
-      position: currentTime,
+      position: Math.min(currentTime, duration),
     });
   }, [currentTime, duration]);
 }
