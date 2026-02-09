@@ -40,14 +40,14 @@ export const demoRegistry: Record<string, ComponentType> = {
   "12-principles-of-animation/9-timing": dynamic(() =>
     import("@/content/12-principles-of-animation/demos/9-timing").then((m) => m.Timing),
   ),
-  "animating-bounds/00-comparison": dynamic(() =>
-    import("@/content/animating-bounds/demos/00-comparison").then((m) => m.Comparison),
+  "animating-container-bounds/00-comparison": dynamic(() =>
+    import("@/content/animating-container-bounds/demos/00-comparison").then((m) => m.Comparison),
   ),
-  "animating-bounds/01-animated-width": dynamic(() =>
-    import("@/content/animating-bounds/demos/01-animated-width").then((m) => m.AnimatedWidth),
+  "animating-container-bounds/01-animated-width": dynamic(() =>
+    import("@/content/animating-container-bounds/demos/01-animated-width").then((m) => m.AnimatedWidth),
   ),
-  "animating-bounds/02-animated-height": dynamic(() =>
-    import("@/content/animating-bounds/demos/02-animated-height").then((m) => m.AnimatedHeight),
+  "animating-container-bounds/02-animated-height": dynamic(() =>
+    import("@/content/animating-container-bounds/demos/02-animated-height").then((m) => m.AnimatedHeight),
   ),
   "generating-sounds-with-ai/audio-concepts-demo": dynamic(() =>
     import("@/content/generating-sounds-with-ai/demos/audio-concepts-demo").then((m) => m.AudioConceptsDemo),

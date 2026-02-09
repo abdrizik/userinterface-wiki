@@ -19,6 +19,7 @@
 
 .content {
   overflow: hidden;
+  contain: layout;
 }
 
 .inner {

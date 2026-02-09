@@ -113,6 +113,7 @@ export default function App() {
 
 .content {
   overflow: hidden;
+  contain: layout;
 }
 
 .inner {
