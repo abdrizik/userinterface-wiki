@@ -55,6 +55,9 @@ export const demoRegistry: Record<string, ComponentType> = {
   "generating-sounds-with-ai/sound-lab-demo": dynamic(() =>
     import("@/content/generating-sounds-with-ai/demos/sound-lab-demo").then((m) => m.SoundLabDemo),
   ),
+  "making-fluid-text/00-fluid-text": dynamic(() =>
+    import("@/content/making-fluid-text/demos/00-fluid-text").then((m) => m.FluidTextDemo),
+  ),
   "mastering-animate-presence/01-presence-state": dynamic(() =>
     import("@/content/mastering-animate-presence/demos/01-presence-state").then((m) => m.PresenceState),
   ),

@@ -21,8 +21,24 @@ const newYork = localFont({
   display: "swap",
 });
 
+const lfe = localFont({
+  variable: "--font-family-lfe",
+  src: [
+    { path: "../public/fonts/lfe/regular.ttf", weight: "400", style: "normal" },
+    { path: "../public/fonts/lfe/medium.ttf", weight: "500", style: "normal" },
+    {
+      path: "../public/fonts/lfe/semi-bold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    { path: "../public/fonts/lfe/bold.ttf", weight: "700", style: "normal" },
+  ],
+  display: "swap",
+});
+
 export const fonts = [
   inter.variable,
   jetbrainsMono.variable,
   newYork.variable,
+  lfe.variable,
 ].join(" ");
