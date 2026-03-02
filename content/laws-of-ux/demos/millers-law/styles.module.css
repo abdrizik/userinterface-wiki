@@ -1,0 +1,44 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  padding-top: 48px;
+  padding-bottom: 96px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 384px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-radius: 10px;
+}
+
+.row:nth-child(even) {
+  background: var(--gray-2);
+}
+
+.label {
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-a8);
+  letter-spacing: var(--font-letter-spacing-12px);
+}
+
+.value {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray-12);
+  letter-spacing: 0.02em;
+}

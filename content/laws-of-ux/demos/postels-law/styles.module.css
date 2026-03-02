@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.input-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--gray-12);
+  outline: none;
+  background: var(--gray-3);
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.input:focus {
+  border-color: none;
+  box-shadow: none;
+}
+
+.input::placeholder {
+  color: var(--gray-11);
+}
+
+.divider {
+  width: 1px;
+  height: 16px;
+  background: var(--gray-6);
+}
+
+.output {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: var(--gray-3);
+  border-radius: 8px;
+
+  transition: background 0.2s ease;
+}
+
+.output[data-error="true"] {
+  background: var(--red-a2);
+}
+
+.output-text {
+  font-size: 13px;
+}
+
+.output[data-empty="true"] .output-text {
+  color: var(--gray-11);
+}
+
+.output[data-error="true"] .output-text {
+  color: var(--red-11);
+}

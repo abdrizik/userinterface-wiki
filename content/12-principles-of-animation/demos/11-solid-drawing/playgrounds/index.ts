@@ -150,10 +150,10 @@ export default function App() {
 }
 
 .globe-scene {
-  rotate: -45deg;
-  transform-style: preserve-3d;
-  perspective: 100px;
   position: relative;
+  transform-style: preserve-3d;
+  rotate: -45deg;
+  perspective: 100px;
 }
 
 .globe-svg {

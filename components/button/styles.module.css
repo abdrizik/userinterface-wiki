@@ -4,6 +4,7 @@
   gap: 4px;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
   border-radius: 6px;

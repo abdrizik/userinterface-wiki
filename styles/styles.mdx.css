@@ -268,6 +268,7 @@
   blockquote {
     position: relative;
     padding-left: var(--prose-block-spacing);
+    margin-bottom: var(--prose-block-spacing);
     font-family: var(--font-regular);
     font-size: 15px;
     font-weight: var(--font-weight-normal);

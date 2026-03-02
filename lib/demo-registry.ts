@@ -49,14 +49,29 @@ export const demoRegistry: Record<string, ComponentType> = {
   "animating-container-bounds/02-animated-height": dynamic(() =>
     import("@/content/animating-container-bounds/demos/02-animated-height").then((m) => m.AnimatedHeight),
   ),
-  "fluid-text/00-fluid-text": dynamic(() =>
-    import("@/content/fluid-text/demos/00-fluid-text").then((m) => m.FluidTextDemo),
-  ),
   "generating-sounds-with-ai/audio-concepts-demo": dynamic(() =>
     import("@/content/generating-sounds-with-ai/demos/audio-concepts-demo").then((m) => m.AudioConceptsDemo),
   ),
   "generating-sounds-with-ai/sound-lab-demo": dynamic(() =>
     import("@/content/generating-sounds-with-ai/demos/sound-lab-demo").then((m) => m.SoundLabDemo),
+  ),
+  "laws-of-ux/doherty-threshold": dynamic(() =>
+    import("@/content/laws-of-ux/demos/doherty-threshold").then((m) => m.DohertyThreshold),
+  ),
+  "laws-of-ux/fitts-law": dynamic(() =>
+    import("@/content/laws-of-ux/demos/fitts-law").then((m) => m.FittsLaw),
+  ),
+  "laws-of-ux/hicks-law": dynamic(() =>
+    import("@/content/laws-of-ux/demos/hicks-law").then((m) => m.HicksLaw),
+  ),
+  "laws-of-ux/hit-area": dynamic(() =>
+    import("@/content/laws-of-ux/demos/hit-area").then((m) => m.HitArea),
+  ),
+  "laws-of-ux/millers-law": dynamic(() =>
+    import("@/content/laws-of-ux/demos/millers-law").then((m) => m.MillersLaw),
+  ),
+  "laws-of-ux/postels-law": dynamic(() =>
+    import("@/content/laws-of-ux/demos/postels-law").then((m) => m.PostelsLaw),
   ),
   "mastering-animate-presence/01-presence-state": dynamic(() =>
     import("@/content/mastering-animate-presence/demos/01-presence-state").then((m) => m.PresenceState),

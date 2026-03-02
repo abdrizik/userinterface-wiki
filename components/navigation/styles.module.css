@@ -4,10 +4,8 @@
   left: 50%;
   z-index: 50;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   width: 100%;
-  height: var(--page-navigation-height);
   background: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--gray-2) 100%, transparent) 25%,

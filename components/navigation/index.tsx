@@ -2,6 +2,7 @@
 
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 import Link from "next/link";
+import { Banner } from "@/components/banner";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { sounds } from "@/lib/sounds";
 import styles from "./styles.module.css";
@@ -30,6 +31,7 @@ const LINKS = [
 export default function Navigation() {
   return (
     <NavigationMenu.Root className={styles.root}>
+      <Banner />
       <div className={styles.container}>
         <Link
           href="/"
