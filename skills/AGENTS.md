@@ -13,7 +13,7 @@ March 2026
 
 ## Abstract
 
-Comprehensive UI/UX best practices guide for web interfaces, designed for AI agents and LLMs. Contains 119 rules across 11 categories, prioritized by impact from critical (animation principles, timing functions) to incremental (morphing icons, typography). Each rule includes detailed explanations and code examples comparing incorrect vs. correct implementations.
+Comprehensive UI/UX best practices guide for web interfaces, designed for AI agents and LLMs. Contains 131 rules across 11 categories, prioritized by impact from critical (animation principles, timing functions) to incremental (morphing icons, typography). Each rule includes detailed explanations and code examples comparing incorrect vs. correct implementations.
 
 ---
 
@@ -131,6 +131,18 @@ Comprehensive UI/UX best practices guide for web interfaces, designed for AI age
    - 9.6 [Fake Speed When Actual Speed Isn't Possible](#96-fake-speed-when-actual-speed-isnt-possible)
    - 9.7 [Accept Messy Input, Output Clean Data](#97-accept-messy-input-output-clean-data)
    - 9.8 [Show What Matters Now, Reveal Complexity Later](#98-show-what-matters-now-reveal-complexity-later)
+   - 9.9 [Use Familiar UI Patterns](#99-use-familiar-ui-patterns)
+   - 9.10 [Visual Polish Increases Perceived Usability](#910-visual-polish-increases-perceived-usability)
+   - 9.11 [Group Related Elements Spatially](#911-group-related-elements-spatially)
+   - 9.12 [Similar Elements Should Look Alike](#912-similar-elements-should-look-alike)
+   - 9.13 [Use Boundaries to Group Related Content](#913-use-boundaries-to-group-related-content)
+   - 9.14 [Make Important Elements Visually Distinct](#914-make-important-elements-visually-distinct)
+   - 9.15 [Place Key Items First or Last](#915-place-key-items-first-or-last)
+   - 9.16 [End Experiences with Clear Success States](#916-end-experiences-with-clear-success-states)
+   - 9.17 [Move Complexity to the System](#917-move-complexity-to-the-system)
+   - 9.18 [Show Progress Toward Completion](#918-show-progress-toward-completion)
+   - 9.19 [Show Incomplete State to Drive Completion](#919-show-incomplete-state-to-drive-completion)
+   - 9.20 [Simplify Complex Visuals into Clear Forms](#920-simplify-complex-visuals-into-clear-forms)
 10. [Predictive Prefetching](#10-predictive-prefetching) — **MEDIUM**
     - 10.1 [Trajectory Prediction Over Hover Prefetching](#101-trajectory-prediction-over-hover-prefetching)
     - 10.2 [Prefetch by Intent, Not Viewport](#102-prefetch-by-intent-not-viewport)
@@ -2539,6 +2551,335 @@ function Editor() {
       </button>
     </div>
   );
+}
+```
+
+### 9.9 Use Familiar UI Patterns
+
+Users spend most of their time on other sites. They expect yours to work the same way (Jakob's Law).
+
+**Incorrect (custom unconventional navigation):**
+
+```tsx
+function Nav() {
+  return (
+    <nav>
+      <button onClick={() => navigate("/")}>⬡</button>
+      <button onClick={() => navigate("/search")}>⬢</button>
+    </nav>
+  );
+}
+```
+
+**Correct (standard recognizable patterns):**
+
+```tsx
+function Nav() {
+  return (
+    <nav>
+      <Link href="/">Home</Link>
+      <Link href="/search">Search</Link>
+    </nav>
+  );
+}
+```
+
+### 9.10 Visual Polish Increases Perceived Usability
+
+Users perceive aesthetically pleasing design as more usable. Small visual details compound into trust.
+
+**Incorrect (unstyled, raw elements):**
+
+```css
+.card {
+  border: 1px solid black;
+  padding: 10px;
+}
+```
+
+**Correct (considered visual treatment):**
+
+```css
+.card {
+  padding: 16px;
+  background: var(--gray-2);
+  border: 1px solid var(--gray-a4);
+  border-radius: 12px;
+  box-shadow: var(--shadow-1);
+}
+```
+
+### 9.11 Group Related Elements Spatially
+
+Elements near each other are perceived as related (Law of Proximity). Use spacing to create visual groups.
+
+**Incorrect (uniform spacing between unrelated items):**
+
+```css
+.form label,
+.form input,
+.form .hint,
+.form .divider {
+  margin-bottom: 16px;
+}
+```
+
+**Correct (tighter spacing within groups, larger between):**
+
+```css
+.form label {
+  margin-bottom: 4px;
+}
+
+.form input {
+  margin-bottom: 2px;
+}
+
+.form .hint {
+  margin-bottom: 24px;
+}
+```
+
+### 9.12 Similar Elements Should Look Alike
+
+Elements that function the same should look the same (Law of Similarity). Visual consistency signals functional consistency.
+
+**Incorrect (same function, different appearance):**
+
+```css
+.save-button {
+  background: blue;
+  border-radius: 8px;
+}
+
+.submit-button {
+  background: green;
+  border-radius: 0;
+}
+```
+
+**Correct (same function, same appearance):**
+
+```css
+.primary-action {
+  background: var(--gray-12);
+  color: var(--gray-1);
+  border-radius: 8px;
+}
+```
+
+### 9.13 Use Boundaries to Group Related Content
+
+Elements sharing a clearly defined boundary are perceived as a group (Law of Common Region).
+
+**Incorrect (flat list with no visual grouping):**
+
+```tsx
+function Settings() {
+  return (
+    <div>
+      <Toggle label="Dark mode" />
+      <Toggle label="Notifications" />
+      <Input label="Email" />
+      <Input label="Password" />
+    </div>
+  );
+}
+```
+
+**Correct (bounded sections):**
+
+```tsx
+function Settings() {
+  return (
+    <div>
+      <section className={styles.group}>
+        <h3>Appearance</h3>
+        <Toggle label="Dark mode" />
+      </section>
+      <section className={styles.group}>
+        <h3>Account</h3>
+        <Input label="Email" />
+        <Input label="Password" />
+      </section>
+    </div>
+  );
+}
+```
+
+### 9.14 Make Important Elements Visually Distinct
+
+When multiple similar elements are present, the one that differs is most likely to be remembered (Von Restorff Effect).
+
+**Incorrect (primary action blends in):**
+
+```tsx
+<div className={styles.actions}>
+  <button className={styles.button}>Cancel</button>
+  <button className={styles.button}>Delete Account</button>
+</div>
+```
+
+**Correct (destructive action stands out):**
+
+```tsx
+<div className={styles.actions}>
+  <button className={styles["button-secondary"]}>Cancel</button>
+  <button className={styles["button-danger"]}>Delete Account</button>
+</div>
+```
+
+### 9.15 Place Key Items First or Last
+
+Users best remember the first and last items in a sequence (Serial Position Effect).
+
+**Incorrect (important action buried in middle):**
+
+```tsx
+<nav>
+  <Link href="/settings">Settings</Link>
+  <Link href="/">Home</Link>
+  <Link href="/about">About</Link>
+</nav>
+```
+
+**Correct (key items at edges):**
+
+```tsx
+<nav>
+  <Link href="/">Home</Link>
+  <Link href="/about">About</Link>
+  <Link href="/settings">Settings</Link>
+</nav>
+```
+
+### 9.16 End Experiences with Clear Success States
+
+People judge experiences by their peak moment and their end (Peak-End Rule). Invest in completion states.
+
+**Incorrect (abrupt end after action):**
+
+```tsx
+async function handleSubmit() {
+  await submitForm(data);
+  router.push("/");
+}
+```
+
+**Correct (satisfying completion state):**
+
+```tsx
+async function handleSubmit() {
+  await submitForm(data);
+  setStatus("success");
+}
+
+return status === "success" ? (
+  <SuccessScreen message="You're all set." />
+) : (
+  <Form onSubmit={handleSubmit} />
+);
+```
+
+### 9.17 Move Complexity to the System
+
+Every system has irreducible complexity (Tesler's Law). The question is who handles it — the user or the system.
+
+**Incorrect (complexity pushed to user):**
+
+```tsx
+<input
+  type="text"
+  placeholder="Enter date as YYYY-MM-DDTHH:mm:ss.sssZ"
+/>
+```
+
+**Correct (system absorbs complexity):**
+
+```tsx
+<DatePicker
+  onChange={(date) => setDate(date.toISOString())}
+/>
+```
+
+### 9.18 Show Progress Toward Completion
+
+People accelerate behavior as they approach a goal (Goal-Gradient Effect). Show how close they are.
+
+**Incorrect (no sense of progress):**
+
+```tsx
+function Onboarding({ step }) {
+  return <OnboardingStep step={step} />;
+}
+```
+
+**Correct (progress visible):**
+
+```tsx
+function Onboarding({ step, totalSteps }) {
+  return (
+    <div>
+      <ProgressBar value={step} max={totalSteps} />
+      <span>Step {step} of {totalSteps}</span>
+      <OnboardingStep step={step} />
+    </div>
+  );
+}
+```
+
+### 9.19 Show Incomplete State to Drive Completion
+
+People remember incomplete tasks better than completed ones (Zeigarnik Effect).
+
+**Incorrect (no indication of incomplete profile):**
+
+```tsx
+function Dashboard() {
+  return <DashboardContent />;
+}
+```
+
+**Correct (incomplete state visible):**
+
+```tsx
+function Dashboard({ profile }) {
+  return (
+    <div>
+      {!profile.isComplete && (
+        <Banner>
+          Complete your profile — {profile.completionPercent}% done
+        </Banner>
+      )}
+      <DashboardContent />
+    </div>
+  );
+}
+```
+
+### 9.20 Simplify Complex Visuals into Clear Forms
+
+People interpret complex visuals as the simplest form possible (Law of Pragnanz). Reduce visual noise.
+
+**Incorrect (visually noisy layout):**
+
+```css
+.card {
+  border: 2px dashed red;
+  background: linear-gradient(45deg, #f0f, #0ff);
+  box-shadow: 5px 5px 0 black, 10px 10px 0 gray;
+  outline: 3px dotted blue;
+}
+```
+
+**Correct (clear, simple form):**
+
+```css
+.card {
+  background: var(--gray-2);
+  border: 1px solid var(--gray-a4);
+  border-radius: 12px;
+  box-shadow: var(--shadow-1);
 }
 ```
 

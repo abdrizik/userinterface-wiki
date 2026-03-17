@@ -9,7 +9,7 @@ metadata:
 
 # User Interface Wiki
 
-Comprehensive UI/UX best practices guide for web interfaces. Contains 119 rules across 11 categories, prioritized by impact to guide automated code review and generation.
+Comprehensive UI/UX best practices guide for web interfaces. Contains 131 rules across 11 categories, prioritized by impact to guide automated code review and generation.
 
 ## When to Apply
 
@@ -172,6 +172,18 @@ Reference these guidelines when:
 - `ux-doherty-perceived-speed` - Fake speed with skeletons, optimistic UI, progress indicators
 - `ux-postels-accept-messy-input` - Accept messy input, output clean data
 - `ux-progressive-disclosure` - Show what matters now, reveal complexity later
+- `ux-jakobs-familiar-patterns` - Use familiar UI patterns users know from other sites
+- `ux-aesthetic-usability` - Visual polish increases perceived usability
+- `ux-proximity-grouping` - Group related elements spatially with tighter spacing
+- `ux-similarity-consistency` - Similar elements should look alike
+- `ux-common-region-boundaries` - Use boundaries to group related content
+- `ux-von-restorff-emphasis` - Make important elements visually distinct
+- `ux-serial-position` - Place key items first or last in sequences
+- `ux-peak-end-finish-strong` - End experiences with clear success states
+- `ux-teslers-complexity` - Move complexity to the system, not the user
+- `ux-goal-gradient-progress` - Show progress toward completion
+- `ux-zeigarnik-show-incomplete` - Show incomplete state to drive completion
+- `ux-pragnanz-simplify` - Simplify complex visuals into clear forms
 
 ### 10. Predictive Prefetching (MEDIUM)
 

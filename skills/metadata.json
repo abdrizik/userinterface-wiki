@@ -1,9 +1,9 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "organization": "User Interface Wiki",
   "author": "raphael-salaja",
   "date": "March 2026",
-  "abstract": "Comprehensive UI/UX best practices guide for web interfaces. Contains 119 rules across 11 categories covering animation principles, timing functions, exit animations, CSS pseudo-elements, audio feedback, sound synthesis, morphing icons, container animation, laws of UX, predictive prefetching, and typography. Each rule includes detailed explanations and code examples comparing incorrect vs. correct implementations.",
+  "abstract": "Comprehensive UI/UX best practices guide for web interfaces. Contains 131 rules across 11 categories covering animation principles, timing functions, exit animations, CSS pseudo-elements, audio feedback, sound synthesis, morphing icons, container animation, laws of UX, predictive prefetching, and typography. Each rule includes detailed explanations and code examples comparing incorrect vs. correct implementations.",
   "references": [
     "https://developer.apple.com/videos/play/wwdc2023/10158",
     "https://motion.dev",
