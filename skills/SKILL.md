@@ -4,12 +4,12 @@ description: UI/UX best practices for web interfaces. Use when reviewing animati
 license: MIT
 metadata:
   author: raphael-salaja
-  version: "2.0.0"
+  version: "3.0.0"
 ---
 
 # User Interface Wiki
 
-Comprehensive UI/UX best practices guide for web interfaces. Contains 131 rules across 11 categories, prioritized by impact to guide automated code review and generation.
+Comprehensive UI/UX best practices guide for web interfaces. Contains 152 rules across 12 categories, prioritized by impact to guide automated code review and generation.
 
 ## When to Apply
 
@@ -40,6 +40,7 @@ Reference these guidelines when:
 | 9 | Laws of UX | HIGH | `ux-` |
 | 10 | Predictive Prefetching | MEDIUM | `prefetch-` |
 | 11 | Typography | MEDIUM | `type-` |
+| 12 | Visual Design | HIGH | `visual-` |
 
 ## Quick Reference
 
@@ -99,6 +100,8 @@ Reference these guidelines when:
 - `pseudo-position-relative-parent` - Parent needs position: relative
 - `pseudo-z-index-layering` - Z-index for correct pseudo-element layering
 - `pseudo-hit-target-expansion` - Negative inset for larger hit targets
+- `pseudo-marker-styling` - Use ::marker for custom list bullet styles
+- `pseudo-first-line-styling` - Use ::first-line for typographic treatments
 - `transition-name-required` - View transitions need view-transition-name
 - `transition-name-unique` - Each transition name unique during transition
 - `transition-name-cleanup` - Remove transition name after completion
@@ -161,6 +164,7 @@ Reference these guidelines when:
 - `container-overflow-hidden` - Set overflow: hidden on animated container during transitions
 - `container-no-excessive-use` - Use sparingly: buttons, accordions, interactive elements
 - `container-callback-ref` - Use callback ref (not useRef) for measurement hooks
+- `container-transition-delay` - Add small delay for natural catching-up feel
 
 ### 9. Laws of UX (HIGH)
 
@@ -184,6 +188,9 @@ Reference these guidelines when:
 - `ux-goal-gradient-progress` - Show progress toward completion
 - `ux-zeigarnik-show-incomplete` - Show incomplete state to drive completion
 - `ux-pragnanz-simplify` - Simplify complex visuals into clear forms
+- `ux-pareto-prioritize-features` - Prioritize the critical 20% of features
+- `ux-cognitive-load-reduce` - Minimize extraneous cognitive load
+- `ux-uniform-connectedness` - Visually connect related elements with lines or frames
 
 ### 10. Predictive Prefetching (MEDIUM)
 
@@ -206,6 +213,24 @@ Reference these guidelines when:
 - `type-text-wrap-balance-headings` - text-wrap: balance on headings for even lines
 - `type-underline-offset` - Offset underlines below descenders
 - `type-no-font-synthesis` - Disable font-synthesis to prevent faux bold/italic
+- `type-font-display-swap` - Use font-display: swap to avoid invisible text during load
+- `type-variable-weight-continuous` - Use continuous weight values (100-900) with variable fonts
+- `type-text-wrap-pretty` - text-wrap: pretty for body text to reduce orphans
+- `type-justify-with-hyphens` - Pair text-align: justify with hyphens: auto
+- `type-letter-spacing-uppercase` - Add letter-spacing to uppercase and small-caps text
+- `type-proper-fractions` - Use diagonal-fractions for proper typographic fractions
+
+### 12. Visual Design (HIGH)
+
+- `visual-concentric-radius` - Inner radius = outer radius minus padding for nested elements
+- `visual-layered-shadows` - Layer multiple shadows for realistic depth
+- `visual-shadow-direction` - All shadows share same offset direction (single light source)
+- `visual-no-pure-black-shadow` - Use neutral colors, not pure black, for shadows
+- `visual-shadow-matches-elevation` - Shadow size indicates elevation in consistent scale
+- `visual-animate-shadow-pseudo` - Animate shadow via pseudo-element opacity for performance
+- `visual-consistent-spacing-scale` - Use a consistent spacing scale, not arbitrary values
+- `visual-border-alpha-colors` - Semi-transparent borders adapt to any background
+- `visual-button-shadow-anatomy` - Six-layer shadow anatomy for polished buttons
 
 ## How to Use
 

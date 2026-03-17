@@ -59,3 +59,8 @@ The section ID (in parentheses) is the filename prefix used to group rules.
 
 **Impact:** MEDIUM
 **Description:** CSS font and text properties most developers overlook. OpenType features, numeric variants, variable font axes, text rendering, wrapping, and decoration controls that make typography feel considered.
+
+## 12. Visual Design (visual)
+
+**Impact:** HIGH
+**Description:** CSS design fundamentals that compound into visual polish. Concentric border radius, layered shadows, consistent spacing scales, and alpha borders. Small details that separate considered interfaces from default ones.

@@ -1,9 +1,9 @@
 {
-  "version": "2.1.0",
+  "version": "3.0.0",
   "organization": "User Interface Wiki",
   "author": "raphael-salaja",
   "date": "March 2026",
-  "abstract": "Comprehensive UI/UX best practices guide for web interfaces. Contains 131 rules across 11 categories covering animation principles, timing functions, exit animations, CSS pseudo-elements, audio feedback, sound synthesis, morphing icons, container animation, laws of UX, predictive prefetching, and typography. Each rule includes detailed explanations and code examples comparing incorrect vs. correct implementations.",
+  "abstract": "Comprehensive UI/UX best practices guide for web interfaces. Contains 152 rules across 12 categories covering animation principles, timing functions, exit animations, CSS pseudo-elements, audio feedback, sound synthesis, morphing icons, container animation, laws of UX, predictive prefetching, typography, and visual design. Each rule includes detailed explanations and code examples comparing incorrect vs. correct implementations.",
   "references": [
     "https://developer.apple.com/videos/play/wwdc2023/10158",
     "https://motion.dev",
@@ -18,6 +18,9 @@
     "https://nextjs.org/docs/app/guides/prefetching",
     "https://rsms.me/inter",
     "https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings",
-    "https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric"
+    "https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric",
+    "https://www.joshwcomeau.com/css/designing-shadows",
+    "https://jakub.kr/work/concentric-border-radius",
+    "https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap"
   ]
 }

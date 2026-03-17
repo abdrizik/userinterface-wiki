@@ -1,6 +1,6 @@
 # User Interface Wiki
 
-**Version 2.0.0**
+**Version 3.0.0**
 raphael-salaja
 March 2026
 
@@ -13,7 +13,7 @@ March 2026
 
 ## Abstract
 
-Comprehensive UI/UX best practices guide for web interfaces, designed for AI agents and LLMs. Contains 131 rules across 11 categories, prioritized by impact from critical (animation principles, timing functions) to incremental (morphing icons, typography). Each rule includes detailed explanations and code examples comparing incorrect vs. correct implementations.
+Comprehensive UI/UX best practices guide for web interfaces, designed for AI agents and LLMs. Contains 152 rules across 12 categories, prioritized by impact from critical (animation principles, timing functions) to incremental (morphing icons, typography). Each rule includes detailed explanations and code examples comparing incorrect vs. correct implementations.
 
 ---
 
@@ -76,6 +76,8 @@ Comprehensive UI/UX best practices guide for web interfaces, designed for AI age
    - 4.11 [Use ::backdrop for Dialog Backgrounds](#411-use-backdrop-for-dialog-backgrounds)
    - 4.12 [Use ::placeholder for Input Styling](#412-use-placeholder-for-input-styling)
    - 4.13 [Use ::selection for Text Styling](#413-use-selection-for-text-styling)
+   - 4.14 [Use ::marker for Custom List Bullets](#414-use-marker-for-custom-list-bullets)
+   - 4.15 [Use ::first-line for Typographic Treatments](#415-use-first-line-for-typographic-treatments)
 5. [Audio Feedback](#5-audio-feedback) — **MEDIUM**
    - 5.1 [Visual Equivalent for Every Sound](#51-visual-equivalent-for-every-sound)
    - 5.2 [Toggle Setting to Disable Sounds](#52-toggle-setting-to-disable-sounds)
@@ -122,6 +124,7 @@ Comprehensive UI/UX best practices guide for web interfaces, designed for AI age
    - 8.4 [Overflow Hidden on Animated Container](#84-overflow-hidden-on-animated-container)
    - 8.5 [Use Animated Bounds Sparingly](#85-use-animated-bounds-sparingly)
    - 8.6 [Use Callback Ref for Measurement](#86-use-callback-ref-for-measurement)
+   - 8.7 [Add Delay for Natural Container Transitions](#87-add-delay-for-natural-container-transitions)
 9. [Laws of UX](#9-laws-of-ux) — **HIGH**
    - 9.1 [Size Interactive Targets for Easy Clicking](#91-size-interactive-targets-for-easy-clicking)
    - 9.2 [Expand Hit Areas with Invisible Padding](#92-expand-hit-areas-with-invisible-padding)
@@ -143,6 +146,9 @@ Comprehensive UI/UX best practices guide for web interfaces, designed for AI age
    - 9.18 [Show Progress Toward Completion](#918-show-progress-toward-completion)
    - 9.19 [Show Incomplete State to Drive Completion](#919-show-incomplete-state-to-drive-completion)
    - 9.20 [Simplify Complex Visuals into Clear Forms](#920-simplify-complex-visuals-into-clear-forms)
+   - 9.21 [Prioritize the Critical 20% of Features](#921-prioritize-the-critical-20-of-features)
+   - 9.22 [Minimize Extraneous Cognitive Load](#922-minimize-extraneous-cognitive-load)
+   - 9.23 [Visually Connect Related Elements](#923-visually-connect-related-elements)
 10. [Predictive Prefetching](#10-predictive-prefetching) — **MEDIUM**
     - 10.1 [Trajectory Prediction Over Hover Prefetching](#101-trajectory-prediction-over-hover-prefetching)
     - 10.2 [Prefetch by Intent, Not Viewport](#102-prefetch-by-intent-not-viewport)
@@ -161,6 +167,22 @@ Comprehensive UI/UX best practices guide for web interfaces, designed for AI age
     - 11.8 [Balance Headings with text-wrap](#118-balance-headings-with-text-wrap)
     - 11.9 [Offset Underlines from Descenders](#119-offset-underlines-from-descenders)
     - 11.10 [Disable Font Synthesis for Missing Styles](#1110-disable-font-synthesis-for-missing-styles)
+    - 11.11 [Use font-display swap](#1111-use-font-display-swap)
+    - 11.12 [Continuous Weight Values with Variable Fonts](#1112-continuous-weight-values-with-variable-fonts)
+    - 11.13 [text-wrap pretty for Body Text](#1113-text-wrap-pretty-for-body-text)
+    - 11.14 [Pair Justified Text with Hyphens](#1114-pair-justified-text-with-hyphens)
+    - 11.15 [Add Letter Spacing to Uppercase Text](#1115-add-letter-spacing-to-uppercase-text)
+    - 11.16 [Use Typographic Fractions](#1116-use-typographic-fractions)
+12. [Visual Design](#12-visual-design) — **HIGH**
+    - 12.1 [Concentric Border Radius for Nested Elements](#121-concentric-border-radius-for-nested-elements)
+    - 12.2 [Layer Multiple Shadows for Realistic Depth](#122-layer-multiple-shadows-for-realistic-depth)
+    - 12.3 [Consistent Shadow Direction Across UI](#123-consistent-shadow-direction-across-ui)
+    - 12.4 [Use Neutral Colors for Shadows](#124-use-neutral-colors-for-shadows)
+    - 12.5 [Shadow Size Indicates Elevation](#125-shadow-size-indicates-elevation)
+    - 12.6 [Animate Shadows via Pseudo-Element Opacity](#126-animate-shadows-via-pseudo-element-opacity)
+    - 12.7 [Use a Consistent Spacing Scale](#127-use-a-consistent-spacing-scale)
+    - 12.8 [Use Semi-Transparent Borders](#128-use-semi-transparent-borders)
+    - 12.9 [Full Shadow Anatomy on Buttons](#129-full-shadow-anatomy-on-buttons)
 
 ---
 
@@ -1306,6 +1328,51 @@ Use ::selection for text selection styling.
 }
 ```
 
+### 4.14 Use ::marker for Custom List Bullets
+
+Use ::marker to style list bullets without extra elements or background-image hacks.
+
+**Incorrect (background image hack):**
+
+```css
+li {
+  list-style: none;
+  background: url("bullet.svg") no-repeat 0 4px;
+  padding-left: 20px;
+}
+```
+
+**Correct (native ::marker):**
+
+```css
+li::marker {
+  color: var(--gray-8);
+  font-size: 0.8em;
+}
+```
+
+### 4.15 Use ::first-line for Typographic Treatments
+
+Use ::first-line for drop-cap-adjacent styling without JavaScript or hardcoded spans.
+
+**Incorrect (manual span):**
+
+```tsx
+<p>
+  <span className={styles["first-line"]}>The opening line</span>
+  is styled differently from the rest.
+</p>
+```
+
+**Correct (native ::first-line):**
+
+```css
+.article p:first-of-type::first-line {
+  font-variant-caps: small-caps;
+  font-weight: var(--font-weight-medium);
+}
+```
+
 Reference: [MDN Pseudo-elements Reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-elements), [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
 
 ---
@@ -2321,6 +2388,22 @@ useEffect(() => {
 }, [element]);
 ```
 
+### 8.7 Add Delay for Natural Container Transitions
+
+Add a small delay so the transition feels like it's catching up to the content.
+
+**Correct:**
+
+```tsx
+<motion.div
+  animate={{ height: bounds.height }}
+  transition={{ duration: 0.2, delay: 0.05 }}
+  style={{ overflow: "hidden" }}
+>
+  <div ref={ref}>{children}</div>
+</motion.div>
+```
+
 Reference: [ResizeObserver - MDN](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver), [Motion Documentation](https://motion.dev)
 
 ---
@@ -2883,6 +2966,113 @@ People interpret complex visuals as the simplest form possible (Law of Pragnanz)
 }
 ```
 
+### 9.21 Prioritize the Critical 20% of Features
+
+80% of users use 20% of features (Pareto Principle). Optimize the critical path first.
+
+**Incorrect (all features equally prominent):**
+
+```tsx
+function Toolbar() {
+  return (
+    <div>
+      {allFeatures.map(f => <Button key={f.id}>{f.label}</Button>)}
+    </div>
+  );
+}
+```
+
+**Correct (critical features prominent, rest accessible):**
+
+```tsx
+function Toolbar() {
+  return (
+    <div>
+      {criticalFeatures.map(f => <Button key={f.id}>{f.label}</Button>)}
+      <MoreMenu features={secondaryFeatures} />
+    </div>
+  );
+}
+```
+
+### 9.22 Minimize Extraneous Cognitive Load
+
+Remove anything that doesn't help the user complete their task. Decoration, redundant labels, and unnecessary options all add load.
+
+**Incorrect (extraneous elements):**
+
+```tsx
+function DeleteDialog() {
+  return (
+    <dialog>
+      <Icon name="warning" size={64} />
+      <h2>Warning!</h2>
+      <p>Are you absolutely sure you want to delete?</p>
+      <p>This action is permanent and cannot be undone.</p>
+      <p>All associated data will be lost forever.</p>
+      <div>
+        <button>Cancel</button>
+        <button>Delete</button>
+        <button>Learn More</button>
+      </div>
+    </dialog>
+  );
+}
+```
+
+**Correct (essential information only):**
+
+```tsx
+function DeleteDialog() {
+  return (
+    <dialog>
+      <h2>Delete this item?</h2>
+      <p>This can't be undone.</p>
+      <div>
+        <button>Cancel</button>
+        <button>Delete</button>
+      </div>
+    </dialog>
+  );
+}
+```
+
+### 9.23 Visually Connect Related Elements
+
+Elements that are visually connected (by lines, color, or frames) are perceived as more related (Law of Uniform Connectedness).
+
+**Incorrect (steps with no visual connection):**
+
+```tsx
+function Steps({ current }) {
+  return (
+    <div>
+      <span>Step 1</span>
+      <span>Step 2</span>
+      <span>Step 3</span>
+    </div>
+  );
+}
+```
+
+**Correct (connected with a visual line):**
+
+```tsx
+function Steps({ current }) {
+  return (
+    <div className={styles.steps}>
+      {steps.map((step, i) => (
+        <div key={step.id} className={styles.step} data-active={i <= current}>
+          <div className={styles.dot} />
+          {i < steps.length - 1 && <div className={styles.connector} />}
+          <span>{step.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
 Reference: [Laws of UX](https://lawsofux.com/) by Jon Yablonski
 
 ---
@@ -3167,7 +3357,348 @@ Set font-synthesis: none to prevent the browser from faking bold or italic. Brow
 | `text-underline-offset: 3px` | Links | Clear descender space |
 | `font-synthesis: none` | Display/icon fonts | Prevents faux styles |
 
+### 11.11 Use font-display swap
+
+Set font-display: swap so text renders immediately with a fallback while the custom font loads.
+
+**Correct:**
+
+```css
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter.woff2") format("woff2");
+  font-display: swap;
+}
+```
+
+### 11.12 Continuous Weight Values with Variable Fonts
+
+Variable fonts accept any integer from 100-900, not just standard stops.
+
+**Correct (precise weight):**
+
+```css
+.medium { font-weight: 450; }
+.semibold { font-weight: 550; }
+```
+
+### 11.13 text-wrap pretty for Body Text
+
+Use text-wrap: pretty for body text to reduce orphans. Use balance for headings.
+
+**Correct:**
+
+```css
+p { text-wrap: pretty; }
+h1, h2, h3 { text-wrap: balance; }
+```
+
+### 11.14 Pair Justified Text with Hyphens
+
+Justified text without hyphens creates rivers of whitespace.
+
+**Incorrect (rivers):**
+
+```css
+.article { text-align: justify; }
+```
+
+**Correct (hyphenation prevents rivers):**
+
+```css
+.article {
+  text-align: justify;
+  hyphens: auto;
+}
+```
+
+### 11.15 Add Letter Spacing to Uppercase Text
+
+Uppercase and small-caps text needs positive letter-spacing to feel open and readable.
+
+**Incorrect (tight uppercase):**
+
+```css
+.label {
+  text-transform: uppercase;
+  font-size: 12px;
+}
+```
+
+**Correct (opened up):**
+
+```css
+.label {
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+```
+
+### 11.16 Use Typographic Fractions
+
+Enable diagonal-fractions to convert 1/2, 1/3 into proper typographic fractions.
+
+**Correct:**
+
+```css
+.recipe { font-variant-numeric: diagonal-fractions; }
+```
+
 Reference: [Inter Typeface](https://rsms.me/inter/), [MDN font-feature-settings](https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings), [MDN font-variant-numeric](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric)
+
+---
+
+## 12. Visual Design
+
+**Impact:** HIGH — CSS design fundamentals that compound into visual polish. Small details that separate considered interfaces from default ones.
+
+### 12.1 Concentric Border Radius for Nested Elements
+
+When nesting rounded elements, inner radius must equal outer radius minus the gap. Same radius on both creates uneven curves.
+
+**Incorrect (same radius on both):**
+
+```css
+.outer {
+  border-radius: 16px;
+  padding: 8px;
+}
+
+.inner {
+  border-radius: 16px;
+}
+```
+
+**Correct (concentric radius):**
+
+```css
+.outer {
+  --padding: 8px;
+  --inner-radius: 8px;
+
+  border-radius: calc(var(--inner-radius) + var(--padding));
+  padding: var(--padding);
+}
+
+.inner {
+  border-radius: var(--inner-radius);
+}
+```
+
+### 12.2 Layer Multiple Shadows for Realistic Depth
+
+A single box-shadow looks flat. Layer multiple shadows with increasing blur and decreasing opacity to mimic real light.
+
+**Incorrect (single flat shadow):**
+
+```css
+.card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+```
+
+**Correct (layered shadows):**
+
+```css
+.card {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    0 12px 24px rgba(0, 0, 0, 0.03);
+}
+```
+
+### 12.3 Consistent Shadow Direction Across UI
+
+All shadows must share the same offset direction to imply a single light source. Mixed directions feel broken.
+
+**Incorrect (conflicting light sources):**
+
+```css
+.card { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+.modal { box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1); }
+.tooltip { box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1); }
+```
+
+**Correct (consistent top-down light):**
+
+```css
+.card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+.modal { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
+.tooltip { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+```
+
+### 12.4 Use Neutral Colors for Shadows
+
+Pure black shadows look harsh. Use deep neutrals or semi-transparent dark colors.
+
+**Incorrect (pure black):**
+
+```css
+.card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+```
+
+**Correct (neutral shadow):**
+
+```css
+.card {
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.08);
+}
+```
+
+### 12.5 Shadow Size Indicates Elevation
+
+Larger blur and offset means higher elevation. Use a consistent shadow scale.
+
+**Correct (elevation scale):**
+
+```css
+:root {
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card { box-shadow: var(--shadow-1); }
+.dropdown { box-shadow: var(--shadow-2); }
+.modal { box-shadow: var(--shadow-3); }
+```
+
+### 12.6 Animate Shadows via Pseudo-Element Opacity
+
+Transitioning box-shadow directly forces expensive repaints. Animate opacity on a pseudo-element instead.
+
+**Incorrect (animating box-shadow):**
+
+```css
+.card {
+  box-shadow: var(--shadow-1);
+  transition: box-shadow 0.2s ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-3);
+}
+```
+
+**Correct (pseudo-element opacity):**
+
+```css
+.card {
+  position: relative;
+  box-shadow: var(--shadow-1);
+}
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--shadow-3);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+.card:hover::after {
+  opacity: 1;
+}
+```
+
+### 12.7 Use a Consistent Spacing Scale
+
+Don't use arbitrary pixel values. Define a scale and use it throughout.
+
+**Incorrect (arbitrary values):**
+
+```css
+.header { padding: 17px; }
+.card { margin-bottom: 13px; }
+.section { gap: 22px; }
+```
+
+**Correct (consistent scale):**
+
+```css
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+}
+
+.header { padding: var(--space-4); }
+.card { margin-bottom: var(--space-3); }
+.section { gap: var(--space-5); }
+```
+
+### 12.8 Use Semi-Transparent Borders
+
+Semi-transparent borders adapt to any background color and create subtle, non-jarring separation.
+
+**Incorrect (hardcoded border color):**
+
+```css
+.card {
+  border: 1px solid #e5e5e5;
+}
+```
+
+**Correct (alpha border):**
+
+```css
+.card {
+  border: 1px solid var(--gray-a4);
+}
+```
+
+### 12.9 Full Shadow Anatomy on Buttons
+
+A polished button uses six layered techniques, not just a single box-shadow:
+
+1. **Outer cut shadow** — 0.5px dark box-shadow to "cut" the button into the surface
+2. **Inner ambient highlight** — 1px inset box-shadow on all sides for environmental light reflections
+3. **Inner top highlight** — 1px inset top highlight for the primary light source from above
+4. **Layered depth shadows** — At least 3 external shadows for natural lighting
+5. **Text drop-shadow** — Drop-shadow on text/icons for better contrast against the button background
+6. **Subtle gradient background** — If you can tell there's a gradient, it's too much
+
+**Incorrect (flat button):**
+
+```css
+.button {
+  background: var(--gray-12);
+  color: var(--gray-1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+```
+
+**Correct (full shadow anatomy):**
+
+```css
+.button {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--gray-12) 100%, white 4%),
+    var(--gray-12)
+  );
+  color: var(--gray-1);
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 4px 8px rgba(0, 0, 0, 0.03);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+}
+```
+
+Reference: [Designing Beautiful Shadows in CSS](https://www.joshwcomeau.com/css/designing-shadows/), [Concentric Border Radius](https://jakub.kr/work/concentric-border-radius), [@PixelJanitor](https://threadreaderapp.com/thread/1623358514440859649)
 
 ---
 
@@ -3212,3 +3743,7 @@ After findings, output a summary:
 - [Inter Typeface](https://rsms.me/inter/)
 - [MDN font-feature-settings](https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings)
 - [MDN font-variant-numeric](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric)
+- [Designing Beautiful Shadows in CSS - Josh W. Comeau](https://www.joshwcomeau.com/css/designing-shadows/)
+- [Concentric Border Radius](https://jakub.kr/work/concentric-border-radius)
+- [Nested Rounded Corners](https://www.ondrejkonecny.com/blog/nested-rounded-corners/)
+- [MDN text-wrap](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap)
